@@ -7,7 +7,7 @@ Five new projects, each planned in its own file:
 
 | # | Plan | Fills | Size | Suggested order |
 |---|---|---|---|---|
-| 1 | [forensics-game-plan.md](forensics-game-plan.md) | Autopsy, Volatility, FTK Imager are listed as skills but no project uses them | L | 1st |
+| 1 | [plan/00-overview.md](plan/00-overview.md) (split into files 01–16) | Autopsy, Volatility, FTK Imager are listed as skills but no project uses them | L | 1st |
 | 2 | [crypto-visualizer-plan.md](crypto-visualizer-plan.md) | Internet Visualizer's "no cryptography in the TLS layer" disclaimer | M | 2nd |
 | 3 | [os-visualizer-plan.md](os-visualizer-plan.md) | Operating Systems course | M | 3rd |
 | 4 | [compiler-visualizer-plan.md](compiler-visualizer-plan.md) | AI Code Visualizer's "does not execute your code" disclaimer | L | 4th |
@@ -48,7 +48,7 @@ None of these projects needs a server-side database:
 | Need | Where it goes |
 |---|---|
 | Case files, evidence, scenarios, lessons | Static files in the repo (JSON/YAML/MDX), validated by Zod at build time |
-| Player progress, settings, finished cases | `localStorage`, behind a versioned schema (`{ v: 1, ... }`) with a migration function. This is what Hacker Simulation already does |
+| Player progress, settings, finished cases | `localStorage`, behind a versioned schema (`{ v: 1, ... }`) with a migration function. (Hacker Simulation stores settings only and keeps no progress; the forensics game deliberately saves case runs, see [plan/00-overview.md](plan/00-overview.md) §4) |
 | Sharing a specific state ("look at this B-tree") | Encode the state in the URL (`?s=<base64url>`). No storage needed |
 | Moving progress to another device | "Export progress" produces a short code or JSON file, and "Import" reads it back. No accounts needed |
 | Usage numbers | `@vercel/analytics`, which is already in every project |
@@ -70,7 +70,7 @@ Every plan follows the same structure, because it's what makes Internet Visualiz
 4. **Honest disclaimers.** Each plan lists what the project deliberately leaves out, in the same voice as the existing `disclaimers[]` fields.
 5. **The same quality checks.** axe on every route, keyboard-only operation, reduced motion respected, a per-page JS budget, Vitest + Playwright.
 
-Default stack for each repo: Next.js (same major version as the portfolio, and read `node_modules/next/dist/docs/` first as `AGENTS.md` says), TypeScript, Tailwind CSS v4, Zustand, Zod, Vitest, Playwright. Add React Flow or Monaco only where a plan says so.
+Default stack for each repo: Next.js (same major version as the portfolio, and read `node_modules/next/dist/docs/` first as `AGENTS.md` says), TypeScript, Tailwind CSS v4, Zod, Vitest, Playwright. Add Zustand, React Flow or Monaco only where a plan says so (Hacker Simulation manages state with pure reducers and hooks, and the forensics game follows it).
 
 ---
 
