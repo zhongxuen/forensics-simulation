@@ -7,6 +7,7 @@
  * commands, the output is byte-identical every run.
  */
 import type { SimError } from "./errors";
+import type { ArtefactRef } from "../evidence/types";
 import type { Accounts, Vfs } from "../fs/types";
 import type { DiscoveryState, NetworkGraph, NetworkSpec, Protocol } from "../net/types";
 import type { ShellCommand } from "../shell/types";
@@ -78,6 +79,11 @@ export interface OutputLine {
   readonly text: string;
   /** Present on lines reporting an expected failure, for the beginner explainer layer. */
   readonly error?: SimError;
+  /**
+   * Forensics addition (docs/plan/02-evidence-model.md §Artefact refs): the piece of evidence this
+   * line shows. Tools set it, `pin` reads it, the grader checks it.
+   */
+  readonly ref?: ArtefactRef;
 }
 
 /**

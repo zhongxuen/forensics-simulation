@@ -1,0 +1,7 @@
+EventID      23  File deleted.
+TimeCreated  2026-04-11T19:42:03Z
+Computer     qf-lt-07
+  ProcessId       5120
+  Image           C:\Windows\explorer.exe
+  User            QUILLFEN\dana
+  TargetFilename  C:\Users\dana\Documents\Invoices\inv-0412.pdf

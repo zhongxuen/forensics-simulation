@@ -1,0 +1,11 @@
+EventID      3  Network connection detected.
+TimeCreated  2026-04-14T02:14:00Z
+Computer     qf-srv-01
+  ProcessId        4120
+  Image            C:\Users\Public\svchost.exe
+  User             QF-SRV-01\svc-update
+  Protocol         tcp
+  SourceIp         10.60.1.10
+  SourcePort       49811
+  DestinationIp    203.0.113.47
+  DestinationPort  443

@@ -1,0 +1,10 @@
+EventID      4732  A member was added to a security-enabled local group.
+TimeCreated  2026-04-14T02:12:45Z
+Computer     qf-srv-01
+Keywords     Audit Success
+  SubjectUserName    administrator
+  SubjectDomainName  QF-SRV-01
+  MemberName         -
+  MemberSid          S-1-5-21-1004-1001
+  TargetUserName     Administrators
+  TargetDomainName   Builtin

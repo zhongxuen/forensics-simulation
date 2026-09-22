@@ -1,0 +1,9 @@
+EventID      1  Process created.
+TimeCreated  2026-04-14T02:13:00Z
+Computer     qf-srv-01
+  ProcessId        4120
+  Image            C:\Users\Public\svchost.exe
+  CommandLine      C:\Users\Public\svchost.exe -k update
+  User             QF-SRV-01\svc-update
+  ParentProcessId  3310
+  ParentImage      C:\Windows\System32\cmd.exe

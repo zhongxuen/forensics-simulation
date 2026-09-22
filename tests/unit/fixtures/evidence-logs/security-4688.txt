@@ -1,0 +1,11 @@
+EventID      4688  A new process has been created.
+TimeCreated  2026-04-14T02:13:00Z
+Computer     qf-srv-01
+Keywords     Audit Success
+  SubjectUserName     svc-update
+  SubjectDomainName   QF-SRV-01
+  NewProcessId        0x1018
+  NewProcessName      C:\Users\Public\svchost.exe
+  ParentProcessName   C:\Windows\System32\cmd.exe
+  CommandLine         C:\Users\Public\svchost.exe -k update
+  TokenElevationType  %%1937

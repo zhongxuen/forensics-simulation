@@ -8,7 +8,8 @@ export { step } from "./core/step";
 export { createInitialState, DEFAULT_START_TIME, scenarioStartMs } from "./core/scenario";
 export { ScenarioError } from "./core/scenario-error";
 export { createRng, deriveSeed, normalizeSeed, seedFromString } from "./core/rng";
-export { fixedClock, formatInstant, parseInstant, steppingClock } from "./core/clock";
+// formatInstant comes from the evidence model: the same output with no options, plus zoned display.
+export { fixedClock, parseInstant, steppingClock } from "./core/clock";
 export { exitCodeFor, formatError, isFsError, isUsageError } from "./core/errors";
 export { deepFreeze } from "./core/freeze";
 export {
@@ -67,3 +68,51 @@ export { MAX_SYMLINK_DEPTH, resolvePath } from "./fs/resolve";
 
 export { canReach, hostById, reachableHosts, resolveHostname, servicesOn } from "./net/graph";
 export { discoveredHost, hostMapState, isDiscovered, selectTopology } from "./net/discovery";
+
+// The evidence model (docs/plan/02-evidence-model.md). Its types come through "./types" above.
+export {
+  ArtefactRefSchema,
+  base64ByteLength,
+  baseName,
+  decodeBase64,
+  DiskImageSchema,
+  encodeBase64,
+  EvidenceSetSchema,
+  FileRecordSchema,
+  formatInstant,
+  formatOffset,
+  formatRef,
+  HandoverItemSchema,
+  isArtefactRef,
+  isBase64,
+  isImageId,
+  isKnownZone,
+  isLogSource,
+  KNOWN_EVENT_IDS,
+  LogRecordSchema,
+  LogSourceSchema,
+  MacbTimesSchema,
+  MemoryImageSchema,
+  mountRead,
+  mountWrite,
+  parentPath,
+  parseRef,
+  PartitionSchema,
+  renderLog,
+  resolveRef,
+  SECURITY_EVENTS,
+  SYSMON_LITE_EVENTS,
+  UTC_ZONE,
+  ZONE_TABLE,
+  zonedParts,
+  zoneOffsetMinutes,
+  zonePeriodAt,
+  type DiskView,
+  type EventInfo,
+  type FormatInstantOptions,
+  type MountWriteOptions,
+  type RenderLogOptions,
+  type ZoneEntry,
+  type ZonedParts,
+  type ZonePeriod,
+} from "./evidence";

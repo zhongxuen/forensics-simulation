@@ -1,0 +1,1 @@
+2026-04-11T19:35:00Z qf-vpn-01 vpn[auth-fail] user=dana src=198.51.100.7 reason="bad password"

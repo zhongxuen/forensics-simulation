@@ -1,0 +1,8 @@
+EventID      4634  An account was logged off.
+TimeCreated  2026-04-11T17:31:00Z
+Computer     qf-lt-07
+Keywords     Audit Success
+  TargetUserName    dana
+  TargetDomainName  QUILLFEN
+  TargetLogonId     0x2b100
+  LogonType         2

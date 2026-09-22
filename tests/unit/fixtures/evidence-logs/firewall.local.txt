@@ -1,0 +1,1 @@
+2026-04-11 20:41:30 +01:00 qf-fw-01 action=allow proto=TCP src=10.60.0.21 spt=51234 dst=203.0.113.80 dpt=443 bytes=1843200 rule=office-out note="large upload"

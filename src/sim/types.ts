@@ -2,9 +2,10 @@
  * Shared simulation types. This is the only part of src/sim that src/content may import, so every
  * type mission content needs (scenario specs, events, errors) is re-exported here. Besides types,
  * it exports only the constant lists of event types and error codes, so content schemas can
- * validate against them.
+ * validate against them (and, for the evidence model, the list of log sources).
  */
 export { SIM_EVENT_TYPES } from "./core/events";
+export { LOG_SOURCES } from "./evidence/types";
 export { FS_ERROR_CODES, SIM_ERROR_CODES } from "./core/errors";
 export type {
   ExecCommand,
@@ -90,3 +91,24 @@ export type {
   ShellWord,
   ShellWordPart,
 } from "./shell/types";
+export type {
+  ArtefactRef,
+  DiskImage,
+  EvidenceSet,
+  FileRecord,
+  HandoverItem,
+  Instant,
+  LogRecord,
+  LogSource,
+  MacbTimes,
+  MemoryConnection,
+  MemoryImage,
+  MemoryModule,
+  MemoryProcess,
+  MemoryRegion,
+  MemoryString,
+  ParsedRef,
+  Partition,
+  ResolvedArtefact,
+  ZonedSource,
+} from "./evidence/types";

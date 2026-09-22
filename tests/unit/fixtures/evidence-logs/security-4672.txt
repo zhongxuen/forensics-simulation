@@ -1,0 +1,8 @@
+EventID      4672  Special privileges assigned to new logon.
+TimeCreated  2026-04-14T02:12:30Z
+Computer     qf-srv-01
+Keywords     Audit Success
+  SubjectUserName    administrator
+  SubjectDomainName  QF-SRV-01
+  SubjectLogonId     0x51c20
+  PrivilegeList      SeDebugPrivilege SeBackupPrivilege

@@ -1,0 +1,15 @@
+EventID      4624  An account was successfully logged on.
+TimeCreated  2026-04-11T19:40:12Z
+Computer     qf-lt-07
+Keywords     Audit Success
+  SubjectUserName            QF-LT-07$
+  SubjectDomainName          QUILLFEN
+  TargetUserName             dana
+  TargetDomainName           QUILLFEN
+  LogonType                  10
+  LogonProcessName           User32
+  AuthenticationPackageName  Negotiate
+  WorkstationName            QF-LT-03
+  IpAddress                  10.60.0.21
+  IpPort                     50112
+  TargetLogonId              0x3e7a1

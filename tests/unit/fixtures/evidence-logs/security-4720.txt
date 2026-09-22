@@ -1,0 +1,9 @@
+EventID      4720  A user account was created.
+TimeCreated  2026-04-14T02:12:40Z
+Computer     qf-srv-01
+Keywords     Audit Success
+  SubjectUserName    administrator
+  SubjectDomainName  QF-SRV-01
+  TargetUserName     svc-update
+  TargetDomainName   QF-SRV-01
+  SamAccountName     svc-update

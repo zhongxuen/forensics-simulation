@@ -1,0 +1,13 @@
+EventID      4625  An account failed to log on.
+TimeCreated  2026-04-14T02:10:00Z
+Computer     qf-srv-01
+Keywords     Audit Failure
+  TargetUserName    administrator
+  TargetDomainName  QF-SRV-01
+  LogonType         10
+  Status            0xc000006d
+  SubStatus         0xc000006a
+  FailureReason     Unknown user name or bad password.
+  WorkstationName   -
+  IpAddress         198.51.100.23
+  IpPort            61022

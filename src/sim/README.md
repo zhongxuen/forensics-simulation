@@ -6,6 +6,7 @@ The only entry point is `step(state, cmd, ctx) => { state, output, events, exitC
 
 - `core/` state, `step`, RNG, clock, scenarios, serialization, replay, and read-only queries (`inspect.ts`)
 - `fs/` the virtual filesystem · `net/` the network model and the discovered-only topology selector · `shell/` running parsed command lines · `tools/` simulated tools and the Linux command set
+- `evidence/` the forensics evidence model: disk, memory and log types, artefact refs, zoned time, schemas (see its README)
 - `__fixtures__/` the test scenario, golden run, and test helpers (`shell.ts` builds command lines for tests)
 
 Never import here: React, Next.js, Node I/O modules, or anything from `src` outside `src/sim`. No `Date.now()`, `new Date()`, or `Math.random()`: inject time and randomness instead. ESLint enforces all of this, and `golden.test.ts` fails loudly if ambient time or randomness is ever read.

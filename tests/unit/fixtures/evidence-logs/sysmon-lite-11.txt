@@ -1,0 +1,6 @@
+EventID      11  File created.
+TimeCreated  2026-04-11T19:44:00Z
+Computer     qf-lt-03
+  ProcessId       2204
+  Image           C:\Windows\System32\notepad.exe
+  TargetFilename  C:\Users\Public\README-HL.txt
