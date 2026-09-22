@@ -22,14 +22,21 @@ Prepare a "Case 1 only" release:
    draft disclaimers from 16 plus "Cases 2 and 3 are still being written."
 2. Hide cases 2 and 3 from /cases (a `released` flag in chapter.ts), not by deleting anything.
 3. Run the whole quality list in 15 §Quality checklist and fix what fails.
-4. Write docs/runbook.md: create the Vercel project (framework Next.js), environment variables (none
+4. Write docs/runbook.md: the Vercel project (already created: forensics-simulation, framework
+   Next.js, production branch main; record its settings rather than recreating it), environment variables (none
    needed; ANTHROPIC_API_KEY only if the mentor ships), the firewall rate-limit rule for /api/mentor/*
    copied from Hacker Simulation's runbook, rolling back, and the playtest kit.
 Don't run vercel deploy yourself. List the owner steps at the end of your reply.
 Commit when everything is green.
 ```
 
-**Owner steps (you, in a browser):** create the Vercel project from the GitHub repo, set the production branch to `main`, require the "CI passed" check on `main`, add the firewall rule if the mentor is on.
+**Owner steps (you, in a browser):**
+
+- [x] Create the Vercel project from the GitHub repo (`forensics-simulation`, done 2026-09-22)
+- [x] Production branch is `main`
+- [ ] Turn off Vercel Authentication for production (Settings → Deployment Protection), or add a public domain/alias, so visitors can reach the site. It's on by default and currently covers the `*.vercel.app` domains
+- [ ] Require the "CI passed" check on `main`
+- [ ] Add the firewall rule if the mentor is on
 
 ## Part B — full launch
 

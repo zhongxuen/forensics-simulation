@@ -11,6 +11,8 @@ The project shows up on the portfolio with an accurate card that backs up the Au
 ## The entry (draft)
 
 - **slug:** `candlewright-incident-room`
+- **liveUrl:** `https://forensics-simulation-goh-zhong-xuen-s-projects.vercel.app` (the Vercel project's production domain; swap in a shorter alias or custom domain if one is added in 15)
+- **githubUrl / githubRepo:** `https://github.com/zhongxuen/forensics-simulation` / `zhongxuen/forensics-simulation`
 - **technologies:** Next.js, TypeScript, React, Tailwind CSS, Zod, Vitest, Playwright (+ Claude API if the mentor shipped)
 - **skills this backs up:** Autopsy, Volatility Workbench, FTK Imager (already in `data/skills.ts`)
 - **keyFeatures (draft):** three cases generated from written stories and tested to be solvable · an Autopsy-style evidence browser, a Volatility-style memory toolkit and an FTK-style acquire-and-verify workflow · a cross-linked super-timeline · a report that only counts findings backed by evidence · a chain-of-custody log built from what you did

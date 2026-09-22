@@ -87,7 +87,9 @@ Read docs/plan/00-overview.md and docs/plan/01-foundation.md.
 2. Reset scripts/bundle-baseline.json for the new routes.
 3. Add .github/dependabot.yml as in the sibling repo.
 4. vercel.json pins "framework": "nextjs".
-Don't create the Vercel project. That's an owner step in file 15.
+The Vercel project already exists (forensics-simulation, connected to the GitHub repo, production
+branch main), so every push to main deploys. Don't create or reconfigure it, and don't run vercel
+deploy yourself.
 Finish with everything green locally, then commit.
 ```
 

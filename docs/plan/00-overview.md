@@ -3,7 +3,7 @@
 Written: 2026-09-22 (split from the single `forensics-game-plan.md`, reviewed against `../hacker-simulation` at commit `4c62fe9`)
 Status: **[planned]**. Nothing is built yet.
 Working title: **Candlewright: Incident Room**
-Repo: `forensics-simulation` (sibling of `hacker-simulation`). Hosting: its own Vercel project. **No database** (see [../README.md](../README.md) §2).
+Repo: `forensics-simulation` (sibling of `hacker-simulation`). Hosting: its own Vercel project, `forensics-simulation` (created and connected to the GitHub repo on 2026-09-22, production branch `main`, framework Next.js). **No database** (see [../README.md](../README.md) §2).
 
 ---
 
