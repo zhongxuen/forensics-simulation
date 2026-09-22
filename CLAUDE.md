@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Plan file 01 (foundation) is built: a Next.js 16 (App Router) + React 19 + TypeScript (strict) + Tailwind CSS 4 app, managed with pnpm 11, with Hacker Simulation's pure engine, terminal, settings, UI kit, app shell, lesson pipeline and quality scripts vendored from `../hacker-simulation` at commit `4c62fe9` (`VENDORED.md` lists every copied path and every change since). Routes: `/` (one line and "Open Case 1"), `/cases` and `/cases/[slug]` (placeholders for `case-01` to `case-03`), `/sandbox` (the vendored terminal on the analyst workstation `ir-ws-01`, account `examiner`, from `src/content/sandbox/workstation.ts`), `/learn` (placeholder), `/settings` (the vendored settings form, key `incident-room:settings`), `/privacy`, and `/styleguide` (dev only). Nothing forensics-specific exists yet: the evidence model is file 02, the case format and generator file 03.
 
-Prompt 01.2 (CI adapted from the sibling, bundle baseline reset) is next. `.github/workflows/ci.yml` is still the sibling's copy until then.
+Prompt 01.2 is done too: `.github/workflows/ci.yml` is adapted from the sibling (with commented TODOs for `case:validate` and `evidence:check`, file 03), `scripts/bundle-baseline.json` is reset for these routes, and `tests/e2e/a11y.spec.ts` runs axe on every route. The Vercel project deploys `main` through its Git integration; nothing in CI deploys.
 
 ## What this project is
 

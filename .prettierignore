@@ -2,3 +2,6 @@ pnpm-lock.yaml
 
 # Golden snapshots are compared byte for byte by src/sim/golden.test.ts.
 src/sim/__fixtures__/golden/
+
+# The plan is hand-written prose with wide tables; Prettier would realign them into noisy diffs.
+docs/

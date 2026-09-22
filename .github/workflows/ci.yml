@@ -1,8 +1,9 @@
-# CI for every pull request and every push to main (md-files/11-testing-security-deployment.md,
-# prompt 11.1). Each check is its own job so a failure says which layer broke; "CI passed" at the
-# end needs all of them, and is the one check to mark required in the branch protection rule for
-# main (Settings > Branches), which is what blocks a merge on failure. No job needs a secret: the
-# mentor is tested with the Anthropic SDK mocked, and the end-to-end tests run it on its notes.
+# CI for every pull request and every push to main (docs/plan/01-foundation.md, prompt 01.2),
+# adapted from ../hacker-simulation's workflow. Each check is its own job so a failure says which
+# layer broke; "CI passed" at the end needs all of them, and is the one check to mark required in
+# the branch protection rule for main (Settings > Branches), which is what blocks a merge on
+# failure. No job needs a secret: nothing here calls a model, and the mentor (file 14) will be
+# tested with the Anthropic SDK mocked. Deployment is Vercel's Git integration, not a job here.
 
 name: CI
 
@@ -41,7 +42,7 @@ jobs:
         run: pnpm audit --audit-level high
 
   unit:
-    name: Unit tests (engine, parser, evaluator, settings, components)
+    name: Unit tests (engine, terminal, settings, boundaries, components)
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -55,7 +56,7 @@ jobs:
       - run: pnpm test:unit
 
   content:
-    name: Content validation (missions, lessons, glossary, campaign, themes)
+    name: Content validation (lessons, glossary, sandbox workstation, themes)
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -67,9 +68,14 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm test:content
+      # TODO(docs/plan/03-case-format-and-generator.md): every case YAML validates and is solvable.
+      # - run: pnpm case:validate
+      # TODO(docs/plan/03-case-format-and-generator.md): the committed evidence JSON is what the
+      # generator builds from the case stories today (fails on stale evidence).
+      # - run: pnpm evidence:check
 
   integration:
-    name: Integration tests (mentor routes, SDK mocked)
+    name: Integration tests (route handlers)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -80,10 +86,12 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm test:integration
+      # No integration tests exist yet: the mentor routes and their tests come with file 14
+      # (docs/plan/14-mentor.md). TODO(docs/plan/14-mentor.md): drop --passWithNoTests then.
+      - run: pnpm test:integration --passWithNoTests
 
   coverage:
-    name: Coverage (src/sim and the key modules gated)
+    name: Coverage (src/sim and settings gated)
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -128,7 +136,7 @@ jobs:
         run: pnpm bundle:check
       - name: No secrets or server-only code in the client bundle
         run: pnpm security:bundle
-      - name: End-to-end tests, including the first five minutes and axe on every route
+      - name: End-to-end tests, axe on every route and the security headers
         run: pnpm test:e2e
       - uses: actions/upload-artifact@v7
         if: failure()
