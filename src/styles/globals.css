@@ -1,0 +1,48 @@
+@import "tailwindcss";
+@import "./tokens.css";
+@import "./theme.css";
+@import "./motion.css";
+@import "./code.css";
+
+/*
+ * `rail:` styles the desktop sidebar while it's collapsed to an icon rail. The collapsed state is
+ * data-sidebar="collapsed" on <html>, set by the settings module (src/lib/settings) and restored
+ * before first paint by SettingsBootScript. Below `md` the sidebar is a drawer and never
+ * collapses, so the variant only applies from `md` up.
+ */
+@custom-variant rail {
+  @media (width >= 48rem) {
+    :root[data-sidebar="collapsed"] & {
+      @slot;
+    }
+  }
+}
+
+/*
+ * Frozen interaction states, so /styleguide can show a real component hovered or keyboard-focused
+ * without a pointer or keyboard. Inside an element with data-force-state="hover" (or "focus"), the
+ * `hover:` (or `focus-visible:`) styles apply, including `group-hover:` and friends.
+ *
+ * These redefine Tailwind's own two variants and keep their place in the cascade. Real :hover (on
+ * devices that can hover) and :focus-visible work exactly as before; only the styleguide sets
+ * data-force-state.
+ */
+@custom-variant hover {
+  @media (hover: hover) {
+    &:hover {
+      @slot;
+    }
+  }
+  &:is([data-force-state~="hover"] *) {
+    @slot;
+  }
+}
+
+@custom-variant focus-visible {
+  &:focus-visible {
+    @slot;
+  }
+  &:is([data-force-state~="focus"] *) {
+    @slot;
+  }
+}

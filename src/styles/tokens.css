@@ -1,0 +1,80 @@
+/*
+ * Semantic design tokens (md-files/02-design-system-and-app-shell.md, "Token model").
+ *
+ * Components use these through Tailwind classes (see theme.css), never raw hex. Every opaque colour
+ * is a 6-digit hex so src/lib/contrast.ts can measure it.
+ *
+ * Dark-first: :root is the dark theme, the only theme in v1. To add a light theme later, add one
+ * block that reassigns the same names, for example:
+ *
+ *   [data-theme="light"] {
+ *     color-scheme: light;
+ *     --surface-base: #...;
+ *     ...
+ *   }
+ *
+ * theme.css reads these with `@theme inline`, so an override on any element re-themes that
+ * subtree. Components and theme.css need no changes.
+ *
+ * Tokens live in Tailwind's `theme` layer so utilities (for example scheme-light) still win.
+ */
+
+@layer theme {
+  :root {
+    color-scheme: dark;
+
+    /* Surfaces: near-black, not #000, so three elevations stay distinguishable. */
+    --surface-base: #0b0f14;
+    --surface-raised: #121821;
+    --surface-overlay: #1a2230;
+
+    /* Text. Each passes WCAG AA (4.5:1) on every surface above. */
+    --text-primary: #e6edf3;
+    --text-secondary: #b4c0cd;
+    --text-muted: #8d9aab;
+
+    /* The one interaction hue. Text on a solid accent fill uses --surface-base. */
+    --accent: #3dd6ef;
+    --accent-hover: #7ee6f7;
+    --accent-subtle: #0f2f38;
+
+    /* Status. Always pair with an icon or label: colour alone never carries meaning. */
+    --status-success: #4ade94;
+    --status-warning: #f5b94a;
+    --status-danger: #ff7a7a;
+    --status-info: #7cb4ff;
+
+    /* Reward: celebrations only (objective ticks, secrets found, mission complete), so wins read
+       instantly. */
+    --reward: #d4a5ff;
+    --reward-glow: rgb(212 165 255 / 0.35); /* translucent: glows and shadows only, never text */
+
+    /* Borders and focus. --border-strong and --focus-ring pass 3:1 (WCAG UI contrast). */
+    --border-subtle: #243041;
+    --border-strong: #66778c;
+    --focus-ring: #7ee6f7;
+
+    /* Terminal palette, consumed by the terminal renderer in phase 05. Terminal themes (phase 08,
+       src/content/themes) reassign these on [data-terminal-theme]; this is the default theme. */
+    --term-bg: #080b10;
+    --term-cursor: #3dd6ef;
+    --term-fg: #d6e2ee;
+    --term-dim: #8593a5;
+    --term-black: #2b3340; /* a background colour: too dark to read as text on --term-bg */
+    --term-red: #ff6e6e;
+    --term-green: #4ade80;
+    --term-yellow: #f5c451;
+    --term-blue: #6aa8ff;
+    --term-magenta: #e08aff;
+    --term-cyan: #3dd6ef;
+    --term-white: #c9d4df;
+    --term-bright-black: #7d8b9c;
+    --term-bright-red: #ff9a9a;
+    --term-bright-green: #86efac;
+    --term-bright-yellow: #fde68a;
+    --term-bright-blue: #9cc5ff;
+    --term-bright-magenta: #f0b5ff;
+    --term-bright-cyan: #8beeff;
+    --term-bright-white: #f5f8fb;
+  }
+}

@@ -1,0 +1,35 @@
+---
+id: fx-ports
+title: Ports and services
+topic: networking
+level: 1
+readingMinutes: 4
+analogy: "A port is like a numbered door on a building; a service is whoever answers it."
+summary: Numbered doors on a computer, and the programs that answer them.
+prerequisites: [fx-intro]
+relatedCommands: [netscan]
+glossaryTerms: [port, service]
+---
+
+## The one-sentence version
+
+Every computer has numbered doors called <Term id="port">ports</Term>.
+
+## How it actually works
+
+### Who answers the door
+
+A <Term id="service">service</Term> listens behind a port.
+
+```console title="Try this"
+$ netscan 10.0.0.12
+```
+
+| Port | Usually       |
+| ---- | ------------- |
+| `22` | remote logins |
+| `80` | websites      |
+
+## Common misconceptions
+
+- An open port isn't a weakness on its own.

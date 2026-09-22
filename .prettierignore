@@ -1,0 +1,4 @@
+pnpm-lock.yaml
+
+# Golden snapshots are compared byte for byte by src/sim/golden.test.ts.
+src/sim/__fixtures__/golden/

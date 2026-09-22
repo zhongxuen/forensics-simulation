@@ -1,0 +1,153 @@
+# CI for every pull request and every push to main (md-files/11-testing-security-deployment.md,
+# prompt 11.1). Each check is its own job so a failure says which layer broke; "CI passed" at the
+# end needs all of them, and is the one check to mark required in the branch protection rule for
+# main (Settings > Branches), which is what blocks a merge on failure. No job needs a secret: the
+# mentor is tested with the Anthropic SDK mocked, and the end-to-end tests run it on its notes.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  static:
+    name: Lint, types, format, audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm format:check
+      - name: Dependency audit (high and critical fail the build)
+        run: pnpm audit --audit-level high
+
+  unit:
+    name: Unit tests (engine, parser, evaluator, settings, components)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:unit
+
+  content:
+    name: Content validation (missions, lessons, glossary, campaign, themes)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:content
+
+  integration:
+    name: Integration tests (mentor routes, SDK mocked)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:integration
+
+  coverage:
+    name: Coverage (src/sim and the key modules gated)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:coverage
+      - name: Coverage summary
+        if: always()
+        run: |
+          {
+            echo "### Coverage"
+            node -e "const t=require('./coverage/coverage-summary.json').total; for (const k of ['statements','branches','functions','lines']) console.log('- ' + k + ': ' + t[k].pct + '%')"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 14
+
+  e2e:
+    name: Build, bundle budget, secret scan, end-to-end and accessibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install Chromium for Playwright
+        run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm build
+      - name: Initial JS budget (fails on regression)
+        run: pnpm bundle:check
+      - name: No secrets or server-only code in the client bundle
+        run: pnpm security:bundle
+      - name: End-to-end tests, including the first five minutes and axe on every route
+        run: pnpm test:e2e
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+
+  ci-passed:
+    name: CI passed
+    if: always()
+    needs: [static, unit, content, integration, coverage, e2e]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every check passed
+        run: |
+          if [ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped') }}" = "true" ]; then
+            echo "A required check did not pass."
+            exit 1
+          fi

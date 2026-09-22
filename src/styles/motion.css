@@ -1,0 +1,277 @@
+/*
+ * Motion: duration and easing tokens, and every animation in the app
+ * (md-files/02-design-system-and-app-shell.md, "Visual direction" and prompt 02.5).
+ *
+ * Working surfaces get short, functional motion. Moments (an objective ticked, a secret found, a
+ * mission complete) get a brief celebration, always under 1.5s. tests/unit/motion.test.ts holds
+ * every animation here to that.
+ *
+ * Reduced motion
+ * --------------
+ * Every duration and delay is multiplied by --motion-scale, which is 0 when motion is reduced. A
+ * zero-length animation jumps straight to its end, so each effect is written to end on the
+ * element's own resting style: the static badge, the filled tick, the message. Under reduced
+ * motion that resting style is all you see, so a celebration still reads as a reward. Purely
+ * decorative layers (the burst, the scanline sweep) rest at opacity 0 and so vanish.
+ *
+ * Motion is reduced when the system asks for it (prefers-reduced-motion: reduce), or inside any
+ * element with data-motion="reduce". data-motion="full" turns it back on. The attribute inherits
+ * like any custom property, so the nearest one wins: /styleguide uses it to show both modes side by
+ * side, and the phase 03 setting will set it on <html>.
+ *
+ * JavaScript-driven effects (the typewriter) ask the same question through useReducedMotion
+ * (src/hooks/use-reduced-motion.ts), which reads --motion-scale, so CSS and JS always agree.
+ *
+ * Celebrations can be skipped with any key: useSkippableEffects (src/hooks/use-skippable-effects.ts)
+ * finishes their animations early. Nothing here blocks input: decorative layers are
+ * pointer-events: none and never take focus.
+ */
+
+@layer theme {
+  :root {
+    --motion-scale: 1;
+
+    /* Functional motion on working surfaces. */
+    --duration-instant: 80ms;
+    --duration-fast: 150ms;
+    --duration-base: 250ms;
+    --duration-slow: 400ms;
+
+    /* Celebrations. Each whole effect, repeats included, stays under 1.5s. */
+    --duration-celebrate: 700ms;
+    --duration-celebrate-long: 1200ms;
+
+    /* Loading indicators loop until the work is done. Motion scale 0 stops them. */
+    --duration-loop: 1000ms;
+
+    --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+    --ease-enter: cubic-bezier(0, 0, 0.2, 1);
+    --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+    /* Overshoots a little, then settles: for pops. */
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root:not([data-motion="full"]) {
+      --motion-scale: 0;
+    }
+  }
+
+  [data-motion="reduce"] {
+    --motion-scale: 0;
+  }
+
+  [data-motion="full"] {
+    --motion-scale: 1;
+  }
+}
+
+/*
+ * Animation utilities: animate-pop, animate-tick-fill, and so on. `inline` puts each value straight
+ * into the utility, so var(--motion-scale) is read on the animated element itself and a
+ * data-motion attribute anywhere above it takes effect.
+ */
+@theme inline {
+  /* Entrances for toasts, dialogs and popovers. */
+  --animate-fade-in: fade-in calc(var(--duration-base) * var(--motion-scale)) var(--ease-enter) both;
+  /* A line that slides in under something, like an objective's success line. */
+  --animate-rise-in: rise-in calc(var(--duration-slow) * var(--motion-scale)) var(--ease-enter)
+    calc(var(--duration-fast) * var(--motion-scale)) both;
+
+  /* Objective tick: the box pops as it fills, and a glow rings out from it. */
+  --animate-tick-fill: pop calc(var(--duration-celebrate) * var(--motion-scale)) var(--ease-spring)
+    both;
+  --animate-tick-glow: glow-ring calc(var(--duration-celebrate-long) * var(--motion-scale))
+    var(--ease-enter) both;
+
+  /* Secret found, and the mission-complete medal. */
+  --animate-pop: pop calc(var(--duration-celebrate) * var(--motion-scale)) var(--ease-spring) both;
+
+  /* Mission complete: sparks fly out from the medal, a scanline sweeps down, the title glitches. */
+  --animate-burst: burst calc(var(--duration-celebrate-long) * var(--motion-scale))
+    var(--ease-enter) calc(var(--burst-delay, 0ms) * var(--motion-scale)) both;
+  --animate-scanline-sweep: scanline-sweep
+    calc(var(--duration-celebrate-long) * var(--motion-scale)) var(--ease-standard) both;
+  --animate-glitch: glitch calc(var(--duration-celebrate) * var(--motion-scale)) steps(1, end)
+    calc(var(--duration-fast) * var(--motion-scale)) both;
+
+  /* Coach mark: the spotlight pulses twice to draw the eye, then stays still. */
+  --animate-glow-pulse: glow-pulse calc(var(--duration-celebrate) * var(--motion-scale)) ease-in-out
+    2 both;
+
+  /* The terminal's cursor blinks while you can type there. Motion scale 0 holds it still and
+     visible: the keyframes rest on the element's own opacity. */
+  --animate-cursor-blink: cursor-blink calc(var(--duration-loop) * 1.1 * var(--motion-scale))
+    step-end infinite;
+
+  /* Loading indicators. Replaces Tailwind's animate-spin so it stops under reduced motion. */
+  --animate-spin: spin calc(var(--duration-loop) * var(--motion-scale)) linear infinite;
+  --animate-indeterminate: indeterminate calc(var(--duration-loop) * 1.4 * var(--motion-scale))
+    var(--ease-standard) infinite;
+  /* The mentor's typing indicator: three dots that rise in turn while a reply is being written.
+     Each dot sets --typing-delay. Motion scale 0 holds them still: the keyframes rest on the dot's
+     own style. */
+  --animate-typing-dot: typing-dot calc(var(--duration-loop) * 1.2 * var(--motion-scale))
+    var(--ease-standard) calc(var(--typing-delay, 0ms) * var(--motion-scale)) infinite;
+}
+
+/*
+ * Keyframes. Most leave out the `to` frame, so the animation ends on the element's own style.
+ */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.25rem);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.375rem);
+  }
+}
+
+@keyframes pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+/* Rests with no glow: the static style has none. */
+@keyframes glow-ring {
+  0% {
+    box-shadow: 0 0 0 0 var(--reward-glow);
+  }
+  35% {
+    box-shadow: 0 0 0 0.5rem var(--reward-glow);
+  }
+  100% {
+    box-shadow: 0 0 0 1rem transparent;
+  }
+}
+
+/* Sparks rest at opacity 0 (see .fx-spark), so they vanish under reduced motion. */
+@keyframes burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--burst-x, 0px)), calc(-50% + var(--burst-y, 0px)))
+      scale(0.4);
+  }
+}
+
+@keyframes scanline-sweep {
+  0% {
+    opacity: 1;
+    transform: translateY(-100%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+@keyframes glitch {
+  0% {
+    transform: translateX(-2px);
+    text-shadow:
+      2px 0 var(--accent),
+      -2px 0 var(--reward);
+  }
+  25% {
+    transform: translateX(2px);
+    text-shadow:
+      -2px 0 var(--accent),
+      2px 0 var(--reward);
+  }
+  50% {
+    transform: translateX(-1px);
+    text-shadow:
+      1px 0 var(--accent),
+      -1px 0 var(--reward);
+  }
+  75% {
+    transform: translateX(1px);
+    text-shadow: none;
+  }
+}
+
+@keyframes glow-pulse {
+  50% {
+    box-shadow:
+      0 0 0 2px var(--focus-ring),
+      0 0 0 0.5rem color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+}
+
+@keyframes cursor-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes typing-dot {
+  30% {
+    opacity: 1;
+    transform: translateY(-0.25rem);
+  }
+}
+
+@keyframes indeterminate {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+/*
+ * Transition durations that honour reduced motion, for movement that isn't a keyframe animation
+ * (a progress ring filling, a bar growing). Pair with a transition-[property] class.
+ * Colour changes on hover don't move anything, so they keep Tailwind's default transition.
+ */
+@utility fx-duration-fast {
+  --tw-duration: calc(var(--duration-fast) * var(--motion-scale));
+  transition-duration: calc(var(--duration-fast) * var(--motion-scale));
+}
+
+@utility fx-duration-base {
+  --tw-duration: calc(var(--duration-base) * var(--motion-scale));
+  transition-duration: calc(var(--duration-base) * var(--motion-scale));
+}
+
+@utility fx-duration-slow {
+  --tw-duration: calc(var(--duration-slow) * var(--motion-scale));
+  transition-duration: calc(var(--duration-slow) * var(--motion-scale));
+}
+
+/* Faint horizontal lines, the old-monitor look. Decorative: gone under reduced motion. */
+@utility fx-scanlines {
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--text-primary) 5%, transparent) 0 1px,
+    transparent 1px 3px
+  );
+  opacity: var(--motion-scale);
+}
+
+/* A spark in the mission-complete burst. Rests invisible; animate-burst flies it out. */
+@utility fx-spark {
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  opacity: 0;
+}

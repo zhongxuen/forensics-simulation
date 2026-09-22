@@ -1,0 +1,160 @@
+$ ping --help
+  ping - ask another computer "are you there?" and time how long it takes to answer.
+
+  SIMULATED: this tool only works inside Incident Room's practice network. It never contacts a real computer.
+
+  USAGE
+    ping [-c count] address-or-name
+
+  WHAT IT DOES
+    Every computer on a network has an address, its IP address, like 10.40.2.15. ping sends it a small "are you there?" message (also called a ping) and waits for the reply. Each reply line shows how long the round trip took, in milliseconds (thousandths of a second).
+    On a real computer ping keeps going until you press Ctrl+C. Here it sends 4 pings and stops; -c chooses how many.
+    No reply doesn't always mean nothing is there. The computer might be switched off, a firewall (a set of rules about who may talk to whom) might be blocking you, or it might be set to ignore pings. Some printers do.
+
+  OPTIONS
+    -c <count>   How many pings to send, up to 20. Defaults to 4.
+
+  EXAMPLES
+    ping 10.40.2.15
+        Check whether the computer at 10.40.2.15 answers.
+    ping -c 1 orders-01
+        Send one ping to the computer called orders-01.
+
+  WHY IT MATTERS
+    Ping is the simplest way to check a computer is reachable, and the first thing people try when the network seems broken. Security testers use it to see which computers are up, but on its own it can be fooled: that's why tools like netscan can also check ports on computers that stay quiet.
+    Only ping computers you have permission to test. Here, the practice network is yours to explore.
+[exit 0]
+  @ help.viewed {"command":"ping"}
+  @ command.run {"command":"ping","exitCode":0,"line":"ping --help"}
+
+$ ping -c 2 10.0.1.20
+  PING 10.0.1.20 56(84) bytes of data.
+  64 bytes from 10.0.1.20: icmp_seq=1 ttl=64 time=1.18 ms
+  64 bytes from 10.0.1.20: icmp_seq=2 ttl=64 time=1.45 ms
+
+  --- 10.0.1.20 ping statistics ---
+  2 packets transmitted, 2 received, 0% packet loss, time 1003ms
+  rtt min/avg/max = 1.177/1.314/1.450 ms
+[exit 0]
+  @ host.discovered {"hostId":"web-01","ip":"10.0.1.20","via":"ping"}
+  @ command.run {"command":"ping","exitCode":0,"line":"ping -c 2 10.0.1.20"}
+
+$ ping -c 1 db-01
+  PING db-01 (10.0.2.40) 56(84) bytes of data.
+  64 bytes from 10.0.2.40: icmp_seq=1 ttl=64 time=1.55 ms
+
+  --- db-01 ping statistics ---
+  1 packets transmitted, 1 received, 0% packet loss, time 2ms
+  rtt min/avg/max = 1.554/1.554/1.554 ms
+[exit 0]
+  @ host.discovered {"hostId":"db-01","ip":"10.0.2.40","via":"ping"}
+  @ command.run {"command":"ping","exitCode":0,"line":"ping -c 1 db-01"}
+
+$ ping -c 1 10.0.2.40
+  PING 10.0.2.40 56(84) bytes of data.
+  64 bytes from 10.0.2.40: icmp_seq=1 ttl=64 time=1.15 ms
+
+  --- 10.0.2.40 ping statistics ---
+  1 packets transmitted, 1 received, 0% packet loss, time 1ms
+  rtt min/avg/max = 1.146/1.146/1.146 ms
+[exit 0]
+  @ command.run {"command":"ping","exitCode":0,"line":"ping -c 1 10.0.2.40"}
+
+$ ping mystery-box
+! ping: mystery-box: Name or service not known
+[exit 1]
+  @ command.error {"code":"HOST_NOT_FOUND","command":"ping","target":"mystery-box"}
+  @ command.run {"command":"ping","exitCode":1,"line":"ping mystery-box"}
+
+$ ifconfig
+  eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+          inet 10.0.1.10  netmask 255.255.255.0  broadcast 10.0.1.255
+          ether 02:00:0a:00:01:0a  txqueuelen 1000  (Ethernet)
+
+  lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+          inet 127.0.0.1  netmask 255.0.0.0
+          loop  txqueuelen 1000  (Local Loopback)
+[exit 0]
+  @ command.run {"command":"ifconfig","exitCode":0,"line":"ifconfig"}
+
+$ logview
+  logview (simulated) · files in /var/log
+
+    auth.log     6 lines  readable
+    private.log  -        no permission (owner root, group root)
+    syslog       4 lines  readable
+
+  Open one with: logview /var/log/<name>
+[exit 0]
+  @ command.run {"command":"logview","exitCode":0,"line":"logview"}
+
+$ logview /var/log/auth.log --grep failed
+  logview (simulated) · /var/log/auth.log · 3 of 6 lines containing "failed"
+
+  2  2026-03-01T23:02:44Z WARN sshd[902]: Failed password for root from 10.0.1.20 port 40112
+  3  2026-03-01T23:02:46Z WARN sshd[902]: Failed password for root from 10.0.1.20 port 40114
+  4  2026-03-01T23:02:49Z WARN sshd[902]: Failed password for admin from 10.0.1.20 port 40118
+[exit 0]
+  @ file.read {"hostId":"ws-01","path":"/var/log/auth.log"}
+  @ log.queried {"hostId":"ws-01","matched":3,"path":"/var/log/auth.log"}
+  @ command.run {"command":"logview","exitCode":0,"line":"logview /var/log/auth.log --grep failed"}
+
+$ logview logs/syslog --level error --count
+  logview (simulated) · /var/log/syslog · 1 of 4 lines at level error
+[exit 0]
+  @ file.read {"hostId":"ws-01","path":"/var/log/syslog"}
+  @ log.queried {"hostId":"ws-01","matched":1,"path":"/var/log/syslog"}
+  @ command.run {"command":"logview","exitCode":0,"line":"logview logs/syslog --level error --count"}
+
+$ logview /var/log/private.log
+! logview: /var/log/private.log: Permission denied
+[exit 1]
+  @ command.error {"code":"EACCES","command":"logview","path":"/var/log/private.log"}
+  @ command.run {"command":"logview","exitCode":1,"line":"logview /var/log/private.log"}
+
+$ logview /etc/shadow
+! logview: /etc/shadow: Permission denied
+[exit 1]
+  @ command.error {"code":"EACCES","command":"logview","path":"/etc/shadow"}
+  @ command.run {"command":"logview","exitCode":1,"line":"logview /etc/shadow"}
+
+$ logview /tmp/loop-a
+! logview: /tmp/loop-a: Too many levels of symbolic links
+[exit 1]
+  @ command.error {"code":"ELOOP","command":"logview","path":"/tmp/loop-a"}
+  @ command.run {"command":"logview","exitCode":1,"line":"logview /tmp/loop-a"}
+
+$ logview /home/alex/todo.txt
+! logview: /home/alex/todo.txt: Permission denied
+[exit 1]
+  @ command.error {"code":"EACCES","command":"logview","path":"/home/alex/todo.txt"}
+  @ command.run {"command":"logview","exitCode":1,"line":"logview /home/alex/todo.txt"}
+
+$ logview ../../../../home/recruit/.secret-note
+  logview (simulated) · /home/recruit/.secret-note · 1 line
+
+  1  You found the hidden note! SIM{hidden-in-plain-sight}
+[exit 0]
+  @ file.read {"hostId":"ws-01","path":"/home/recruit/.secret-note"}
+  @ log.queried {"hostId":"ws-01","matched":1,"path":"/home/recruit/.secret-note"}
+  @ flag.found {"flagId":"hidden-note"}
+  @ command.run {"command":"logview","exitCode":0,"line":"logview ../../../../home/recruit/.secret-note"}
+
+$ logview --grep ssh
+  (with 37 characters piped in)
+  logview (simulated) · (piped input) · 2 of 3 lines containing "ssh"
+
+  2  sshd restarted
+  3  ssh key added
+[exit 0]
+  @ log.queried {"hostId":"ws-01","matched":2,"path":"(piped input)"}
+  @ command.run {"command":"logview","exitCode":0,"line":"logview --grep ssh"}
+
+$ sl
+! sl: command not found
+[exit 127]
+  @ command.error {"code":"UNKNOWN_COMMAND","command":"sl"}
+  @ command.run {"command":"sl","exitCode":127,"line":"sl"}
+
+$
+[exit 0]

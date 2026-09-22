@@ -1,0 +1,69 @@
+/*
+ * Maps the semantic tokens in tokens.css into Tailwind's theme, so they work as classes:
+ *
+ *   --surface-*   bg-surface-base  bg-surface-raised  bg-surface-overlay
+ *   --text-*      text-primary  text-secondary  text-muted
+ *   --accent*     text-accent  bg-accent  hover:bg-accent-hover  bg-accent-subtle
+ *   --status-*    text-status-success  bg-status-danger  ...
+ *   --reward*     text-reward  bg-reward-glow
+ *   --border-*    border-subtle  border-strong  divide-subtle
+ *   --focus-ring  outline-focus-ring  ring-focus-ring
+ *   --term-*      bg-term-bg  text-term-fg  text-term-dim  text-term-red  ...
+ *
+ * Colours go in --color-* (every colour utility), except text and border tokens, which use
+ * Tailwind's utility-scoped namespaces so the class is `text-primary`, not `text-text-primary`.
+ *
+ * `inline` makes each utility read the token directly (bg-surface-raised is
+ * `background-color: var(--surface-raised)`), so overriding a token on an element re-themes its
+ * subtree. Opacity modifiers such as bg-accent/20 still work.
+ */
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-surface-base: var(--surface-base);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-overlay: var(--surface-overlay);
+
+  --text-color-primary: var(--text-primary);
+  --text-color-secondary: var(--text-secondary);
+  --text-color-muted: var(--text-muted);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-subtle: var(--accent-subtle);
+
+  --color-status-success: var(--status-success);
+  --color-status-warning: var(--status-warning);
+  --color-status-danger: var(--status-danger);
+  --color-status-info: var(--status-info);
+
+  --color-reward: var(--reward);
+  --color-reward-glow: var(--reward-glow);
+
+  --border-color-subtle: var(--border-subtle);
+  --border-color-strong: var(--border-strong);
+  --color-focus-ring: var(--focus-ring);
+
+  --color-term-bg: var(--term-bg);
+  --color-term-cursor: var(--term-cursor);
+  --color-term-fg: var(--term-fg);
+  --color-term-dim: var(--term-dim);
+  --color-term-black: var(--term-black);
+  --color-term-red: var(--term-red);
+  --color-term-green: var(--term-green);
+  --color-term-yellow: var(--term-yellow);
+  --color-term-blue: var(--term-blue);
+  --color-term-magenta: var(--term-magenta);
+  --color-term-cyan: var(--term-cyan);
+  --color-term-white: var(--term-white);
+  --color-term-bright-black: var(--term-bright-black);
+  --color-term-bright-red: var(--term-bright-red);
+  --color-term-bright-green: var(--term-bright-green);
+  --color-term-bright-yellow: var(--term-bright-yellow);
+  --color-term-bright-blue: var(--term-bright-blue);
+  --color-term-bright-magenta: var(--term-bright-magenta);
+  --color-term-bright-cyan: var(--term-bright-cyan);
+  --color-term-bright-white: var(--term-bright-white);
+}

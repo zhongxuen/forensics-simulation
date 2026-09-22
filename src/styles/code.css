@@ -1,0 +1,26 @@
+/*
+ * Syntax highlighting colours for lesson code blocks (src/features/learning/lessons/highlight.ts).
+ *
+ * Shiki's CSS-variables theme colours each token with var(--code-token-*). Every one points at an
+ * existing token that the contrast audit already checks on --surface-raised, where code blocks
+ * sit, so highlighted code needs no colours of its own. To retheme code, repoint these.
+ */
+
+@layer theme {
+  :root {
+    --code-foreground: var(--text-primary);
+    --code-background: var(--surface-raised);
+    --code-token-comment: var(--text-muted);
+    --code-token-keyword: var(--accent);
+    --code-token-constant: var(--status-warning);
+    --code-token-string: var(--status-success);
+    --code-token-string-expression: var(--status-success);
+    --code-token-function: var(--status-info);
+    --code-token-parameter: var(--text-secondary);
+    --code-token-punctuation: var(--text-secondary);
+    --code-token-link: var(--accent);
+    --code-token-inserted: var(--status-success);
+    --code-token-deleted: var(--status-danger);
+    --code-token-changed: var(--status-warning);
+  }
+}

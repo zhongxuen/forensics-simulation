@@ -1,0 +1,6 @@
+# Keep LF in the working tree on every OS so Prettier and ESLint agree with git.
+* text=auto eol=lf
+*.ico binary
+*.png binary
+*.jpg binary
+*.woff2 binary
