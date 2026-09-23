@@ -39,10 +39,16 @@ const REF = /^(disk|mem|log):[\w.:/*-]{1,200}$/;
 const id = () => z.string().check(z.regex(ID));
 const count = () => z.int().check(z.nonnegative());
 
-/** One entry in the terminal's command log: a line the player typed, or Reset machine. */
+/**
+ * One entry in the workstation's log: a line the player typed, Reset machine, or an image opened
+ * in the Evidence Browser (its workstation path). Opening an original with its write-blocker off
+ * changes it, so a save has to replay those opens too, in order. Adding the `browse` entry kept
+ * the shape backward compatible, so it didn't need a new version.
+ */
 export const LogEntrySchema = z.union([
   z.strictObject({ line: z.string().check(z.maxLength(MAX_LINE_LENGTH)) }),
   z.strictObject({ reset: z.literal(true) }),
+  z.strictObject({ browse: z.string().check(z.minLength(1), z.maxLength(MAX_LINE_LENGTH)) }),
 ]);
 
 export type LogEntry = z.output<typeof LogEntrySchema>;

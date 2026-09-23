@@ -5,6 +5,7 @@ import { Spinner } from "@/components/ui/spinner";
 import type { CaseRunSave, CaseStorage, SaveStatus } from "@/lib/case-storage";
 import type { RunnableCase } from "../run/case-definition";
 import type { CaseRunAction, CaseRunState } from "../run/case-run";
+import { caseEvidence } from "../run/evidence";
 import { useCaseRun } from "../run/use-case-run";
 import { CaseBriefing } from "./case-briefing";
 
@@ -57,16 +58,21 @@ interface CaseAttemptProps {
 function CaseAttempt({ caseDef, run, dispatch, saved, saveStatus }: CaseAttemptProps) {
   const [starting, setStarting] = useState(false);
 
-  // Warm up the play chunk while the player reads the briefing, so Start case is instant.
+  // Warm up the play chunk and the evidence while the player reads the briefing, so Start case is
+  // instant.
+  const caseId = caseDef.id;
   useEffect(() => {
-    const warm = () => void loadCasePlay().catch(() => {});
+    const warm = () => {
+      void loadCasePlay().catch(() => {});
+      void caseEvidence(caseId);
+    };
     if (typeof window.requestIdleCallback === "function") {
       const handle = window.requestIdleCallback(warm, { timeout: 3000 });
       return () => window.cancelIdleCallback(handle);
     }
     const timer = window.setTimeout(warm, 1500);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [caseId]);
 
   // Moving between briefing, workspace and report puts focus on the new screen's heading (the
   // debrief focuses its own). On the page's first render focus stays put.

@@ -1,20 +1,13 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type RefObject,
-} from "react";
+import { use, useCallback, useLayoutEffect, useMemo, useRef, type RefObject } from "react";
 import type { CaseRunSave, SaveStatus } from "@/lib/case-storage";
 import { useTerminalSession, type TerminalSession } from "@/features/terminal";
-import type { EvidenceSet, SimEvent, SimState } from "@/sim/types";
+import type { SimEvent, SimState } from "@/sim/types";
 import type { RunnableCase } from "../run/case-definition";
 import type { CaseRunAction, CaseRunState } from "../run/case-run";
-import { hasCaseEvidence, loadCaseEvidence } from "../run/evidence";
+import { caseEvidence } from "../run/evidence";
+import { browseChange, evidenceSetup } from "../run/workstation";
 import { CaseDebrief } from "./case-debrief";
 import { CaseReport } from "./case-report";
 import { CaseWorkspace } from "./case-workspace";
@@ -35,8 +28,13 @@ export interface CasePlayProps {
  * the briefing page stays small (the 200 KB budget). One attempt's terminal session lives here,
  * across workspace, report and debrief, so the screen is still there when the player goes back.
  *
- * Opening a case with a save replays its command log through the session, line by line, before
- * the first paint: the same parser, engine and in-world clock as when it was typed, so the machine
+ * The case's evidence arrives as its own chunk (00 §4 row 12) and is attached to the workstation
+ * before it starts, as devices under /dev/evidence with their write-blockers on, so the disk tools
+ * and the Evidence Browser read the same engine state. Until it has arrived this suspends, and the
+ * runner keeps showing the briefing.
+ *
+ * Opening a case with a save replays its log through the session, entry by entry, before the
+ * first paint: the same parser, engine and in-world clock as when it was typed, so the machine
  * and the screen come back as they were, and the events re-tick nothing that wasn't ticked.
  */
 export default function CasePlay({
@@ -47,6 +45,7 @@ export default function CasePlay({
   saveStatus,
   restoreFrom,
 }: CasePlayProps) {
+  const evidence = use(caseEvidence(caseDef.id));
   // True while a save's log is being replayed, so its pins aren't pinned a second time.
   const replaying = useRef(false);
   const onEvents = useCallback(
@@ -55,11 +54,16 @@ export default function CasePlay({
     [dispatch],
   );
   const onReset = useCallback((sim: SimState) => dispatch({ type: "reset", sim }), [dispatch]);
+  const setup = useMemo(
+    () => (evidence ? evidenceSetup(caseDef.scenario, evidence) : undefined),
+    [caseDef.scenario, evidence],
+  );
   const session = useTerminalSession({
     scenario: caseDef.scenario,
     seed: caseDef.seed,
     onEvents,
     onReset,
+    ...(setup && { setup }),
   });
 
   // Start (or pick up) the run once, before the first paint, so the player goes straight from
@@ -77,6 +81,7 @@ export default function CasePlay({
     replaying.current = true;
     for (const entry of restoreFrom.log) {
       if ("reset" in entry) session.reset();
+      else if ("browse" in entry) session.apply(browseChange(entry.browse));
       else session.submit(entry.line);
     }
     replaying.current = false;
@@ -99,20 +104,16 @@ export default function CasePlay({
     [session, dispatch],
   );
 
-  // The evidence arrives as its own chunk (00 §4 row 12), while the player starts on the terminal.
-  const [evidence, setEvidence] = useState<EvidenceSet | null | undefined>(() =>
-    hasCaseEvidence(caseDef.id) ? undefined : null,
+  // The Evidence Browser opens an image through the engine, and the open goes in the log, like a
+  // typed line: opening an original with its write-blocker off changes it, so a save replays it.
+  const browse = useCallback(
+    (path: string) => {
+      const opened = session.apply(browseChange(path));
+      if (opened) dispatch({ type: "log", entry: { browse: path } });
+      return opened;
+    },
+    [session, dispatch],
   );
-  useEffect(() => {
-    let live = true;
-    loadCaseEvidence(caseDef.id)?.then(
-      (loaded) => live && setEvidence(loaded),
-      () => live && setEvidence(null),
-    );
-    return () => {
-      live = false;
-    };
-  }, [caseDef.id]);
 
   switch (run.phase) {
     case "briefing":
@@ -128,6 +129,7 @@ export default function CasePlay({
           run={run}
           dispatch={dispatch}
           session={logged}
+          browse={browse}
           evidence={evidence}
           headingRef={headingRef}
           saveStatus={saveStatus}

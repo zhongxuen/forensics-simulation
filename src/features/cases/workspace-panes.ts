@@ -1,5 +1,5 @@
 import type { ComponentType } from "react";
-import type { EvidenceSet } from "@/sim/types";
+import type { BrowsedImage, EvidenceSet, SimState } from "@/sim/types";
 import type { RunnableCase } from "./run/case-definition";
 import type { CaseRunAction, CaseRunState } from "./run/case-run";
 
@@ -22,8 +22,28 @@ export interface WorkspacePaneProps {
   readonly caseDef: RunnableCase;
   readonly run: CaseRunState;
   readonly dispatch: (action: CaseRunAction) => void;
-  /** The case's evidence: undefined while it loads, null for a case with none yet. */
-  readonly evidence: EvidenceSet | null | undefined;
+  /** The case's evidence as it was handed over, or null for a case with none yet. */
+  readonly evidence: EvidenceSet | null;
+  /** The analyst workstation the terminal runs on. */
+  readonly workstation: PaneWorkstation;
+}
+
+/**
+ * The analyst workstation, as a pane sees it. A pane never has its own read path: whatever it
+ * shows of the evidence comes from the engine's state or through `browse`, so the write-blockers
+ * apply to it exactly as they do to the terminal.
+ */
+export interface PaneWorkstation {
+  /** The engine's latest state. Read it; change it only through `browse`. */
+  readonly sim: SimState;
+  /**
+   * Opens a disk image through the engine, at its workstation path, the way the disk tools do:
+   * an original through its write-blocker, or around it (changing it) when the blocker is off.
+   * The open is kept in the run's log, so a save replays it. Undefined if nothing was there.
+   */
+  browse(path: string): BrowsedImage | undefined;
+  /** Puts a command at the terminal's prompt without running it, and shows the terminal. */
+  showInTerminal(line: string): void;
 }
 
 export interface WorkspacePane {

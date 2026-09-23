@@ -4,6 +4,7 @@ import {
   lazy,
   Suspense,
   useId,
+  useMemo,
   useRef,
   useState,
   useSyncExternalStore,
@@ -20,7 +21,7 @@ import { Spinner } from "@/components/ui/spinner";
 import type { SaveStatus } from "@/lib/case-storage";
 import { cx } from "@/lib/cx";
 import { Terminal, type TerminalSession } from "@/features/terminal";
-import type { EvidenceSet } from "@/sim/types";
+import type { BrowsedImage, EvidenceSet } from "@/sim/types";
 import type { RunnableCase } from "../run/case-definition";
 import type { CaseRunAction, CaseRunState } from "../run/case-run";
 import { caseProgress } from "../run/evaluate";
@@ -29,6 +30,7 @@ import {
   PANE_ORDER,
   WORKSPACE_PANES,
   type PaneId,
+  type PaneWorkstation,
   type WorkspacePaneProps,
 } from "../workspace-panes";
 import { LaterPane } from "./later-pane";
@@ -58,7 +60,9 @@ interface CaseWorkspaceProps {
   run: CaseRunState;
   dispatch: (action: CaseRunAction) => void;
   session: TerminalSession;
-  evidence: EvidenceSet | null | undefined;
+  /** Opens a disk image through the engine for the Evidence Browser, logged for replay. */
+  browse: (path: string) => BrowsedImage | undefined;
+  evidence: EvidenceSet | null;
   headingRef: RefObject<HTMLHeadingElement | null>;
   saveStatus: SaveStatus;
 }
@@ -77,6 +81,7 @@ export function CaseWorkspace({
   run,
   dispatch,
   session,
+  browse,
   evidence,
   headingRef,
   saveStatus,
@@ -114,7 +119,20 @@ export function CaseWorkspace({
     tabRefs.current.get(next)?.focus();
   };
 
-  const paneProps: WorkspacePaneProps = { caseDef, run, dispatch, evidence };
+  // "Show in terminal": the command goes to the prompt, unrun, and the terminal comes into view.
+  const [fillRequest, setFillRequest] = useState<{ id: number; line: string }>();
+  const workstation = useMemo<PaneWorkstation>(
+    () => ({
+      sim: session.sim,
+      browse,
+      showInTerminal: (line) => {
+        setFillRequest((previous) => ({ id: (previous?.id ?? 0) + 1, line }));
+        setView("terminal");
+      },
+    }),
+    [session.sim, browse],
+  );
+  const paneProps: WorkspacePaneProps = { caseDef, run, dispatch, evidence, workstation };
   const tabId = (id: ViewId) => `${baseId}-tab-${id}`;
   const panelId = (id: ViewId) => `${baseId}-panel-${id}`;
   const terminalShown = desktop || selected === "terminal";
@@ -180,7 +198,11 @@ export function CaseWorkspace({
           hidden={!terminalShown}
           className={cx("min-w-0", !desktop && "mt-4")}
         >
-          <Terminal session={session} outputClassName="h-[24rem] lg:h-[32rem]" />
+          <Terminal
+            session={session}
+            outputClassName="h-[24rem] lg:h-[32rem]"
+            {...(fillRequest && { fillRequest })}
+          />
         </div>
 
         <div className="min-w-0">

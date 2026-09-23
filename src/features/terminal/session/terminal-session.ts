@@ -83,23 +83,40 @@ export interface TerminalSessionState {
   readonly lastEvents: readonly SimEvent[];
   /** Commands whose silent success has been explained once already. */
   readonly explainedQuiet: readonly string[];
+  /** Applied to the scenario's starting state, on start and on every Reset machine. */
+  readonly setup?: SessionSetup;
 }
+
+/**
+ * Something added to the machine's starting state that the scenario itself can't describe, such
+ * as a case's evidence attached as devices (src/sim/evidence/session.ts). Pure, and run again on
+ * Reset machine, so the machine always starts the same way.
+ */
+export type SessionSetup = (sim: SimState) => SimState;
 
 export interface SessionOptions {
   readonly scenario: ScenarioSpec;
   readonly seed: number;
   readonly scrollback?: number;
+  readonly setup?: SessionSetup;
 }
+
+/** The scenario's starting state, with the session's setup applied. */
+const startingState = (scenario: ScenarioSpec, seed: number, setup?: SessionSetup): SimState => {
+  const sim = createInitialState(scenario, seed);
+  return setup ? setup(sim) : sim;
+};
 
 export function createTerminalSession({
   scenario,
   seed,
   scrollback,
+  setup,
 }: SessionOptions): TerminalSessionState {
   return {
     scenario,
     seed,
-    sim: createInitialState(scenario, seed),
+    sim: startingState(scenario, seed, setup),
     run: createRun(scenario.id, seed),
     blocks: [],
     inputHistory: [],
@@ -107,6 +124,7 @@ export function createTerminalSession({
     scrollback: Math.max(100, scrollback ?? DEFAULT_SCROLLBACK),
     lastEvents: [],
     explainedQuiet: [],
+    ...(setup && { setup }),
   };
 }
 
@@ -361,7 +379,7 @@ export const clearScreen = (session: TerminalSessionState): TerminalSessionState
  * was there, with a note, so the learner can still see what they did.
  */
 export function resetMachine(session: TerminalSessionState): TerminalSessionState {
-  const sim = createInitialState(session.scenario, session.seed);
+  const sim = startingState(session.scenario, session.seed, session.setup);
   const text =
     "The practice machine is back to how it started. Everything you changed has been undone.";
   const block: TerminalBlock = {
@@ -382,6 +400,30 @@ export function resetMachine(session: TerminalSessionState): TerminalSessionStat
     lastEvents: [],
     explainedQuiet: [],
   });
+}
+
+/** What an engine call outside the command line did: the new state, and the events it caused. */
+export interface EngineChange {
+  readonly state: SimState;
+  readonly events: readonly SimEvent[];
+}
+
+/**
+ * Applies an engine call that isn't a typed line, such as the Evidence Browser opening an image
+ * (src/sim/tools/forensics/browse.ts), at the in-world time the next command would run. The
+ * machine and the latest events change; the screen and the run don't, because nothing was typed.
+ * `change` returns undefined when it did nothing.
+ */
+export function applyChange<T extends EngineChange>(
+  session: TerminalSessionState,
+  change: (sim: SimState, now: number) => T | undefined,
+): { session: TerminalSessionState; change: T | undefined } {
+  const result = change(session.sim, nextCommandTime(session));
+  if (!result) return { session, change: undefined };
+  return {
+    session: { ...session, sim: result.state, lastEvents: result.events },
+    change: result,
+  };
 }
 
 /** Keeps the screen within the scrollback limit, dropping the oldest lines first. */

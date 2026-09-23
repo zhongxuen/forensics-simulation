@@ -49,6 +49,11 @@ export interface TerminalProps {
    * terminal already has as a fallback. Whoever explains it is up to the caller.
    */
   onExplain?: (request: TerminalExplainRequest) => void;
+  /**
+   * Puts a line at the prompt without running it, and focuses the prompt: "Show in terminal" from
+   * another view. Pass a new object (a new `id`) for each request.
+   */
+  fillRequest?: { readonly id: number; readonly line: string };
 }
 
 interface SearchState {
@@ -92,6 +97,7 @@ export function Terminal({
   className,
   outputClassName = "h-[26rem]",
   onExplain,
+  fillRequest,
 }: TerminalProps) {
   const { beginnerMode, promptStyle, cursorStyle } = useSettings();
   const [value, setValue] = useState("");
@@ -350,6 +356,25 @@ export function Terminal({
     setChoices([]);
     inputRef.current?.focus();
   };
+
+  // A line from another view: at the prompt, ready for the learner to read, edit and run. The
+  // line is set while rendering (like a tour request); focus and the caret follow once it's shown.
+  const [seenFill, setSeenFill] = useState(fillRequest);
+  if (fillRequest !== seenFill) {
+    setSeenFill(fillRequest);
+    if (fillRequest) {
+      setValue(fillRequest.line);
+      setCursor(fillRequest.line.length);
+      setChoices([]);
+      setHistoryIndex(null);
+    }
+  }
+  useEffect(() => {
+    const input = inputRef.current;
+    if (!fillRequest || !input) return;
+    input.focus();
+    input.setSelectionRange(fillRequest.line.length, fillRequest.line.length);
+  }, [fillRequest]);
 
   const chipCommands = chips ?? session.suggestions;
   const lastId = blocks.at(-1)?.id;

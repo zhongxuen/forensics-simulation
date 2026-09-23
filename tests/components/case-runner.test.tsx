@@ -176,11 +176,12 @@ describe("CaseRunner", () => {
     expect(tab("Objectives").getAttribute("aria-selected")).toBe("true");
   });
 
-  it("lists the handed-over evidence in the Evidence tab, loaded on demand", async () => {
+  it("opens the Evidence Browser in the Evidence tab, loaded on demand", async () => {
     const user = await startCase(storageOver(new Map()));
     await user.click(tab("Evidence"));
-    expect(await screen.findByRole("heading", { name: "Disk images" }, CHUNK)).toBeTruthy();
-    expect(screen.getByText(/1 marked deleted/)).toBeTruthy();
+    const tree = await screen.findByRole("tree", { name: "Evidence" }, CHUNK);
+    expect(within(tree).getByRole("treeitem", { name: /qf-lt-03/ })).toBeTruthy();
+    expect(screen.getByText(/Logs from/)).toBeTruthy();
   });
 
   it("moves between tabs with the arrow keys", async () => {

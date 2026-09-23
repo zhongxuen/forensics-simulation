@@ -1,25 +1,22 @@
 "use client";
 
 import { EmptyState } from "@/components/ui/empty-state";
-import { Spinner } from "@/components/ui/spinner";
+import { EvidenceBrowser } from "@/features/evidence-browser";
 import { formatInstant } from "@/sim";
 import type { EvidenceSet, LogSource } from "@/sim/types";
 import type { WorkspacePaneProps } from "../workspace-panes";
 
 /**
- * The Evidence pane: what was handed over, as the handover form lists it, with each disk's size
- * and hashes, each memory capture, and the log sources. The Evidence Browser (prompt 05.2) takes
- * this tab over, registered in workspace-panes.ts.
+ * The Evidence pane: the Evidence Browser over the case's drives (src/features/evidence-browser),
+ * then what else was handed over, memory captures and log sources, which the Timeline tab (file
+ * 09) and the memory tools (file 08) open up. This module is the pane's chunk, so the browser only
+ * downloads when the Evidence tab first opens.
+ *
+ * The browser reads nothing itself: it gets the workstation's engine state and opens drives
+ * through `workstation.browse`, the same engine call the disk tools make. Pins go on the run's
+ * board, the same one the terminal's `pin` fills.
  */
-export default function EvidencePane({ evidence }: WorkspacePaneProps) {
-  if (evidence === undefined) {
-    return (
-      <p role="status" className="flex items-center gap-3 py-10 text-secondary">
-        <Spinner />
-        Opening the evidence bag…
-      </p>
-    );
-  }
+export default function EvidencePane({ evidence, run, dispatch, workstation }: WorkspacePaneProps) {
   if (evidence === null || isEmpty(evidence)) {
     return (
       <EmptyState
@@ -32,81 +29,40 @@ export default function EvidencePane({ evidence }: WorkspacePaneProps) {
 
   return (
     <div className="space-y-6">
-      <p className="leading-7 text-secondary">
-        Everything the client handed over. Each item is a read-only copy: you look at it on your
-        workstation, and the original stays sealed.
-      </p>
+      <div>
+        <h3 className="text-lg font-semibold">Evidence Browser</h3>
+        <p className="mt-1 leading-7 text-secondary">
+          Everything the client handed over. Open a drive to look through its folders, the files in
+          them, and the files that were deleted. You read it on your workstation through the same
+          write-blockers as the terminal, so the original stays as it was.
+        </p>
+      </div>
 
-      {evidence.disks.length > 0 && (
-        <section aria-labelledby="evidence-disks">
-          <h3 id="evidence-disks" className="text-sm font-semibold tracking-wide text-secondary">
-            Disk images
-          </h3>
-          <ul className="mt-3 space-y-3">
-            {evidence.disks.map((disk) => {
-              const form = evidence.handover.find((item) => item.item === disk.id);
-              const deleted = disk.records.filter((record) => record.deleted).length;
-              return (
-                <li key={disk.id} className="rounded-lg border border-subtle bg-surface-base p-4">
-                  <p className="font-semibold">
-                    <code className="font-mono">{disk.id}</code>
-                    <span className="font-normal text-secondary"> · {disk.device.model}</span>
-                  </p>
-                  <dl className="mt-2 grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1 text-sm">
-                    <dt className="text-muted">Size</dt>
-                    <dd>{formatBytes(disk.sectors * disk.sectorSize)}</dd>
-                    <dt className="text-muted">File records</dt>
-                    <dd>
-                      {disk.records.length}
-                      {deleted > 0 && `, ${deleted} marked deleted`}
-                    </dd>
-                    {form && (
-                      <>
-                        <dt className="text-muted">Received</dt>
-                        <dd>
-                          {formatInstant(form.receivedAt)} from {form.by}
-                        </dd>
-                      </>
-                    )}
-                    {form?.hashes && (
-                      <>
-                        <dt className="text-muted">SHA-256 on the form</dt>
-                        <dd className="font-mono text-xs break-all">{form.hashes.sha256}</dd>
-                      </>
-                    )}
-                  </dl>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      )}
+      <EvidenceBrowser
+        sim={workstation.sim}
+        evidence={evidence}
+        browse={workstation.browse}
+        pins={run.pins}
+        onPin={(ref) => dispatch({ type: "pin", ref })}
+        onUnpin={(ref) => dispatch({ type: "unpin", ref })}
+        showInTerminal={workstation.showInTerminal}
+      />
 
-      {evidence.memory.length > 0 && (
-        <section aria-labelledby="evidence-memory">
-          <h3 id="evidence-memory" className="text-sm font-semibold tracking-wide text-secondary">
-            Memory captures
+      {(evidence.memory.length > 0 || evidence.logs.length > 0) && (
+        <section aria-labelledby="evidence-also" className="space-y-3">
+          <h3 id="evidence-also" className="text-sm font-semibold tracking-wide text-secondary">
+            Also handed over
           </h3>
-          <ul className="mt-3 space-y-2">
+          <ul className="space-y-2 text-sm">
             {evidence.memory.map((image) => (
-              <li key={image.id} className="text-sm">
-                <code className="font-mono">{image.host}</code>, captured{" "}
+              <li key={image.id}>
+                A memory capture of <code className="font-mono">{image.host}</code>, taken{" "}
                 {formatInstant(image.capturedAt)}: {image.processes.length} processes
               </li>
             ))}
-          </ul>
-        </section>
-      )}
-
-      {evidence.logs.length > 0 && (
-        <section aria-labelledby="evidence-logs">
-          <h3 id="evidence-logs" className="text-sm font-semibold tracking-wide text-secondary">
-            Logs
-          </h3>
-          <ul className="mt-3 space-y-2">
             {logCounts(evidence).map(([source, count]) => (
-              <li key={source} className="text-sm">
-                <code className="font-mono">{source}</code>: {count}{" "}
+              <li key={source}>
+                Logs from <code className="font-mono">{source}</code>: {count}{" "}
                 {count === 1 ? "record" : "records"}
               </li>
             ))}
@@ -125,10 +81,4 @@ function logCounts(evidence: EvidenceSet): [LogSource, number][] {
   for (const record of evidence.logs)
     counts.set(record.source, (counts.get(record.source) ?? 0) + 1);
   return [...counts];
-}
-
-function formatBytes(bytes: number): string {
-  if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  if (bytes >= 1024) return `${Math.round(bytes / 1024)} KB`;
-  return `${bytes} bytes`;
 }

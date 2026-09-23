@@ -44,11 +44,11 @@ export default function PrivacyPage() {
         </h2>
         <p className="mt-2 leading-7 text-secondary">
           Under <code className={KEY}>incident-room:cases:v1</code>: for each case you&apos;ve
-          opened, the commands you typed (so the case can be rebuilt when you come back), the
-          findings you pinned, your notes, your report draft, and which objectives you&apos;ve
-          ticked and hints you&apos;ve seen. A case takes half an hour or so, so it&apos;s kept if
-          you close the tab. If your browser blocks saving, the case still plays, and isn&apos;t
-          kept.
+          opened, the commands you typed and the drives you opened in the Evidence Browser (so the
+          case can be rebuilt when you come back), the findings you pinned, your notes, your report
+          draft, and which objectives you&apos;ve ticked and hints you&apos;ve seen. A case takes
+          half an hour or so, so it&apos;s kept if you close the tab. If your browser blocks saving,
+          the case still plays, and isn&apos;t kept.
         </p>
       </section>
 

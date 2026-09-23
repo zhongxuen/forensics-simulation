@@ -44,6 +44,15 @@ export { stableStringify } from "./core/stable-json";
 
 export { BUILTIN_TOOLS, defaultRegistry, SECURITY_TOOLS } from "./tools";
 export { FORENSICS_TOOLS } from "./tools/forensics";
+// The Evidence Browser opens images through the disk tools' own calls (docs/plan/05 §Evidence Browser).
+export {
+  browsableImages,
+  browseImage,
+  BROWSER_TOOL,
+  type BrowsableImage,
+  type BrowsedImage,
+} from "./tools/forensics/browse";
+export { clusterReuse, clusterRanges, type ClusterReuse } from "./tools/forensics/shared";
 export { LINUX_COMMANDS } from "./tools/commands";
 export { commandGroups } from "./tools/commands/help";
 export { listTools } from "./tools/catalog";

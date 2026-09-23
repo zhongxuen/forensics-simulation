@@ -10,6 +10,7 @@ import {
   type Completion,
 } from "../beginner/autocomplete";
 import {
+  applyChange,
   clearScreen,
   createTerminalSession,
   interruptLine,
@@ -17,7 +18,9 @@ import {
   resetMachine,
   sessionSnapshot,
   submitLine,
+  type EngineChange,
   type PromptInfo,
+  type SessionSetup,
   type TerminalBlock,
   type TerminalSessionState,
 } from "../session/terminal-session";
@@ -34,6 +37,8 @@ export interface UseTerminalSessionOptions {
   readonly onEvents?: (events: readonly SimEvent[], state: SimState) => void;
   /** Called after Reset machine, with the fresh state. */
   readonly onReset?: (state: SimState) => void;
+  /** Added to the machine's starting state, on start and on Reset machine (a case's evidence). */
+  readonly setup?: SessionSetup;
 }
 
 export interface TerminalSession {
@@ -53,6 +58,14 @@ export interface TerminalSession {
   clear(): void;
   /** Restores the scenario's starting state (Reset machine). */
   reset(): void;
+  /**
+   * Runs an engine call that isn't a typed line (the Evidence Browser opening an image) against
+   * the latest state, keeps its new state and reports its events like a command's. Returns what
+   * `change` returned.
+   */
+  apply<T extends EngineChange>(
+    change: (sim: SimState, now: number) => T | undefined,
+  ): T | undefined;
   /** The state, the run and a plain transcript, for replay and bug reports. */
   snapshot(): ReturnType<typeof sessionSnapshot>;
   /** Commands worth trying next, built from what's in the current folder. */
@@ -80,10 +93,13 @@ export function useTerminalSession({
   scrollback,
   onEvents,
   onReset,
+  setup,
 }: UseTerminalSessionOptions): TerminalSession {
   // The scenario and seed are read once: to switch scenario, give the component using this hook a
   // new `key`, which starts a fresh session.
-  const [state, setState] = useState(() => createTerminalSession({ scenario, seed, scrollback }));
+  const [state, setState] = useState(() =>
+    createTerminalSession({ scenario, seed, scrollback, ...(setup && { setup }) }),
+  );
   // Actions read the latest state synchronously, so two quick submits never race.
   const latest = useRef(state);
 
@@ -119,6 +135,16 @@ export function useTerminalSession({
     commit(next);
     callbacks.current.onReset?.(next.sim);
   }, [commit]);
+  const apply = useCallback(
+    <T extends EngineChange>(change: (sim: SimState, now: number) => T | undefined) => {
+      const { session: next, change: made } = applyChange(latest.current, change);
+      if (!made) return undefined;
+      commit(next);
+      callbacks.current.onEvents?.(made.events, made.state);
+      return made;
+    },
+    [commit],
+  );
   const snapshot = useCallback(() => sessionSnapshot(latest.current), []);
   const complete = useCallback(
     (input: string, cursor: number) => completeAtCursor(input, cursor, latest.current.sim),
@@ -148,12 +174,13 @@ export function useTerminalSession({
       interrupt,
       clear,
       reset,
+      apply,
       snapshot,
       suggestions,
       complete,
       ghost,
       search,
     }),
-    [state, submit, interrupt, clear, reset, snapshot, suggestions, complete, ghost, search],
+    [state, submit, interrupt, clear, reset, apply, snapshot, suggestions, complete, ghost, search],
   );
 }

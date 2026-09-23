@@ -93,6 +93,9 @@ export type {
   ShellWordPart,
 } from "./shell/types";
 export type { AttachedItem, EvidenceSession, RecalledLine } from "./evidence/session";
+export type { BrowsableImage, BrowsedImage } from "./tools/forensics/browse";
+export type { DiskView } from "./evidence/disk";
+export type { ClusterReuse } from "./tools/forensics/shared";
 export type {
   ArtefactRef,
   DiskImage,

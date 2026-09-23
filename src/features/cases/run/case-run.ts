@@ -43,7 +43,10 @@ export interface CaseRunState {
   readonly sim: SimState | null;
   /** Every event since the run started, across machine resets. Never saved: replay rebuilds it. */
   readonly events: readonly SimEvent[];
-  /** Every line typed and every Reset machine press, oldest first: what a save replays. */
+  /**
+   * Every line typed, every Reset machine press and every image opened in the Evidence Browser,
+   * oldest first: what a save replays.
+   */
   readonly log: readonly LogEntry[];
   /** Objectives ticked, in the order they were ticked. Once earned, a tick stays. */
   readonly completed: readonly string[];
@@ -69,7 +72,10 @@ export type CaseRunAction =
    * and earned. The workstation starts fresh; replaying the log (`command` actions) catches it up.
    */
   | { readonly type: "restore"; readonly save: CaseRunSave; readonly sim: SimState }
-  /** The player typed a line or pressed Reset machine: it goes in the log for replay. */
+  /**
+   * The player typed a line, pressed Reset machine or opened an image in the Evidence Browser: it
+   * goes in the log for replay.
+   */
   | { readonly type: "log"; readonly entry: LogEntry }
   /**
    * A command ran in the terminal: its events and the engine's new state. `replay` marks the
@@ -164,12 +170,7 @@ export function caseRunReducer(
       // An absurdly long pasted line is cut to what a save may hold, so the save still validates.
       return {
         ...run,
-        log: [
-          ...run.log,
-          "line" in action.entry
-            ? { line: action.entry.line.slice(0, MAX_LINE_LENGTH) }
-            : action.entry,
-        ],
+        log: [...run.log, clip(action.entry)],
       };
     case "command": {
       if (!playing) return run;
@@ -225,6 +226,13 @@ export function caseRunReducer(
     case "restart":
       return createCaseRun(run.attempt + 1);
   }
+}
+
+/** A log entry cut to what a save may hold, so the save still validates. */
+function clip(entry: LogEntry): LogEntry {
+  if ("line" in entry) return { line: entry.line.slice(0, MAX_LINE_LENGTH) };
+  if ("browse" in entry) return { browse: entry.browse.slice(0, MAX_LINE_LENGTH) };
+  return entry;
 }
 
 function beatsOn(caseDef: RunnableCase, on: "start" | "complete"): number[] {

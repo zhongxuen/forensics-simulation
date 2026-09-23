@@ -5,6 +5,7 @@
 export * from "./parser";
 
 export {
+  applyChange,
   clearScreen,
   createTerminalSession,
   DEFAULT_SCROLLBACK,
@@ -17,7 +18,9 @@ export {
   screenLineCount,
   sessionSnapshot,
   submitLine,
+  type EngineChange,
   type PromptInfo,
+  type SessionSetup,
   type TerminalBlock,
   type TerminalLine,
   type TerminalLineKind,
