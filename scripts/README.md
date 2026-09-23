@@ -1,8 +1,13 @@
 # scripts
 
-Command-line tools run with `tsx` through `package.json` scripts. Vendored from `../hacker-simulation` (`VENDORED.md`); the plan adds the `case:*` scripts in prompt 03.2.
+Command-line tools run with `tsx` through `package.json` scripts. Vendored from `../hacker-simulation` (`VENDORED.md`); the `case:*` scripts follow its `mission:*` ones.
 
-- `build-evidence.ts` — `pnpm evidence:build`: plays every case's story through the pure generator and writes `src/content/evidence/<case>/evidence.json` and `answers.json` with sorted keys. `pnpm evidence:check` builds without writing and fails when what is committed isn't what the stories build today, which is how a story edit nobody rebuilt gets caught in CI.
+Writing a case:
+
+- `case-new.ts` — `pnpm case:new <id>`: scaffolds `src/content/cases/<id>.yaml`, its playthrough and its evidence. What it writes already validates, generates and plays to the end, with every piece of copy marked TODO, so an author starts from something that works. The template is `lib/case-template.ts`, and `tests/content/case-toolkit.test.ts` keeps that promise true.
+- `case-validate.ts` — `pnpm case:validate [id…]`: the YAML and the schema, the story (it has to generate), the accepted evidence (every pattern has to match something), ids across the catalog, the lesson links, the banned words, the committed evidence, and the playthrough. `--strict` also fails on a leftover TODO, and that is what CI runs.
+- `case-play.ts` — `pnpm case:play <id>`: plays a case headlessly through the same parser, engine and tool registry as the browser, and prints the transcript. With `--run "<command>"`, `--pin <pattern>`, `--report <question>=<answer>`, `--answer <objective>=<text>` and `--reset` it plays those steps instead, which is how you try something out while writing.
+- `build-evidence.ts` — `pnpm evidence:build`: plays every case's story through the pure generator and writes `src/content/evidence/<case>/evidence.json` and `answers.json` with sorted keys. `pnpm evidence:check` builds without writing and fails when what is committed isn't what the stories build today, which is how a story edit nobody rebuilt gets caught in CI. What those two files hold lives in `lib/evidence-files.ts`, so every script agrees about what "up to date" means.
 
 Checks on a production build, run after `pnpm build`:
 

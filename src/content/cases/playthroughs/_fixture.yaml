@@ -1,0 +1,36 @@
+# The scripted run `pnpm case:play _fixture` and CI use to check _fixture still finishes.
+#
+# Steps: run: <command>, pin: <evidence pattern>, report: <question id> with answer: <text>,
+# answer: <text> with objective: <id>, or reset: true. Add ticks: [ids] to a step to say what it
+# should tick, and the run fails if it doesn't.
+case: _fixture
+description: "The short way through: read the letter, copy the drive, find the deletion, report it."
+steps:
+  # Nothing is touched before the letter is read (docs/plan/99-reference.md, rule 1).
+  - run: cat letter.txt
+    ticks: [read-the-letter]
+  - run: cat handover.txt
+
+  # The drive is copied first, with the write-blocker on, and every question is asked of the copy.
+  - run: blocker
+  - run: acquire /dev/evidence/qf-lt-03 --out images/qf-lt-03.img
+  - run: lsfs images/qf-lt-03.img -r -d
+  - run: inode images/qf-lt-03.img 36
+  - run: pin -m "the docket, deleted the night nobody was in the office"
+    ticks: [find-the-deletion]
+
+  # The account question is answered from the security log. Until the log tools land
+  # (docs/plan/07-carve-strings-logq.md) the board gets that record the way a view would pin it.
+  - pin: "log:security/where eventId=4624 and LogonType=10"
+
+  - report: when-deleted
+    answer: "2026-04-11T21:51:07Z"
+    verdict: supported
+    ticks: [answer-the-report]
+  - report: which-account
+    answer: mara
+    verdict: supported
+expect:
+  complete: true
+  objectives: [read-the-letter, find-the-deletion, answer-the-report]
+  supported: true

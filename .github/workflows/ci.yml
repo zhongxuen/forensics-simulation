@@ -68,11 +68,14 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm test:content
-      # TODO(docs/plan/03-case-format-and-generator.md): every case YAML validates and is solvable.
-      # - run: pnpm case:validate
       # The committed evidence JSON is what the generator builds from the case stories today, so a
       # story edit that nobody rebuilt fails here (docs/plan/03-case-format-and-generator.md).
       - run: pnpm evidence:check
+      # Every case validates, its answer key points at evidence that is really there, and its
+      # playthrough still finishes it with the tools that are registered. --strict also refuses a
+      # case with a TODO left in it from `pnpm case:new`.
+      - name: Every case is valid, and each one plays to the end
+        run: pnpm case:validate --strict
 
   integration:
     name: Integration tests (route handlers)
