@@ -22,7 +22,10 @@ export function CaseList({ listings }: { listings: readonly CaseListing[] }) {
           >
             <span className="flex flex-wrap items-center gap-2">
               <span className="text-lg font-semibold text-primary">{listing.title}</span>
-              {!listing.caseDef && <Badge tone="neutral">Coming in a later update</Badge>}
+              {listing.status === "written" && <Badge tone="neutral">Workspace coming soon</Badge>}
+              {listing.status === "planned" && (
+                <Badge tone="neutral">Coming in a later update</Badge>
+              )}
             </span>
             <span className="mt-2 block leading-7 text-secondary">{listing.summary}</span>
           </Link>

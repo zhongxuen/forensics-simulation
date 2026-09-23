@@ -31,7 +31,13 @@ export {
   mainObjectives,
   type ObjectiveEvaluator,
 } from "./run/evaluate";
-export { CASE_LISTINGS, findCaseListing, type CaseListing } from "./run/catalog";
+export {
+  CASE_LISTINGS,
+  CHAPTER,
+  findCaseListing,
+  type CaseListing,
+  type CaseStatus,
+} from "./run/catalog";
 export { hasCaseEvidence, loadCaseEvidence } from "./run/evidence";
 export { PRACTICE_CASE } from "./run/practice-case";
 export { replayLog } from "./run/replay";

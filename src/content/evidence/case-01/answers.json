@@ -1,0 +1,33 @@
+{
+  "caseId": "case-01",
+  "questions": [
+    {
+      "acceptedRefs": [
+        "disk:qf-lt-03:mft/46"
+      ],
+      "answer": "Yes — its SHA-256 is the SHA-256 on the handover form",
+      "id": "copy-is-identical",
+      "type": "choice"
+    },
+    {
+      "acceptedRefs": [
+        "disk:qf-lt-03:mft/46"
+      ],
+      "answer": "SHA-256, because that is the hash written on the handover form",
+      "id": "which-hash",
+      "type": "choice"
+    },
+    {
+      "acceptedRefs": [
+        "disk:qf-lt-03:mft/46",
+        "log:sysmon-lite/15"
+      ],
+      "answer": "2026-04-11T19:44:37Z",
+      "answerAt": 1775936677000,
+      "id": "note-created",
+      "toleranceSeconds": 60,
+      "type": "timestamp"
+    }
+  ],
+  "version": 1
+}

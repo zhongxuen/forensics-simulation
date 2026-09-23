@@ -1,0 +1,1398 @@
+{
+  "caseId": "case-01",
+  "disks": [
+    {
+      "clusterSize": 4096,
+      "device": {
+        "model": "Pellmoor 256 GB solid-state drive",
+        "serial": "PM-5798-4448"
+      },
+      "id": "qf-lt-03",
+      "partitions": [
+        {
+          "fs": "NTFS-like",
+          "index": 0,
+          "label": "System reserved",
+          "sectors": 1048576,
+          "startSector": 2048
+        },
+        {
+          "fs": "NTFS-like",
+          "index": 1,
+          "label": "Windows",
+          "sectors": 499067568,
+          "startSector": 1050624
+        }
+      ],
+      "records": [
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\",
+          "record": 5,
+          "size": 0,
+          "times": {
+            "a": 1739516875000,
+            "b": 1739516875000,
+            "c": 1739516875000,
+            "m": 1739516875000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows",
+          "record": 6,
+          "size": 0,
+          "times": {
+            "a": 1739517891000,
+            "b": 1739517891000,
+            "c": 1739517891000,
+            "m": 1739517891000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32",
+          "record": 7,
+          "size": 0,
+          "times": {
+            "a": 1739516587000,
+            "b": 1739516587000,
+            "c": 1739516587000,
+            "m": 1739516587000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\drivers",
+          "record": 8,
+          "size": 0,
+          "times": {
+            "a": 1739514839000,
+            "b": 1739514839000,
+            "c": 1739514839000,
+            "m": 1739514839000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\drivers\\etc",
+          "record": 9,
+          "size": 0,
+          "times": {
+            "a": 1739514839000,
+            "b": 1739514839000,
+            "c": 1739514839000,
+            "m": 1739514839000
+          }
+        },
+        {
+          "clusters": [
+            1000
+          ],
+          "contentB64": "IyBMb2NhbCBuYW1lIGxvb2t1cHMgYXJlIGNoZWNrZWQgaGVyZSBiZWZvcmUgdGhlIG5ldHdvcmsgaXMgYXNrZWQuCjEyNy4wLjAuMSBsb2NhbGhvc3QK",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\drivers\\etc\\hosts",
+          "record": 10,
+          "size": 87,
+          "times": {
+            "a": 1739514839000,
+            "b": 1739514839000,
+            "c": 1739514839000,
+            "m": 1739514839000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Users",
+          "record": 11,
+          "size": 0,
+          "times": {
+            "a": 1739518021000,
+            "b": 1739518021000,
+            "c": 1739518021000,
+            "m": 1739518021000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Users\\Public",
+          "record": 12,
+          "size": 0,
+          "times": {
+            "a": 1739516225000,
+            "b": 1739516225000,
+            "c": 1739516225000,
+            "m": 1739516225000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Users\\Public\\Downloads",
+          "record": 13,
+          "size": 0,
+          "times": {
+            "a": 1739517556000,
+            "b": 1739517556000,
+            "c": 1739517556000,
+            "m": 1739517556000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Program Files",
+          "record": 14,
+          "size": 0,
+          "times": {
+            "a": 1739518439000,
+            "b": 1739518439000,
+            "c": 1739518439000,
+            "m": 1739518439000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\ProgramData",
+          "record": 15,
+          "size": 0,
+          "times": {
+            "a": 1739515447000,
+            "b": 1739515447000,
+            "c": 1739515447000,
+            "m": 1739515447000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\ProgramData\\Quillfen",
+          "record": 16,
+          "size": 0,
+          "times": {
+            "a": 1759385666000,
+            "b": 1759385666000,
+            "c": 1759385666000,
+            "m": 1759385666000
+          }
+        },
+        {
+          "clusters": [
+            1001
+          ],
+          "contentB64": "UXVpbGxmZW4gRnJlaWdodCAtIHlhcmQgaGFuZGJvb2sgKGV4dHJhY3QpCgoxLiBFdmVyeSBwYWxsZXQgZ2V0cyBhIGRvY2tldCBiZWZvcmUgaXQgbGVhdmVzIHRoZSBnYXRlLgoyLiBUaGUgb2ZmaWNlIGxhcHRvcCBzdGF5cyBpbiB0aGUgb2ZmaWNlLiBJZiB5b3UgbmVlZCBpdCBpbiB0aGUgeWFyZCwgc2lnbiBpdCBvdXQuCjMuIElmIGEgc2NyZWVuIGFza3MgZm9yIGEgcGFzc3dvcmQgdHdpY2UsIHN0b3AgYW5kIHRlbGwgdGhlIG9mZmljZS4K",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\ProgramData\\Quillfen\\yard-handbook.txt",
+          "record": 17,
+          "size": 252,
+          "times": {
+            "a": 1759385666000,
+            "b": 1759385666000,
+            "c": 1759385666000,
+            "m": 1759385666000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator",
+          "record": 18,
+          "size": 0,
+          "times": {
+            "a": 1749880756000,
+            "b": 1749880756000,
+            "c": 1749880756000,
+            "m": 1749880756000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\Desktop",
+          "record": 19,
+          "size": 0,
+          "times": {
+            "a": 1749887421000,
+            "b": 1749887421000,
+            "c": 1749887421000,
+            "m": 1749887421000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\Documents",
+          "record": 20,
+          "size": 0,
+          "times": {
+            "a": 1749884210000,
+            "b": 1749884210000,
+            "c": 1749884210000,
+            "m": 1749884210000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\Downloads",
+          "record": 21,
+          "size": 0,
+          "times": {
+            "a": 1749886314000,
+            "b": 1749886314000,
+            "c": 1749886314000,
+            "m": 1749886314000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\AppData",
+          "record": 22,
+          "size": 0,
+          "times": {
+            "a": 1749886799000,
+            "b": 1749886799000,
+            "c": 1749886799000,
+            "m": 1749886799000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\AppData\\Local",
+          "record": 23,
+          "size": 0,
+          "times": {
+            "a": 1749886216000,
+            "b": 1749886216000,
+            "c": 1749886216000,
+            "m": 1749886216000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\AppData\\Local\\Web",
+          "record": 24,
+          "size": 0,
+          "times": {
+            "a": 1749882352000,
+            "b": 1749882352000,
+            "c": 1749882352000,
+            "m": 1749882352000
+          }
+        },
+        {
+          "clusters": [
+            1002
+          ],
+          "contentB64": "IyBPbmUgbGluZSBwZXIgcGFnZSBvcGVuZWQ6IGxvY2FsIHRpbWUsIHRoZW4gdGhlIGFkZHJlc3MuCg==",
+          "deleted": false,
+          "kind": "file",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\AppData\\Local\\Web\\history.log",
+          "record": 25,
+          "size": 58,
+          "times": {
+            "a": 1773209353000,
+            "b": 1773209353000,
+            "c": 1773209353000,
+            "m": 1773209353000
+          }
+        },
+        {
+          "clusters": [
+            1003
+          ],
+          "contentB64": "UGFsbGV0IHdyYXAgc3VwcGxpZXJzClRyYWlsZXIgaW5zcGVjdGlvbiBkYXRlcwpOaWdodCBnYXRlIHJvdGEK",
+          "deleted": false,
+          "kind": "file",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\Documents\\reading-list.txt",
+          "record": 26,
+          "size": 63,
+          "times": {
+            "a": 1772000930000,
+            "b": 1772000930000,
+            "c": 1772000930000,
+            "m": 1772000930000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "mara",
+          "path": "C:\\Users\\mara",
+          "record": 27,
+          "size": 0,
+          "times": {
+            "a": 1749886346000,
+            "b": 1749886346000,
+            "c": 1749886346000,
+            "m": 1749886346000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Desktop",
+          "record": 28,
+          "size": 0,
+          "times": {
+            "a": 1749882816000,
+            "b": 1749882816000,
+            "c": 1749882816000,
+            "m": 1749882816000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Documents",
+          "record": 29,
+          "size": 0,
+          "times": {
+            "a": 1749884492000,
+            "b": 1749884492000,
+            "c": 1749884492000,
+            "m": 1749884492000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Downloads",
+          "record": 30,
+          "size": 0,
+          "times": {
+            "a": 1749885397000,
+            "b": 1749885397000,
+            "c": 1749885397000,
+            "m": 1749885397000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\AppData",
+          "record": 31,
+          "size": 0,
+          "times": {
+            "a": 1749885731000,
+            "b": 1749885731000,
+            "c": 1749885731000,
+            "m": 1749885731000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\AppData\\Local",
+          "record": 32,
+          "size": 0,
+          "times": {
+            "a": 1749881509000,
+            "b": 1749881509000,
+            "c": 1749881509000,
+            "m": 1749881509000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\AppData\\Local\\Web",
+          "record": 33,
+          "size": 0,
+          "times": {
+            "a": 1749881114000,
+            "b": 1749881114000,
+            "c": 1749881114000,
+            "m": 1749881114000
+          }
+        },
+        {
+          "clusters": [
+            1004
+          ],
+          "contentB64": "IyBPbmUgbGluZSBwZXIgcGFnZSBvcGVuZWQ6IGxvY2FsIHRpbWUsIHRoZW4gdGhlIGFkZHJlc3MuCjIwMjYtMDQtMTIgMTM6MDg6NTggKzAxOjAwIGh0dHBzOi8vbWFwcy5leGFtcGxlLwoyMDI2LTA0LTEyIDE2OjM2OjU5ICswMTowMCBodHRwczovL21hcHMuZXhhbXBsZS8KMjAyNi0wNC0xMiAxNzoxNzowNCArMDE6MDAgaHR0cHM6Ly9wYXJ0cy5leGFtcGxlLwo=",
+          "deleted": false,
+          "kind": "file",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\AppData\\Local\\Web\\history.log",
+          "record": 34,
+          "size": 206,
+          "times": {
+            "a": 1776010624000,
+            "b": 1773209634000,
+            "c": 1776010624000,
+            "m": 1776010624000
+          }
+        },
+        {
+          "clusters": [
+            1005
+          ],
+          "contentB64": "UGFsbGV0IHdyYXAgc3VwcGxpZXJzClRyYWlsZXIgaW5zcGVjdGlvbiBkYXRlcwpOaWdodCBnYXRlIHJvdGEK",
+          "deleted": false,
+          "kind": "file",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Documents\\reading-list.txt",
+          "record": 35,
+          "size": 63,
+          "times": {
+            "a": 1772000349000,
+            "b": 1772000349000,
+            "c": 1772000349000,
+            "m": 1772000349000
+          }
+        },
+        {
+          "clusters": [
+            1006
+          ],
+          "contentB64": "MjggY291bnRlZCwgMiBzdGlsbCB0byBjaGVjay4K",
+          "deleted": false,
+          "kind": "file",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Documents\\trailer-checks.txt",
+          "record": 36,
+          "size": 30,
+          "times": {
+            "a": 1775809053000,
+            "b": 1775809053000,
+            "c": 1775809053000,
+            "m": 1775809053000
+          }
+        },
+        {
+          "clusters": [
+            1007
+          ],
+          "contentB64": "TmlnaHQgZ2F0ZSByb3RhLCB3ZWVrIDE1CgpGcmkgIG5vcnRoIGdhdGUsIDE4OjAwIHRvIDA2OjAwClNhdCAgbm9ib2R5IG9uLCB5YXJkIHNodXQKU3VuICBub2JvZHkgb24sIHlhcmQgc2h1dApNb24gIG5vcnRoIGdhdGUsIDA2OjAwIHRvIDE4OjAwCk1vbiAgc3dhcHBlZDogc291dGggZ2F0ZSwgMDY6MDAgdG8gMTg6MDAK",
+          "deleted": false,
+          "kind": "file",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Documents\\gate-rota-week15.txt",
+          "record": 37,
+          "size": 183,
+          "times": {
+            "a": 1775936482000,
+            "b": 1775812360000,
+            "c": 1775838900000,
+            "m": 1775838900000
+          }
+        },
+        {
+          "clusters": [
+            1008
+          ],
+          "contentB64": "MTYgY291bnRlZCwgNSBzdGlsbCB0byBjaGVjay4K",
+          "deleted": false,
+          "kind": "file",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Documents\\fuel-log.txt",
+          "record": 38,
+          "size": 30,
+          "times": {
+            "a": 1776005460000,
+            "b": 1775815045000,
+            "c": 1776005460000,
+            "m": 1776005460000
+          }
+        },
+        {
+          "clusters": [
+            1009
+          ],
+          "contentB64": "TVoAAFRoaXMgcHJvZ3JhbSBjYW5ub3QgYmUgcnVuIGluIERPUyBtb2RlLgBub3RlcGFkLmV4ZQA=",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\notepad.exe",
+          "record": 39,
+          "size": 56,
+          "times": {
+            "a": 1775817653000,
+            "b": 1775817653000,
+            "c": 1775817653000,
+            "m": 1775817653000
+          }
+        },
+        {
+          "clusters": [
+            1010
+          ],
+          "contentB64": "MjcgY291bnRlZCwgMyBzdGlsbCB0byBjaGVjay4K",
+          "deleted": false,
+          "kind": "file",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Documents\\gate-rota.txt",
+          "record": 40,
+          "size": 30,
+          "times": {
+            "a": 1775906094000,
+            "b": 1775823188000,
+            "c": 1775906094000,
+            "m": 1775906094000
+          }
+        },
+        {
+          "clusters": [
+            1011
+          ],
+          "contentB64": "TVoAAFRoaXMgcHJvZ3JhbSBjYW5ub3QgYmUgcnVuIGluIERPUyBtb2RlLgBjYWxjLmV4ZQA=",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\calc.exe",
+          "record": 41,
+          "size": 53,
+          "times": {
+            "a": 1775826223000,
+            "b": 1775826223000,
+            "c": 1775826223000,
+            "m": 1775826223000
+          }
+        },
+        {
+          "clusters": [
+            1012
+          ],
+          "contentB64": "TVoAAFRoaXMgcHJvZ3JhbSBjYW5ub3QgYmUgcnVuIGluIERPUyBtb2RlLgBiYWNrdXAtY2hlY2suZXhlAA==",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\backup-check.exe",
+          "record": 42,
+          "size": 61,
+          "times": {
+            "a": 1775904674000,
+            "b": 1775904674000,
+            "c": 1775904674000,
+            "m": 1775904674000
+          }
+        },
+        {
+          "clusters": [
+            1013
+          ],
+          "contentB64": "TVoAAFRoaXMgcHJvZ3JhbSBjYW5ub3QgYmUgcnVuIGluIERPUyBtb2RlLgBwcmludHNwb29sLmV4ZQA=",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\printspool.exe",
+          "record": 43,
+          "size": 59,
+          "times": {
+            "a": 1775914407000,
+            "b": 1775914407000,
+            "c": 1775914407000,
+            "m": 1775914407000
+          }
+        },
+        {
+          "clusters": [
+            1014
+          ],
+          "contentB64": "MTAgY291bnRlZCwgNSBzdGlsbCB0byBjaGVjay4K",
+          "deleted": false,
+          "kind": "file",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Documents\\pallet-counts.txt",
+          "record": 44,
+          "size": 30,
+          "times": {
+            "a": 1775922661000,
+            "b": 1775922661000,
+            "c": 1775922661000,
+            "m": 1775922661000
+          }
+        },
+        {
+          "clusters": [
+            1015
+          ],
+          "contentB64": "MzAgY291bnRlZCwgMiBzdGlsbCB0byBjaGVjay4K",
+          "deleted": false,
+          "kind": "file",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Documents\\week-notes.txt",
+          "record": 45,
+          "size": 30,
+          "times": {
+            "a": 1775924163000,
+            "b": 1775924163000,
+            "c": 1775924163000,
+            "m": 1775924163000
+          }
+        },
+        {
+          "clusters": [
+            1016
+          ],
+          "contentB64": "VGhlIGRvb3Igd2FzIG9wZW4uCgrigJQgSEwK",
+          "deleted": false,
+          "kind": "file",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Desktop\\the-door-was-open.txt",
+          "record": 46,
+          "size": 27,
+          "times": {
+            "a": 1775936677000,
+            "b": 1775936677000,
+            "c": 1775936677000,
+            "m": 1775936677000
+          }
+        },
+        {
+          "clusters": [
+            1017
+          ],
+          "contentB64": "MzQgY291bnRlZCwgNiBzdGlsbCB0byBjaGVjay4K",
+          "deleted": false,
+          "kind": "file",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Documents\\tyre-order.txt",
+          "record": 47,
+          "size": 30,
+          "times": {
+            "a": 1775988693000,
+            "b": 1775988693000,
+            "c": 1775988693000,
+            "m": 1775988693000
+          }
+        }
+      ],
+      "sectorSize": 512,
+      "sectors": 500118192,
+      "unallocatedB64": ""
+    }
+  ],
+  "handover": [
+    {
+      "by": "Gus Thimblegate, IT contractor to Quillfen Freight",
+      "hashes": {
+        "md5": "33b7019767616510147b6a54b9f5d1d1",
+        "sha256": "f852ef34b625d961dfa1232481a3645c3e293d8cea6bacd327d9faa9236416b6"
+      },
+      "item": "qf-lt-03",
+      "receivedAt": 1776072000000
+    }
+  ],
+  "logs": [
+    {
+      "at": 1775804842000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x301d3",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 1,
+      "source": "security"
+    },
+    {
+      "at": 1775807880000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x303a6",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 2,
+      "source": "security"
+    },
+    {
+      "at": 1775809053000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\explorer.exe",
+        "ProcessId": "1016",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\trailer-checks.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 1,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775812360000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\explorer.exe",
+        "ProcessId": "1016",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\gate-rota-week15.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 2,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775815045000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\explorer.exe",
+        "ProcessId": "1016",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\fuel-log.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 3,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775817653000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "NewProcessId": "0x3fc",
+        "NewProcessName": "C:\\Windows\\System32\\notepad.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 3,
+      "source": "security"
+    },
+    {
+      "at": 1775817653000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1020",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 4,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775821143000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x30579",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 4,
+      "source": "security"
+    },
+    {
+      "at": 1775823188000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1020",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\gate-rota.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 5,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775826223000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "NewProcessId": "0x400",
+        "NewProcessName": "C:\\Windows\\System32\\calc.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 5,
+      "source": "security"
+    },
+    {
+      "at": 1775826223000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1024",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 6,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775832767000,
+      "fields": {
+        "answer": "198.51.100.136",
+        "client": "10.60.0.21",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 1,
+      "source": "dns"
+    },
+    {
+      "at": 1775833968000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ProcessId": "1024",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\fuel-log.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 7,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775838004000,
+      "fields": {
+        "answer": "198.51.100.13",
+        "client": "10.60.0.21",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 2,
+      "source": "dns"
+    },
+    {
+      "at": 1775893598000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "NewProcessId": "0x404",
+        "NewProcessName": "C:\\Windows\\System32\\calc.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 6,
+      "source": "security"
+    },
+    {
+      "at": 1775893598000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1028",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 8,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775896503000,
+      "fields": {
+        "answer": "198.51.100.150",
+        "client": "10.60.0.21",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 3,
+      "source": "dns"
+    },
+    {
+      "at": 1775899939000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ProcessId": "1028",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\fuel-log.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 9,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775904674000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "NewProcessId": "0x408",
+        "NewProcessName": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 7,
+      "source": "security"
+    },
+    {
+      "at": 1775904674000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1032",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 10,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775906094000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ProcessId": "1032",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\gate-rota.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 11,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775909257000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x3074c",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 8,
+      "source": "security"
+    },
+    {
+      "at": 1775914407000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "NewProcessId": "0x40c",
+        "NewProcessName": "C:\\Windows\\System32\\printspool.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 9,
+      "source": "security"
+    },
+    {
+      "at": 1775914407000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1036",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 12,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775917503000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x3091f",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 10,
+      "source": "security"
+    },
+    {
+      "at": 1775922661000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ProcessId": "1036",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\pallet-counts.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 13,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775924163000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ProcessId": "1036",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\week-notes.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 14,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775936677000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ProcessId": "1036",
+        "TargetFilename": "C:\\Users\\mara\\Desktop\\the-door-was-open.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 15,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775977517000,
+      "fields": {
+        "answer": "198.51.100.219",
+        "client": "10.60.0.21",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 4,
+      "source": "dns"
+    },
+    {
+      "at": 1775984019000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x30af2",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 11,
+      "source": "security"
+    },
+    {
+      "at": 1775987241000,
+      "fields": {
+        "answer": "198.51.100.216",
+        "client": "10.60.0.21",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 5,
+      "source": "dns"
+    },
+    {
+      "at": 1775988693000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ProcessId": "1036",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\tyre-order.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 16,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775992203000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x30cc5",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 12,
+      "source": "security"
+    },
+    {
+      "at": 1775995738000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 6,
+      "source": "dns"
+    },
+    {
+      "at": 1775999949000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "NewProcessId": "0x410",
+        "NewProcessName": "C:\\Windows\\System32\\printspool.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 13,
+      "source": "security"
+    },
+    {
+      "at": 1775999949000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1040",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 17,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1776005460000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ProcessId": "1040",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\fuel-log.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 18,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1776008219000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 7,
+      "source": "dns"
+    },
+    {
+      "at": 1776010624000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 8,
+      "source": "dns"
+    },
+    {
+      "at": 1776063863000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x30e98",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 14,
+      "source": "security"
+    },
+    {
+      "at": 1776070104000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "NewProcessId": "0x414",
+        "NewProcessName": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 15,
+      "source": "security"
+    },
+    {
+      "at": 1776070104000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1044",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 19,
+      "source": "sysmon-lite"
+    }
+  ],
+  "memory": [],
+  "seed": 20260413,
+  "zones": {
+    "disk": "Europe/London"
+  }
+}

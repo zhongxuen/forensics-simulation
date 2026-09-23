@@ -2,7 +2,7 @@
 
 Declarative content as data, validated by schemas.
 
-- `cases/` — one YAML file per case: the ground-truth story, the briefing, the objectives, the report and the debrief, checked by `cases/schema.ts` (see its README). File 06 writes Case 1.
+- `cases/` — one YAML file per case: the ground-truth story, the briefing, the objectives, the report and the debrief, checked by `cases/schema.ts` (see its README). `case-01.yaml` is written; `cases/chapter.ts` holds the chapter and the order its cases are played in.
 - `evidence/` — the evidence each case's story builds, written by `pnpm evidence:build` and committed (see its README). Never edited by hand.
 
 - `sandbox/` — the analyst workstation `ir-ws-01` that `/sandbox` runs (see its README).

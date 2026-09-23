@@ -6,6 +6,8 @@ One YAML file per case, named after its id (`case-01.yaml`). A case file holds t
 
 A file starting with `_` is a **fixture**: it exercises the pipeline and is never offered to a player. `_fixture.yaml` is the one, and it is the shortest full example of every part of the format.
 
+`chapter.ts` is the other file here that is not a case: the chapter's title, the two lines that frame it, and the **order its cases are played in**. Everything that needs to know which case comes first reads it from there — the landing page's button, the app shell's "Start here", the case list — so moving a case in the chapter moves it everywhere. `tests/content/case-chapter.test.ts` checks its ids against this folder.
+
 ## What a case file holds
 
 | Part                                | What it is                                                                                                                                                                                  |
@@ -64,6 +66,12 @@ acceptedEvidence:
 5. `pnpm case:validate <id>` — the schema, the story, the accepted evidence, the lesson links, the banned words, the committed evidence and the playthrough, with readable errors.
 6. `pnpm test:content` — the same checks as a test suite, plus consistency, determinism and the world rules.
 7. Work through the authoring checklist in `docs/plan/99-reference.md`.
+8. Add the case to `chapter.ts` if it isn't there, so it appears in the list and in the right place.
+
+Two things worth knowing before the first run, both learned writing Case 1:
+
+- **A case has to hand over every log source its story writes to.** Background activity browses and looks names up, so an `office-day` profile writes to `dns` whether or not the report asks about it. `pnpm evidence:build` says which sources were dropped, and `tests/content/case-consistency.test.ts` fails on them.
+- **A report answer points at an artefact, and an artefact is a record, a log line or something in memory.** There is no ref for an image's hash, so "my copy matched the form" cannot be cited directly; Case 1's header comment says how it works around that.
 
 ## Playthroughs
 
@@ -89,11 +97,15 @@ Commands go through the same parser, engine and tool registry as the browser, so
 
 Every new name — a person, a company, a product, a machine — is searched before it is used, and recorded here. Only `.example` domains, and only reserved addresses (RFC 5737's `192.0.2.0/24`, `198.51.100.0/24` and `203.0.113.0/24`, or a private range). The schema refuses anything else.
 
-| Name             | Checked    | What it is, and what the search found                                                                                                        |
-| ---------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Quillfen Freight | 2026-09-22 | The client. No organisation of that name was found (`docs/plan/00-overview.md` §4, row 1)                                                    |
-| Pellmoor         | 2026-09-23 | The drive maker printed on the evidence bag, in `baselines/`. No company or brand of that name was found; the nearest are Pella and Pelmorex |
-| Wrenfold         | 2026-09-23 | The memory-stick maker a `usb-insert` gives a drive. No company or brand of that name was found; the nearest are Renfold and Wren Kitchens   |
-| `mara`           | —          | The yard office account in `_fixture.yaml`. A first name with no surname, standing for nobody. The cast, who do have names, is in `cast.ts`  |
+| Name             | Checked    | What it is, and what the search found                                                                                                                                                                                          |
+| ---------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Quillfen Freight | 2026-09-22 | The client. No organisation of that name was found (`docs/plan/00-overview.md` §4, row 1)                                                                                                                                      |
+| Pellmoor         | 2026-09-23 | The drive maker printed on the evidence bag, in `baselines/`. No company or brand of that name was found; the nearest are Pella and Pelmorex                                                                                   |
+| Wrenfold         | 2026-09-23 | The memory-stick maker a `usb-insert` gives a drive. No company or brand of that name was found; the nearest are Renfold and Wren Kitchens                                                                                     |
+| Delia Quillfen   | 2026-09-23 | Quillfen Freight's owner, who signs Case 1's letter and never speaks. Searched as a full name: no person of that name was found, and the nearest was an unrelated Delia Quilez. The surname is the yard's own, already cleared |
+| Gus Thimblegate  | 2026-09-23 | The yard's IT contractor, who signs Case 1's handover form and never speaks. "Thimblegate" returned no organisation and no notable person, only residential street names in Georgia and Kentucky                               |
+| `mara`           | —          | The yard office account in `_fixture.yaml` and `case-01.yaml`. A first name with no surname, standing for nobody. The cast, who do have names, is in `cast.ts`                                                                 |
+
+Two names were searched for Case 1 and dropped: **Brindlecote** (a real Brindle IT Solutions exists, and an IT contractor is exactly what the name was for) and **Speltham** (Speltham Limited is a real UK clothing company). **Gorsewick** was dropped too: Gorsewick Hall is the setting of a published mystery series.
 
 Never import here: anything except `@/content` and `@/sim/types` (ESLint enforces it).

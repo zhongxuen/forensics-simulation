@@ -1,3 +1,5 @@
+import { CHAPTER_ONE, FIRST_CASE_ID } from "@/content/cases/chapter";
+
 /**
  * Where the "Start here" button takes the learner, so a beginner never has to decide where to go.
  */
@@ -10,11 +12,11 @@ export interface NextStep {
 }
 
 /**
- * Case 1 (docs/plan/06-case-1-the-clean-copy.md). Its page is a placeholder until file 05 builds
- * the workspace and file 06 writes the case.
+ * The chapter's first case (`src/content/cases/chapter.ts`). The chapter decides which one that
+ * is, so reordering the cases there moves every "Start here" in the app with it.
  */
 export const FIRST_STEP: NextStep = {
-  href: "/cases/case-01",
+  href: `/cases/${FIRST_CASE_ID}`,
   title: "Open Case 1",
-  detail: "Your first investigation",
+  detail: `Your first investigation, at ${CHAPTER_ONE.client.split(",")[0]}`,
 };

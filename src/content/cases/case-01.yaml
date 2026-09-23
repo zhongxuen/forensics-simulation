@@ -1,0 +1,363 @@
+# case-01, "The clean copy" (docs/plan/06-case-1-the-clean-copy.md).
+#
+# The first case, and the first thing a visitor plays. It is about the **copy**, not the break-in:
+# a laptop arrives in a bag with a hash on the form, and the whole job is to end up holding a copy
+# you can prove is the same drive. Whoever came in, and why, is Case 2's problem.
+#
+# Two places this file leaves the plan, both because of what the engine can point at today:
+#
+# - 06 §Objectives says "turn on the write-blocker". Write-blockers start **on**
+#   (src/sim/evidence/session.ts), which is how evidence is meant to arrive, so the objective is to
+#   look at them before touching anything. Turning one off is the wrong turn, not the right one.
+# - 06 §Report says the first two answers cite the MATCH line. A ref names a record, a log line or
+#   something in memory (src/sim/evidence/refs.ts); there is no ref for "this image's hash", so a
+#   MATCH line cannot be pinned. All three answers point at the note's record instead, which is the
+#   one thing this case produces — and the `explain` text says why a record out of a verified copy
+#   is worth quoting. When file 10 builds the custody log, its entries are the artefact these two
+#   questions really want.
+id: case-01
+version: 1
+title: The clean copy
+client:
+  org: Quillfen Freight
+  signedBy: Delia Quillfen, owner, Quillfen Freight, and Theo Ashgrove, team lead, Candlewright Security
+  letter: |
+    We run a small haulage yard. On Monday morning I found the office laptop switched on and
+    unlocked, with a message on the screen that none of us wrote. Nobody was in the yard over the
+    weekend, and the office door does not always latch.
+
+    Please examine the yard office laptop, qf-lt-03, and tell us what happened to it. Gus
+    Thimblegate, who looks after our computers, took a fingerprint of the drive here before it
+    went into the bag, and the form is with it.
+
+    Nothing that belongs to a member of staff personally is to be looked at, and please leave the
+    rest of the yard's computers alone for now.
+estimatedMinutes: 15
+seed: 20260413
+hook: A laptop arrives in a sealed bag with a fingerprint on the form. Make a copy you can prove is the same drive.
+learningGoals:
+  - Why an examiner works from a copy, and never from the drive itself
+  - What a write-blocker does, and what happens to the evidence when it is off
+  - How a hash shows that a copy and an original are the same, byte for byte
+  - What a handover form records, and why the next person needs it
+concepts:
+  - foundations-what-forensics-is
+  - foundations-order-of-volatility
+  - foundations-chain-of-custody
+  - foundations-hashing-for-evidence
+briefing:
+  scenario: >-
+    Quillfen Freight is a small family haulage yard. On Monday morning the owner found the yard
+    office laptop switched on, unlocked, and carrying a message nobody there had written. The
+    laptop is now on your desk in a sealed bag, with a handover form and a signed letter.
+  role: >-
+    You are the newest member of Candlewright Security's blue team, at the examining workstation
+    ir-ws-01, signed in as examiner. Your case folder is already open in the terminal.
+  authorization: >-
+    Delia Quillfen, who owns Quillfen Freight, and Theo Ashgrove, Candlewright's team lead, both
+    signed on 13 April 2026. The letter covers one machine, the yard office laptop qf-lt-03, and
+    nothing that belongs to a member of staff personally. The yard's other computers are out of
+    scope.
+
+machines:
+  - id: qf-lt-03
+    kind: windows-laptop
+    baseline: office-laptop-v1
+    zone: Europe/London
+    ip: 10.60.0.21
+    accounts: [mara]
+  - id: ir-ws-01
+    kind: linux-workstation
+    baseline: analyst-workstation-v1
+    zone: Europe/London
+
+# The ground truth: who did what, on which machine, at which instant. Times always carry a zone.
+#
+# Friday is an ordinary day that ends without anyone signing out. Saturday evening somebody walks
+# into an office whose door did not latch, reads what is on the screen, leaves a note, and goes.
+# Monday morning the laptop is found and handed over. Nothing touches the drive after the form is
+# signed — that rule is the generator's, and it is also the case's whole subject.
+story:
+  - at: "2026-04-10T07:58:00Z"
+    actor: user:mara
+    on: qf-lt-03
+    do: logon
+    with: { account: mara, type: interactive }
+
+  - id: rota-written
+    at: "2026-04-10T09:12:40Z"
+    actor: user:mara
+    on: qf-lt-03
+    do: create-file
+    path: 'C:\Users\mara\Documents\gate-rota-week15.txt'
+    content: |
+      Night gate rota, week 15
+
+      Fri  north gate, 18:00 to 06:00
+      Sat  nobody on, yard shut
+      Sun  nobody on, yard shut
+      Mon  north gate, 06:00 to 18:00
+
+  # Friday ends with no sign-out. The laptop stays signed in over the weekend, which is the door
+  # in this story: the message on Monday's screen was written into a session nobody closed.
+  - at: "2026-04-10T16:35:00Z"
+    actor: user:mara
+    on: qf-lt-03
+    do: modify-file
+    path: 'C:\Users\mara\Documents\gate-rota-week15.txt'
+    append: |
+      Mon  swapped: south gate, 06:00 to 18:00
+
+  - id: rota-read
+    at: "2026-04-11T19:41:22Z"
+    actor: attacker
+    on: qf-lt-03
+    do: read-file
+    path: 'C:\Users\mara\Documents\gate-rota-week15.txt'
+
+  - id: note-left
+    at: "2026-04-11T19:44:37Z"
+    actor: attacker
+    on: qf-lt-03
+    do: create-file
+    path: 'C:\Users\mara\Desktop\the-door-was-open.txt'
+    owner: mara
+    content: |
+      The door was open.
+
+      — HL
+
+  - at: "2026-04-13T09:20:00Z"
+    actor: analyst
+    on: ir-ws-01
+    do: hand-over
+    with:
+      item: qf-lt-03
+      by: Gus Thimblegate, IT contractor to Quillfen Freight
+      hashes: true
+
+noise: { profile: office-day, density: low }
+
+evidence:
+  # Nothing in this case's report needs a log: the note's own record answers it, and the tools that
+  # query logs arrive in file 07. They are handed over anyway, because a case has to hand over every
+  # source its story writes to (tests/content/case-consistency), and because an examiner is given
+  # the logs whether or not this week's question needs them.
+  disks: [qf-lt-03]
+  logs: [security, sysmon-lite, dns]
+  memory: []
+  # The laptop's own clock showed Europe/London, an hour ahead of UTC that weekend. Saying so here
+  # is what makes `inode` add its note about the hour a witness would name, and it is the first
+  # time a player meets the idea that a time needs a zone before it means anything.
+  zones: { disk: Europe/London }
+
+# The cold open: two lines, then the first objective (docs/plan/99-reference.md, "Cold opens").
+beats:
+  - on: start
+    speaker: teammate-idris
+    text: >-
+      Idris Fenwick, investigations. A haulage yard found their office laptop awake on Monday with
+      a message on it that nobody there typed. It is in the bag on your desk, and today is about
+      one thing: getting a copy of that drive we can stand behind.
+  - on: start
+    speaker: teammate-kit
+    text: >-
+      Kit Nakashima-Reyes, and I have been eyeing that bag for ten minutes. Could we open the
+      laptop and have a quick look first? Two minutes, then we copy it properly.
+  - on: { objective: read-the-paperwork }
+    speaker: mentor-noor
+    text: >-
+      Noor Halvorsen, your mentor. Kit, the drive has a fingerprint on that form, taken before it
+      left the yard. Opening the original changes when its files were last read, and a drive whose
+      fingerprint no longer matches the form is a drive somebody can argue about. Copy first, then
+      ask the copy anything you like.
+  - on: { objective: prove-the-copy }
+    speaker: teammate-idris
+    text: >-
+      That MATCH is the sentence your whole report rests on. Everything you say from here comes out
+      of that copy, and you can show the copy is the drive the yard handed us.
+  - on: { objective: find-the-note }
+    speaker: teammate-idris
+    text: >-
+      There it is. Read the times on that record rather than the clock on the wall: the yard shut on
+      Saturday lunchtime, and this was written on Saturday evening.
+  - on: complete
+    speaker: mentor-noor
+    text: >-
+      You took a copy, showed it was the same drive, and found the one thing on it that nobody at
+      the yard put there. Nothing you did changed the evidence. Now write it up, and point every
+      answer at the record you pinned, so the next person can check it without taking your word for
+      any of it.
+
+objectives:
+  - id: read-the-paperwork
+    description: Read the letter and the handover form that came with the laptop.
+    why: The letter says what you may examine, and the form says what you were handed and what it hashed to.
+    success: You know what you may examine, and what you may not. The other file in that folder is the form the laptop came with.
+    check:
+      kind: commandRun
+      pattern: "^\\s*cat\\b"
+
+  - id: check-the-blocker
+    description: Check the write-blocker on the evidence device before anything reads it.
+    why: A write-blocker is what lets this computer read the laptop's drive without changing it.
+    success: The blocker is on, so nothing you do next can write to the original.
+    check:
+      kind: commandRun
+      # Turning one off is the wrong turn, so it does not count as having checked.
+      pattern: "^\\s*blocker\\b(?!.*\\boff\\b)"
+
+  - id: make-the-image
+    description: Make a working copy of the laptop's drive in your case folder.
+    why: An examiner works from a copy. The original goes back in the bag and stays as it arrived.
+    success: You have your own copy of the drive, and the original is untouched.
+    check:
+      kind: commandRun
+      pattern: "^\\s*acquire\\b"
+
+  - id: prove-the-copy
+    description: Check your copy against the SHA-256 on the handover form.
+    why: A copy nobody can show is identical is not evidence. The hash is how you show it.
+    success: MATCH. Your copy and the drive the yard handed over are the same, byte for byte.
+    check:
+      kind: commandRun
+      # Verifying the original device is worth doing, and is the "Both Ends" bonus below. This
+      # objective is about the copy, so a --verify aimed at /dev/evidence does not tick it.
+      pattern: "^\\s*hashsum\\b(?=.*--verify)(?!.*/dev/evidence/)"
+
+  - id: find-the-note
+    description: Find the message left on the laptop's desktop, and pin its record to the board.
+    why: A finding that is not on the board is a memory, and a report cannot point at a memory.
+    success: The note's record is on the board, with the time it was written on it.
+    check:
+      kind: all
+      of:
+        - { kind: commandRun, pattern: "^\\s*lsfs\\b" }
+        - { kind: pinned, evidence: "disk:qf-lt-03:mft/*door-was-open*" }
+
+  # 06 §Objectives asks for a bonus that notices hashing before anything is opened. Nothing in the
+  # schema can look at the order events happened in, so this asks for the same care in a way a
+  # check can see: hashing the original as well as the copy, so both ends of the copy are in the
+  # player's own transcript. It says nothing about the two agreeing, because a player who takes
+  # the wrong turn hashes the original too, and finds out there that they no longer do.
+  - id: hash-the-original
+    name: Both Ends
+    description: Hash the original drive as well as your copy.
+    why: A report stands up better when you hashed both ends of the copy yourself, rather than one of them.
+    success: Both ends hashed. The drive's own fingerprint is in your transcript now, taken by you.
+    optional: true
+    check:
+      kind: commandRun
+      pattern: "^\\s*hashsum\\b.*/dev/evidence/qf-lt-03"
+
+  - id: md5-as-well
+    name: Belt And Braces
+    description: Check the form's MD5 as well as its SHA-256.
+    why: Forms and older tools still carry MD5, and a second fingerprint costs you one command.
+    success: Belt and braces. You checked the form's other fingerprint as well as the one it leads with.
+    hidden: true
+    check:
+      kind: commandRun
+      pattern: "^\\s*hashsum\\b(?=.*--verify).*\\bmd5\\b"
+
+hints:
+  read-the-paperwork:
+    - Two pieces of paper came with the laptop, and they are in the folder the terminal opened in. Read them before you touch the bag.
+    - The letter says which machine is in scope. The form says who handed the laptop over, when, and what its drive hashed to that morning.
+    - "Run `ls` to see what is there, then `cat letter.txt` and `cat handover.txt`."
+  check-the-blocker:
+    - Before anything reads the drive, find out whether this computer is able to write to it.
+    - A write-blocker sits between the computer and the drive and lets reads through but not writes. One command lists them.
+    - "Run `blocker` on its own to see every device and whether its blocker is on."
+  make-the-image:
+    - You need your own copy of the drive before you ask it anything. The folder for it is already there.
+    - Copying a drive into a file you can examine is called imaging, and the tool prints the copy's hashes when it finishes.
+    - "Run `acquire /dev/evidence/qf-lt-03 --out images/qf-lt-03.img`."
+  prove-the-copy:
+    - The form has a fingerprint on it, taken at the yard. Your copy has one too. Compare them.
+    - "A hash is a short fingerprint of a pile of bytes: same bytes in, same fingerprint out. Comparing the two is one command with one option."
+    - "Run `hashsum --verify <the SHA-256 from handover.txt> images/qf-lt-03.img`."
+  find-the-note:
+    - The owner saw a message on the screen. Whatever it was, it is somewhere in that account's desktop folder on your copy.
+    - "Listing your image shows every record on it: a folder at a time, or the whole drive with one option. Opening a single record shows its times and gives you something to pin."
+    - "List the folder with `lsfs images/qf-lt-03.img 'C:\\Users\\mara\\Desktop' -l`, open the record it shows with `inode`, then `pin` it."
+  hash-the-original:
+    - You hashed your copy. There is a second thing on this desk with a hash worth taking.
+    - Reading the original through a blocker that is on changes nothing at all, so hashing it costs you nothing.
+    - "Run `hashsum /dev/evidence/qf-lt-03` while the blocker is on."
+
+report:
+  questions:
+    - id: copy-is-identical
+      ask: Is the copy you examined the same as the drive Quillfen Freight handed over?
+      type: choice
+      answer: Yes — its SHA-256 is the SHA-256 on the handover form
+      choices:
+        - Yes — its SHA-256 is the SHA-256 on the handover form
+        - Yes — it has the same files on it
+        - There is no way to tell once a drive has been copied
+      acceptedEvidence:
+        - "disk:qf-lt-03:mft/*door-was-open*"
+      explain: >-
+        MATCH means the two piles of bytes are the same, fingerprint for fingerprint. Having the
+        same files is not the same claim: two drives can hold the same file names and differ
+        everywhere else. It is the hash that lets you quote a record out of your copy and say it is
+        what was on the laptop.
+
+    - id: which-hash
+      ask: Which hash did you check your copy against, and why that one?
+      type: choice
+      answer: SHA-256, because that is the hash written on the handover form
+      choices:
+        - SHA-256, because that is the hash written on the handover form
+        - MD5, because it is shorter to read out loud
+        - Either one, because any two hashes say the same thing
+      acceptedEvidence:
+        - "disk:qf-lt-03:mft/*door-was-open*"
+      explain: >-
+        You check against the hash the other side wrote down, or you have compared your copy with
+        nothing. The form carries both, and MD5 is there because forms and older tools still use it.
+        Two different piles of bytes can be made to share an MD5, so when it matters, SHA-256 is the
+        one to stand on.
+
+    - id: note-created
+      ask: When was the note on the desktop created?
+      type: timestamp
+      answer: "2026-04-11T19:44:37Z"
+      toleranceSeconds: 60
+      answerFrom: note-left
+      acceptedEvidence:
+        - "disk:qf-lt-03:mft/*door-was-open*"
+        - "log:sysmon-lite/where TargetFilename=*door-was-open*"
+      explain: >-
+        Two sources agree on the same moment: the record's own born time, and the line the monitor
+        wrote as the file appeared. Two sources agreeing is worth more than either on its own. The
+        drive's own clock showed Europe/London, an hour ahead of UTC that weekend, so a witness
+        would name a different hour for the same instant.
+
+debrief:
+  summary: >-
+    You read the paperwork, took a copy of the laptop's drive without changing the original, showed
+    the copy was the same drive the yard handed over, and put a time on the one file at that yard
+    nobody there had written.
+  whatYouLearned:
+    - An examiner works from a copy. The original goes back in the bag as it arrived.
+    - A write-blocker lets a computer read a drive but never write to it. With it off, reading the drive changes it.
+    - A hash is a short fingerprint of a pile of bytes, and two matching hashes say the copy and the original are the same.
+    - A handover form records what was handed over, by whom, when, and what it hashed to, so the next person can check it still does.
+  ethicsNote: >-
+    The laptop belongs to Quillfen Freight, and Quillfen Freight asked for it to be examined and put
+    that in writing. The account name on the records says which sign-in was used; it is not a finding
+    about the person whose name it is, and this case does not go there. The letter also keeps things
+    out: the yard's other computers, and anything belonging to a member of staff personally, were
+    not looked at, however close to hand they were.
+  defensiveTakeaway: >-
+    Two changes would have made Monday morning shorter for the yard. Set the office laptop to lock
+    its screen after a few idle minutes, so a session left open on Friday is not still open on
+    Saturday. And write down what to do when a machine is found like this: do not switch it off, do
+    not use it, and call someone — because the moment anybody types on it, some of what happened
+    stops being readable.
+  nextTease: The note was written on the Saturday evening. On the bookkeeper's laptop, an invoice went missing that same weekend.
+  furtherReading:
+    - foundations-chain-of-custody
+    - foundations-hashing-for-evidence

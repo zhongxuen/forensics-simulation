@@ -1,0 +1,75 @@
+# The scripted run `pnpm case:play case-01` and CI use to check case-01 still finishes.
+#
+# It takes the wrong turn on purpose first (docs/plan/06-case-1-the-clean-copy.md §Wrong turn):
+# the write-blocker goes off, the original is read, its hash stops matching the handover form, and
+# Reset machine puts it back. That path is the case's whole lesson, so it is the path most likely
+# to break, and it is proved here on every build.
+#
+# The two hashes below are the ones on the handover form, which the generator takes from the image
+# the story leaves behind. Edit the story and they move — and this file stops passing, which is
+# exactly what should happen.
+case: case-01
+description: "The wrong turn first, then the clean copy: read, check, image, verify, find the note."
+steps:
+  # Nothing is touched before the paperwork is read (docs/plan/99-reference.md, rule 1).
+  - run: ls
+  - run: cat letter.txt
+    ticks: [read-the-paperwork]
+  - run: cat handover.txt
+
+  # --- The wrong turn. Kit's "quick look" at the original, and what it costs. ---
+  - run: blocker
+    ticks: [check-the-blocker]
+  - run: blocker off /dev/evidence/qf-lt-03
+  - run: lsfs /dev/evidence/qf-lt-03 -l
+  # Every live record on the original now carries a new access time, so the drive no longer hashes
+  # to what the yard's contractor wrote on the form. Hashing it here is what earns "Both Ends",
+  # and it is also how the player finds out what the quick look cost.
+  - run: hashsum --verify f852ef34b625d961dfa1232481a3645c3e293d8cea6bacd327d9faa9236416b6 /dev/evidence/qf-lt-03
+    ticks: [hash-the-original]
+
+  # Reset machine: the drive comes back as it arrived, and the blocker with it. Nothing is lost
+  # except this run's false start.
+  - reset: true
+  - run: blocker
+  # The same command, the same hash, and now it matches: the reset really did undo it.
+  - run: hashsum --verify f852ef34b625d961dfa1232481a3645c3e293d8cea6bacd327d9faa9236416b6 /dev/evidence/qf-lt-03
+
+  # --- The clean copy. ---
+  - run: acquire /dev/evidence/qf-lt-03 --out images/qf-lt-03.img
+    ticks: [make-the-image]
+  - run: hashsum --verify f852ef34b625d961dfa1232481a3645c3e293d8cea6bacd327d9faa9236416b6 images/qf-lt-03.img
+    ticks: [prove-the-copy]
+  # "Belt And Braces": the form carries an MD5 as well, and checking it costs one command.
+  - run: hashsum -a md5 --verify 33b7019767616510147b6a54b9f5d1d1 images/qf-lt-03.img
+    ticks: [md5-as-well]
+
+  # --- The note. ---
+  - run: lsfs images/qf-lt-03.img 'C:\Users\mara\Desktop' -l
+  - run: inode images/qf-lt-03.img 46
+  - run: pin -m "the message nobody at the yard wrote"
+    ticks: [find-the-note]
+  # Reading it out: the content comes off the image, and the image is the one that matched.
+  - run: recover images/qf-lt-03.img 46 --out export/the-door-was-open.txt
+  - run: cat export/the-door-was-open.txt
+
+  - report: copy-is-identical
+    answer: Yes — its SHA-256 is the SHA-256 on the handover form
+    verdict: supported
+  - report: which-hash
+    answer: SHA-256, because that is the hash written on the handover form
+    verdict: supported
+  - report: note-created
+    answer: "2026-04-11T19:44:37Z"
+    verdict: supported
+expect:
+  complete: true
+  objectives:
+    - read-the-paperwork
+    - check-the-blocker
+    - make-the-image
+    - prove-the-copy
+    - find-the-note
+    - hash-the-original
+    - md5-as-well
+  supported: true

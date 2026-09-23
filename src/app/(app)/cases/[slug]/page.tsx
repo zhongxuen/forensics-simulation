@@ -30,7 +30,11 @@ export default async function CasePage({ params }: PageProps<"/cases/[slug]">) {
     return (
       <SectionPlaceholder
         headline={listing.title}
-        status="This case is still being written. It arrives in a later update."
+        status={
+          listing.status === "written"
+            ? "This case is written, and the workspace that runs it is being finished. It needs the case board to pin evidence to and the report that points at it, and both arrive in the next update."
+            : "This case is still being written. It arrives in a later update."
+        }
         nextStep={{
           href: "/cases/practice",
           title: "Try the practice case",

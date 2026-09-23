@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CHAPTER_ONE } from "@/content/cases/chapter";
 import { ButtonLink } from "@/components/ui/button";
 import { FOCUS_RING } from "@/components/ui/focus-ring";
 import { ArrowRightIcon } from "@/components/ui/icons";
@@ -6,7 +7,10 @@ import { SimulatedBadge } from "@/components/ui/simulated-badge";
 import { cx } from "@/lib/cx";
 import { FIRST_STEP } from "@/lib/next-step";
 
-/** The landing page: one line and one button (placeholder until file 06 writes its copy). */
+/**
+ * The landing page: what the game is, what the first case is, and one button into it. The button
+ * goes wherever `src/content/cases/chapter.ts` says the chapter starts.
+ */
 export default function HomePage() {
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center gap-6 px-6 py-16">
@@ -18,9 +22,11 @@ export default function HomePage() {
         Candlewright: Incident Room
       </h1>
       <p className="text-lg leading-8 text-secondary">
-        Join Candlewright Security&apos;s blue team and work out what happened after a break-in,
-        from a disk, a memory dump and a set of logs. No experience needed.
+        You have joined Candlewright Security&apos;s blue team. A client asks what happened to one
+        of their computers, and you find out: from a disk, a memory dump and a set of logs, in a
+        simulated terminal and three investigator views. No experience needed.
       </p>
+      <p className="text-base leading-7 text-secondary">{CHAPTER_ONE.opening}</p>
       <div className="space-y-3">
         <ButtonLink
           href={FIRST_STEP.href}
@@ -32,7 +38,8 @@ export default function HomePage() {
           {FIRST_STEP.title}
         </ButtonLink>
         <p className="text-base leading-7 text-secondary">
-          No sign-up. Nothing to install.{" "}
+          Case 1 takes about 15 minutes. No sign-up, nothing to install, and your work is saved in
+          this browser only.{" "}
           <Link
             href="/privacy"
             className={cx("rounded-sm text-accent underline underline-offset-4", FOCUS_RING)}
