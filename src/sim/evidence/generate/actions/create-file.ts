@@ -1,5 +1,12 @@
 import type { ActionOf } from "../types";
-import { diskOf, ensurePath, ownerFor, writeContent, type ActionContext } from "../world";
+import {
+  diskOf,
+  ensurePath,
+  liveRecord,
+  ownerFor,
+  writeContent,
+  type ActionContext,
+} from "../world";
 import { writingProcess } from "./shared";
 
 /**
@@ -7,21 +14,31 @@ import { writingProcess } from "./shared";
  * born, changed, written and read in the same moment. Anything above it that is missing (the
  * folder, and the folder above that) is created too.
  *
+ * Saving over a file that is already there is the same action again, and it behaves the way a save
+ * does: the content becomes whatever the story said, and modified, accessed and changed move to
+ * this instant while **born** stays where it was. Leaving the times alone instead would make the
+ * record disagree with the story that wrote it, which is what `tests/content/case-consistency`
+ * checks for — and the background activity a case generates picks its file names from a short
+ * list, so the same name does come round twice.
+ *
  * Leaves: the file record, and sysmon-lite 11.
  */
 export function applyCreateFile(ctx: ActionContext, action: ActionOf<"create-file">): void {
   const disk = diskOf(ctx.machine, ctx.where);
   const owner = action.owner ?? ownerFor(ctx.machine, action.path);
-  const file = ensurePath(disk, action.path, {
-    at: ctx.recorded,
-    owner,
-    kind: "file",
-    content: action.content ?? "",
-  });
-  // ensurePath hands back what is already there, so writing over an existing file still gets the
-  // content the story asked for, with the times of a write rather than of a birth.
-  if (action.content !== undefined && file.content.length === 0) {
-    writeContent(disk, file, action.content, ctx.recorded);
+  const existing = liveRecord(disk, action.path);
+  const file =
+    existing ??
+    ensurePath(disk, action.path, {
+      at: ctx.recorded,
+      owner,
+      kind: "file",
+      content: action.content ?? "",
+    });
+  // A save over something already on the disk. With no content in the story, the file keeps what
+  // it had and only its times move.
+  if (existing && existing.kind !== "dir") {
+    writeContent(disk, file, action.content ?? file.content, ctx.recorded);
   }
 
   const process = writingProcess(ctx);

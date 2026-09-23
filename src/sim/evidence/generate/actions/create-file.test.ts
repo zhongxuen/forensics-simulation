@@ -40,6 +40,58 @@ describe("create-file", () => {
     expect(oneLog(evidence, "sysmon-lite", 11).fields.TargetFilename).toBe(PATH);
   });
 
+  it("saves over a file that is already there, moving M, A and C but not B", () => {
+    const later = at("2026-04-12T14:51:00Z");
+    const { evidence } = play([
+      {
+        at: WHEN,
+        actor: { kind: "user", account: "dana" },
+        on: "qf-lt-07",
+        do: "create-file",
+        path: PATH,
+        content: "Invoice 0412\n",
+      },
+      {
+        at: later,
+        actor: { kind: "user", account: "dana" },
+        on: "qf-lt-07",
+        do: "create-file",
+        path: PATH,
+        content: "Invoice 0412, corrected\n",
+      },
+    ]);
+
+    const file = recordAt(evidence, PATH);
+    expect(file.times).toEqual({ m: later, a: later, c: later, b: WHEN });
+    expect(file.size).toBe("Invoice 0412, corrected\n".length);
+  });
+
+  it("keeps the content when a save over a file says nothing about it", () => {
+    const later = at("2026-04-12T14:51:00Z");
+    const { evidence } = play([
+      {
+        at: WHEN,
+        actor: { kind: "user", account: "dana" },
+        on: "qf-lt-07",
+        do: "create-file",
+        path: PATH,
+        content: "Invoice 0412\n",
+      },
+      {
+        at: later,
+        actor: { kind: "user", account: "dana" },
+        on: "qf-lt-07",
+        do: "create-file",
+        path: PATH,
+      },
+    ]);
+
+    const file = recordAt(evidence, PATH);
+    expect(file.size).toBe("Invoice 0412\n".length);
+    expect(file.times.m).toBe(later);
+    expect(file.times.b).toBe(WHEN);
+  });
+
   it("refuses a file on a machine that is never imaged", () => {
     expect(() =>
       play(
