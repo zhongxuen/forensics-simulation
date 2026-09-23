@@ -133,6 +133,6 @@ Finish with pnpm lint, pnpm typecheck and pnpm test green, then commit.
 
 ## Done when
 
-- [ ] `pnpm case:new demo && pnpm case:validate demo && pnpm case:play demo` works end to end
-- [ ] Moving one story action by an hour fails consistency, answer integrity or staleness, with a message that names the action
-- [ ] Evidence loads through `import()` and appears as its own chunk in the build output
+- [x] `pnpm case:new demo && pnpm case:validate demo && pnpm case:play demo` works end to end
+- [x] Moving one story action by an hour fails consistency, answer integrity or staleness, with a message that names the action (`tests/content/case-failure-modes.test.ts`)
+- [x] Evidence loads through `import()` (`src/features/cases/loader/evidence.ts`), and the practice case's evidence is its own chunk in the build output. No **generated** evidence chunk appears yet, because no page loads a generated case: `src/features/cases/run/evidence.ts` still lists only the practice case, and file 06 is what points it at `loadEvidence(caseId)`

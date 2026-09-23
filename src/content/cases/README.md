@@ -57,12 +57,33 @@ acceptedEvidence:
 
 ## Writing a case
 
-1. Write the story first, and only then the objectives and the report. The story is what everything else is checked against.
-2. `pnpm evidence:build` — plays it, writes the evidence, and tells you what it couldn't do.
-3. `pnpm test:content` — validates every case, checks the committed evidence is what the stories build today, and checks the world rules.
-4. Work through the authoring checklist in `docs/plan/99-reference.md`.
+1. `pnpm case:new <id>` — scaffolds a case, its playthrough and its evidence. What it writes already validates and plays to the end, with every piece of copy marked TODO.
+2. Write the story first, and only then the objectives and the report. The story is what everything else is checked against.
+3. `pnpm evidence:build` — plays it, writes the evidence, and tells you what it couldn't do. Run it again after every story edit.
+4. `pnpm case:play <id>` — plays the case's playthrough and prints the transcript. Add `--run "<command>"` to try something out instead.
+5. `pnpm case:validate <id>` — the schema, the story, the accepted evidence, the lesson links, the banned words, the committed evidence and the playthrough, with readable errors.
+6. `pnpm test:content` — the same checks as a test suite, plus consistency, determinism and the world rules.
+7. Work through the authoring checklist in `docs/plan/99-reference.md`.
 
-`pnpm case:new`, `pnpm case:validate` and `pnpm case:play` arrive with prompt 03.2.
+## Playthroughs
+
+Every case has one, in `playthroughs/<id>.yaml`: the scripted run that proves the case can be finished with the tools the game has. It is not a script for the player — it is the proof, run by `pnpm case:play`, `pnpm case:validate` and CI.
+
+```yaml
+case: case-02
+steps:
+  - run: cat letter.txt # type a command, exactly as a player would
+    ticks: [read-the-letter] # and check what it ticks
+  - pin: "log:security/where eventId=4624" # put evidence on the board from a view
+  - report: when-deleted # answer a report question
+    answer: "2026-04-11T19:42:03Z"
+    verdict: supported # supported | needs-evidence | not-yet
+expect:
+  complete: true # every main objective ticked
+  supported: true # every report finding points at evidence
+```
+
+Commands go through the same parser, engine and tool registry as the browser, so a playthrough that finishes here finishes in the app. A `pin:` step takes an evidence **pattern**, not a record number, so it keeps working when the story moves.
 
 ## Names
 

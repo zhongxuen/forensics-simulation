@@ -3,9 +3,9 @@
 # It exercises one of each kind of thing a real case does — a machine built from a baseline, a
 # story with a file that is created, read and deleted, a handover with hashes, a memory capture,
 # background noise, objectives with three hints each, and report questions whose acceptedEvidence
-# has to resolve — while staying small enough to read in one sitting. Its objectives and its
-# playthrough use only the workstation commands the vendored engine already has (`cat`, `grep`),
-# so it keeps working until the forensics tools land (docs/plan/04-disk-tools.md).
+# has to resolve — while staying small enough to read in one sitting. Its objectives use one check
+# of each kind, and its playthrough (playthroughs/_fixture.yaml) finishes it with the tools that
+# are registered today, so `pnpm case:play _fixture` is the whole pipeline's end-to-end test.
 #
 # A file name starting with `_` marks a fixture: the loader finds it by id but never lists it.
 id: _fixture
@@ -133,12 +133,14 @@ objectives:
       kind: commandRun
       pattern: "^\\s*cat\\b"
   - id: find-the-deletion
-    description: Search the handed-over notes for the missing docket.
+    description: Find the deleted docket on a copy of the laptop's disk, and pin it to the board.
     why: Knowing which file went missing is what turns a worry into a question you can answer.
-    success: You have the docket's name, and can say where it was.
+    success: You have the docket's record, and it is on the board for the report to point at.
     check:
-      kind: commandRun
-      pattern: "^\\s*grep\\b"
+      kind: all
+      of:
+        - { kind: commandRun, pattern: "^\\s*lsfs\\b" }
+        - { kind: pinned, evidence: "disk:qf-lt-03:mft/*docket-4471*" }
   - id: answer-the-report
     description: Answer the report's question about when the docket was deleted.
     why: A finding nobody can check is not a finding. The time comes from the evidence.
@@ -153,9 +155,9 @@ hints:
     - Every file on the workstation can be read from the terminal, a page at a time.
     - "Use `cat` and the path to the letter."
   find-the-deletion:
-    - You are looking for one name among many lines. Searching beats scrolling.
-    - One command picks out only the lines that hold a word you give it.
-    - "Use `grep` with part of the docket's name."
+    - An examiner never works on the drive itself. Copy it first, then ask the copy.
+    - Deleting a file leaves its record behind, and one command lists only those records.
+    - "Copy the drive with `acquire`, list what was deleted with `lsfs -d`, open the record with `inode`, then `pin` it."
   answer-the-report:
     - The report asks when, not what. Something in the evidence says exactly when.
     - Deleting a file is recorded, and the record carries the time it happened.

@@ -22,6 +22,9 @@
     "format:check": "prettier --check .",
     "evidence:build": "tsx scripts/build-evidence.ts",
     "evidence:check": "tsx scripts/build-evidence.ts --check",
+    "case:new": "tsx scripts/case-new.ts",
+    "case:validate": "tsx scripts/case-validate.ts",
+    "case:play": "tsx scripts/case-play.ts",
     "bundle:check": "tsx scripts/bundle-size.ts",
     "security:bundle": "tsx scripts/check-client-bundle.ts"
   },

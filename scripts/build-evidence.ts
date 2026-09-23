@@ -14,8 +14,11 @@
  * Both are written with sorted keys (`stableStringify`), so the same story always produces the
  * same bytes and `--check` can tell "somebody edited the story and forgot to rebuild" apart from
  * "the generator changed". The generator is seeded and pure, so there is nothing else it could be.
+ *
+ * What those two files hold lives in scripts/lib/evidence-files.ts, so `pnpm case:new` and
+ * `pnpm case:validate` agree with this script about what "up to date" means.
  */
-import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { readdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import type { Case } from "@/content/cases/schema";
 import {
@@ -25,9 +28,13 @@ import {
   loadCaseCatalog,
   type BuiltCase,
 } from "@/features/cases/server";
-import { stableStringify } from "@/sim";
-
-const EVIDENCE_DIR = join(process.cwd(), "src", "content", "evidence");
+import {
+  EVIDENCE_DIR,
+  evidenceDirFor,
+  evidenceFiles,
+  readIfThere,
+  writeEvidenceFiles,
+} from "./lib/evidence-files";
 
 const args = process.argv.slice(2);
 const check = args.includes("--check");
@@ -54,29 +61,26 @@ for (const entry of cases) {
     continue;
   }
 
-  const files = {
-    "evidence.json": `${stableStringify(built.evidence, 2)}\n`,
-    "answers.json": `${stableStringify(answerKey(entry, built), 2)}\n`,
-  };
-  const dir = join(EVIDENCE_DIR, entry.id);
+  const files = evidenceFiles(built);
+  const dir = evidenceDirFor(entry.id);
   const sizes: string[] = [];
 
-  for (const [name, contents] of Object.entries(files)) {
-    const path = join(dir, name);
-    const before = read(path);
-    if (before === contents) continue;
-    changed++;
-    if (check) {
+  if (check) {
+    for (const [name, contents] of Object.entries(files)) {
+      const before = readIfThere(join(dir, name));
+      if (before === contents) continue;
+      changed++;
       problems.push(
         before === undefined
           ? `${entry.id}/${name} has never been built. Run \`pnpm evidence:build\`.`
           : `${entry.id}/${name} is out of date: the story has changed since it was built. Run \`pnpm evidence:build\` and commit the result.`,
       );
-      continue;
     }
-    mkdirSync(dir, { recursive: true });
-    writeFileSync(path, contents, "utf8");
-    sizes.push(`${name} ${kb(contents)}`);
+  } else {
+    for (const name of writeEvidenceFiles(built)) {
+      changed++;
+      sizes.push(`${name} ${kb(files[name] ?? "")}`);
+    }
   }
 
   const { evidence } = built;
@@ -139,36 +143,6 @@ function load(): Case[] {
     if (!(error instanceof CaseSourceError)) throw error;
     console.error(error.message);
     fail("\nFix the case file, then run this again.");
-  }
-}
-
-/**
- * The answer key: each question's answer and the artefact refs its `acceptedEvidence` matched when
- * the evidence was built. Resolving the patterns here is what keeps a report honest — a question
- * that points at evidence which has moved fails the build instead of failing a player.
- */
-function answerKey(entry: Case, built: BuiltCase) {
-  return {
-    caseId: entry.id,
-    version: entry.version,
-    questions: entry.report.questions.map((question) => ({
-      id: question.id,
-      type: question.type,
-      answer: question.answer,
-      ...("answerAt" in question ? { answerAt: question.answerAt } : {}),
-      ...(question.toleranceSeconds === undefined
-        ? {}
-        : { toleranceSeconds: question.toleranceSeconds }),
-      acceptedRefs: built.acceptedRefs.get(question.id) ?? [],
-    })),
-  };
-}
-
-function read(path: string): string | undefined {
-  try {
-    return readFileSync(path, "utf8");
-  } catch {
-    return undefined;
   }
 }
 
