@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { EXTERNAL_LESSON_IDS } from "../references";
 import {
   BEGINNER_LEVEL_MAX,
   BEGINNER_READING_MINUTES_MAX,
@@ -33,6 +34,21 @@ export const LessonFrontmatterSchema = z
     summary: z.string().trim().min(1).max(160).optional(),
     /** Lessons worth reading first. */
     prerequisites: uniqueIds(ContentIdSchema).default([]),
+    /**
+     * Hacker Simulation lessons worth reading first, shown as "Start here if this is new"
+     * (src/content/references.ts, EXTERNAL_LESSONS). Link to them instead of repeating them.
+     */
+    externalPrerequisites: uniqueIds(
+      z.enum(EXTERNAL_LESSON_IDS, {
+        error: (issue) =>
+          `"${String(issue.input)}" isn't one of Hacker Simulation's linked lessons. Use one of: ${EXTERNAL_LESSON_IDS.join(", ")} (src/content/references.ts).`,
+      }),
+    ).default([]),
+    /**
+     * The primary sources the lesson relies on, by id from CITATIONS in src/content/references.ts.
+     * Every lesson in src/content/lessons cites at least one (tests/unit/content-references.test.ts).
+     */
+    cites: uniqueIds(ContentIdSchema).default([]),
     /** Missions that put this lesson into practice. */
     relatedMissions: uniqueIds(ContentIdSchema).default([]),
     /** Simulated commands the lesson explains. */

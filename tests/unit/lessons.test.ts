@@ -62,6 +62,24 @@ describe("parseLessonSource", () => {
     );
   });
 
+  it("reads Hacker Simulation prerequisites and citations, defaulting both to empty", () => {
+    const { frontmatter: meta } = parseLessonSource(
+      frontmatter(`${VALID}\nexternalPrerequisites: [crypto-hashing]\ncites: [rfc-3227-s2-1]`),
+      "net-ports.mdx",
+    );
+    expect(meta.externalPrerequisites).toEqual(["crypto-hashing"]);
+    expect(meta.cites).toEqual(["rfc-3227-s2-1"]);
+    const { frontmatter: bare } = parseLessonSource(frontmatter(VALID), "net-ports.mdx");
+    expect(bare.externalPrerequisites).toEqual([]);
+    expect(bare.cites).toEqual([]);
+  });
+
+  it("only links to the Hacker Simulation lessons it knows", () => {
+    expect(
+      problemsWith(frontmatter(`${VALID}\nexternalPrerequisites: [net-ports-deluxe]`)).join(),
+    ).toMatch(/isn't one of Hacker Simulation's linked lessons/);
+  });
+
   it("requires an analogy and a short reading time at levels 0 and 1", () => {
     const noAnalogy = VALID.replace(/analogy:.*\n/, "");
     expect(problemsWith(frontmatter(noAnalogy))).toEqual([

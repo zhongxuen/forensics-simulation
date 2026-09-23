@@ -1,0 +1,126 @@
+---
+id: foundations-chain-of-custody
+title: Who had the evidence, and when
+topic: forensics
+level: 2
+readingMinutes: 7
+analogy: "A parcel's tracking history: collected, sorted, loaded, delivered, each with a time and a name. If it says 'delivered' but there's no 'loaded', you want to know where the parcel was."
+summary: A written record of every hand the evidence passed through, and everything done to it, with no gaps.
+prerequisites: [foundations-what-forensics-is]
+externalPrerequisites: [forensics-evidence-care]
+relatedCommands: [grep, cat]
+glossaryTerms: [chain-of-custody, custody-log, acquisition, write-blocker]
+cites: [nist-sp-800-86-s3-1-2, nist-ir-8387-s3-2]
+---
+
+## The one-sentence version
+
+A <Term id="chain-of-custody">chain of custody</Term> is the record of everyone who had the
+evidence, what each of them did with it, and when, from the moment it was collected to the moment
+the report is signed.
+
+Think of a parcel's tracking history: collected, sorted, loaded, delivered, each with a time and a
+place. If it says "delivered" and there's no "loaded", you'd want to know where the parcel spent
+that time. Evidence is the same, and the question will be asked more sharply.
+
+## Why it matters in security
+
+Your report says "the note on this laptop was created on Saturday evening". Someone who doesn't like
+that answer won't argue with the timestamp. They'll ask who had the laptop between Saturday and the
+day you copied it, and whether anyone could have changed it. A chain of custody is how you answer.
+
+NIST SP 800-86 (§3.1.2) spells out what the chain involves: a log of every person who had the
+evidence, what they did to it and at what time, storing it securely when nobody is using it,
+examining only a copy, and checking that the original and the copy still match.
+
+<Quiz
+  question="Which of these custody log entries would you be most worried to find?"
+  options={[
+    {
+      text: "Mon 09:20: Idris opened bag 0412, write-blocker on, copied the note",
+      explanation:
+        "That's a healthy entry: a name, a time, what was done, and how the original was protected while it happened.",
+    },
+    {
+      text: "Mon 09:33: Idris sealed the stick in bag 0413 and locked it in cabinet 2",
+      explanation:
+        "Also healthy. It says where the original went and how to tell if anyone opened it: a new seal with a number.",
+    },
+    {
+      text: "Tue 08:47: Kit copied the note again, for a demonstration",
+      correct: true,
+      explanation:
+        "Nothing says the stick left cabinet 2 or that bag 0413 was opened. Maybe Kit copied from the first copy, maybe from the stick. The log can't say, and that's the gap someone will point at. It may be innocent. It still has to be explained.",
+    },
+  ]}
+/>
+
+## How it actually works
+
+A chain of custody isn't one document. It's several habits that together leave no gaps.
+
+**A custody log.** The <Term id="custody-log">custody log</Term> is the running list: date and time,
+who, and what they did. "Took the laptop from the yard office." "Handed it to Idris, seal intact."
+"Opened the bag, made a copy." Each entry is short. The rule is that every change of hands and every
+action on the evidence gets one.
+
+**Seals and labels.** Evidence goes into a bag with a numbered seal. A log entry that says "seal
+0412 intact" is something anyone can check later, and a broken seal with no entry is a question.
+
+**Acquisition that doesn't change the original.** <Term id="acquisition">Acquisition</Term> is
+making the forensic copy. It's done with a <Term id="write-blocker">write-blocker</Term> between
+the original and the examiner's computer, so nothing can be written to it by accident, and the log
+says it was on.
+
+**Hashes, kept apart from the evidence.** A fingerprint of the copy, worked out as soon as it's
+made, lets anyone check later that it hasn't changed. NIST IR 8387 (§3.2) adds the detail that makes
+this work: store the hashes somewhere separate from the image, where the person examining it can't
+quietly change both. The next lesson is about those fingerprints.
+
+**Work on the copy.** The original goes back in a sealed bag. Every examination happens on the copy,
+and if the copy is ever in doubt, you make another from the original and check it the same way.
+
+### What a gap means
+
+A gap doesn't mean someone tampered with the evidence. It means you can't show they didn't. The
+honest thing is to say so in the report, explain what you know, and let the reader weigh it. Hiding
+a gap is far worse than having one.
+
+## See it
+
+Your workstation has the custody log for a practice USB stick. Follow one bag through it.
+
+<MiniTerminal
+  scenario="ir-ws-practice"
+  commands={[
+    "cat custody-log.txt",
+    "grep 0413 custody-log.txt",
+    "grep copy-b custody-log.txt",
+    "cat handover.txt",
+  ]}
+  task="Type `grep 0413 custody-log.txt` to find every entry about bag 0413."
+  expect="grep"
+  success="One line: the stick was sealed in bag 0413 and locked away. Now look at copy-b. It was made the next morning, and no entry says the bag was opened. That's a gap."
+/>
+
+`grep` prints only the lines that contain what you typed, which makes it a good way to follow one
+item through a long log. Try the same with `TRAIN-07` or a person's name.
+
+## In practice
+
+In [Case 1, The Clean Copy](/cases/case-01), Quillfen Freight's laptop arrives with a handover
+form: who handed it over, when, and a fingerprint their IT contractor took on site. As you work, the
+case keeps a custody log of your own actions: each copy, each check, and whether the write-blocker
+was on when you touched the original. It's on the debrief at the end, and you can export it.
+
+## Common misconceptions
+
+- **"Chain of custody is paperwork for court."** Most cases never reach a court. The same record is
+  what lets a client, an insurer or a colleague trust your conclusion without redoing your work.
+- **"A good hash replaces the custody log."** A hash proves two things are identical. It can't say
+  where the original came from, who had it, or whether it was changed before anyone hashed it. Both
+  are needed.
+- **"Only the original needs a chain of custody."** Copies need one too. If you can't say which copy
+  you examined and where it came from, the chain breaks at the copy.
+- **"If there's a gap, the evidence is worthless."** A gap weakens it and has to be explained. It
+  doesn't erase it. Say what happened, plainly, and let the reader decide.
