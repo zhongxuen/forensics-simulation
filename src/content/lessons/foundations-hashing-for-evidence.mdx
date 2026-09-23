@@ -64,10 +64,9 @@ fingerprint, on any computer.
 ### When to hash
 
 NIST SP 800-86 (§4.2.2) describes the routine. Connect the original through a write-blocker, so the
-examiner's computer can't write to it. Work out the original's hash. Make the
-
-<Term id="forensic-image">forensic image</Term>. Work out the image's hash. If they match, the image
-is exact. Record both, with the time.
+examiner's computer can't write to it. Work out the original's hash. Then make the copy and work
+out its hash. If the two match, the <Term id="forensic-image">forensic image</Term> is exact. Record
+both, with the time.
 
 Timing matters. A hash proves nothing changed _since it was taken_. If the original was altered
 before anyone hashed it, the hash will happily vouch for the altered version. That's why NIST IR
