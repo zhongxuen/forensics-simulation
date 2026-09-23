@@ -1,6 +1,8 @@
 # scripts
 
-Command-line tools run with `tsx` through `package.json` scripts. Vendored from `../hacker-simulation` (`VENDORED.md`); the plan adds `build-evidence.ts` and the `case:*` scripts in file 03.
+Command-line tools run with `tsx` through `package.json` scripts. Vendored from `../hacker-simulation` (`VENDORED.md`); the plan adds the `case:*` scripts in prompt 03.2.
+
+- `build-evidence.ts` — `pnpm evidence:build`: plays every case's story through the pure generator and writes `src/content/evidence/<case>/evidence.json` and `answers.json` with sorted keys. `pnpm evidence:check` builds without writing and fails when what is committed isn't what the stories build today, which is how a story edit nobody rebuilt gets caught in CI.
 
 Checks on a production build, run after `pnpm build`:
 

@@ -1,0 +1,203 @@
+# _fixture: the case the pipeline is tested with, never offered to a player.
+#
+# It exercises one of each kind of thing a real case does — a machine built from a baseline, a
+# story with a file that is created, read and deleted, a handover with hashes, a memory capture,
+# background noise, objectives with three hints each, and report questions whose acceptedEvidence
+# has to resolve — while staying small enough to read in one sitting. Its objectives and its
+# playthrough use only the workstation commands the vendored engine already has (`cat`, `grep`),
+# so it keeps working until the forensics tools land (docs/plan/04-disk-tools.md).
+#
+# A file name starting with `_` marks a fixture: the loader finds it by id but never lists it.
+id: _fixture
+version: 1
+title: The fixture case
+client:
+  org: Quillfen Freight
+  signedBy: Theo Ashgrove, team lead, Candlewright Security
+  letter: |
+    Candlewright Security is asked to examine the yard office laptop qf-lt-03, handed over on
+    11 April 2026. Only that laptop and the logs from it are in scope. Nothing belonging to a
+    member of staff personally is examined, and no system outside the yard office is touched.
+estimatedMinutes: 5
+seed: 20260411
+hook: A short case that exists to keep the evidence pipeline honest.
+learningGoals:
+  - What a case file holds, and what the generator makes from it
+  - Why every answer on a report points at a piece of evidence
+concepts: []
+briefing:
+  scenario: >-
+    Quillfen Freight's yard office laptop was left signed in overnight, and a docket file is
+    missing. The office asked Candlewright to look at the laptop and say what happened to it.
+  role: >-
+    You are the newest member of Candlewright's blue team, working from a copy of the laptop's
+    disk on the examining workstation.
+  authorization: >-
+    Theo signed the letter with the yard office on 11 April 2026. It covers the laptop qf-lt-03
+    and its logs, and nothing else.
+
+machines:
+  - id: qf-lt-03
+    kind: windows-laptop
+    baseline: office-laptop-v1
+    zone: Europe/London
+    ip: 10.60.0.21
+    accounts: [mara]
+  - id: ir-ws-01
+    kind: linux-workstation
+    baseline: analyst-workstation-v1
+    zone: Europe/London
+
+story:
+  - at: "2026-04-11T08:12:00Z"
+    actor: user:mara
+    on: qf-lt-03
+    do: logon
+    with: { account: mara, type: interactive }
+
+  - id: docket-written
+    at: "2026-04-11T08:20:14Z"
+    actor: user:mara
+    on: qf-lt-03
+    do: create-file
+    path: 'C:\Users\mara\Documents\docket-4471.txt'
+    content: |
+      Docket 4471
+      Pallets: 12
+      Gate: north
+      Signed out by: the night gate
+
+  - at: "2026-04-11T17:02:00Z"
+    actor: user:mara
+    on: qf-lt-03
+    do: logoff
+    with: { account: mara }
+
+  - at: "2026-04-11T21:48:30Z"
+    actor: attacker
+    on: qf-lt-03
+    do: logon
+    with: { account: mara, type: remote, from: 10.60.0.27 }
+
+  - id: docket-deleted
+    at: "2026-04-11T21:51:07Z"
+    actor: attacker
+    on: qf-lt-03
+    do: delete-file
+    path: 'C:\Users\mara\Documents\docket-4471.txt'
+
+  - at: "2026-04-11T21:52:40Z"
+    actor: attacker
+    on: qf-lt-03
+    do: logoff
+    with: { account: mara }
+
+  - at: "2026-04-12T09:00:00Z"
+    actor: analyst
+    on: qf-lt-03
+    do: capture-memory
+
+  - at: "2026-04-12T09:30:00Z"
+    actor: analyst
+    on: ir-ws-01
+    do: hand-over
+    with:
+      item: qf-lt-03
+      by: The Quillfen Freight yard office
+
+noise: { profile: office-day, density: low }
+
+evidence:
+  disks: [qf-lt-03]
+  logs: [security, sysmon-lite, dns]
+  memory: [qf-lt-03]
+
+beats:
+  - on: start
+    speaker: teammate-idris
+    text: >-
+      Idris Fenwick, investigations. This one is small: a laptop, a missing docket, and a night
+      nobody was in the office. Read what is there before you decide what it means.
+  - on: complete
+    speaker: mentor-noor
+    text: >-
+      Noor Halvorsen, your mentor. You read the evidence and said what it shows, with nothing
+      added. That is the whole job.
+
+objectives:
+  - id: read-the-letter
+    description: Read the client's letter and say what is in scope.
+    why: Every case starts with somebody asking, in writing, and saying what may be examined.
+    success: You know what you may look at, and what you may not.
+    check:
+      kind: commandRun
+      pattern: "^\\s*cat\\b"
+  - id: find-the-deletion
+    description: Search the handed-over notes for the missing docket.
+    why: Knowing which file went missing is what turns a worry into a question you can answer.
+    success: You have the docket's name, and can say where it was.
+    check:
+      kind: commandRun
+      pattern: "^\\s*grep\\b"
+  - id: answer-the-report
+    description: Answer the report's question about when the docket was deleted.
+    why: A finding nobody can check is not a finding. The time comes from the evidence.
+    success: Your answer points at the record that shows it.
+    check:
+      kind: reported
+      question: when-deleted
+
+hints:
+  read-the-letter:
+    - The case starts with a letter from the client. It is on the workstation, waiting to be read.
+    - Every file on the workstation can be read from the terminal, a page at a time.
+    - "Use `cat` and the path to the letter."
+  find-the-deletion:
+    - You are looking for one name among many lines. Searching beats scrolling.
+    - One command picks out only the lines that hold a word you give it.
+    - "Use `grep` with part of the docket's name."
+  answer-the-report:
+    - The report asks when, not what. Something in the evidence says exactly when.
+    - Deleting a file is recorded, and the record carries the time it happened.
+    - Answer with the time on the record that shows the file being deleted.
+
+report:
+  questions:
+    - id: when-deleted
+      ask: When was the docket deleted?
+      type: timestamp
+      answer: "2026-04-11T21:51:07Z"
+      toleranceSeconds: 60
+      answerFrom: docket-deleted
+      acceptedEvidence:
+        - "disk:qf-lt-03:mft/*docket-4471*"
+        - "log:sysmon-lite/where eventId=23"
+      explain: >-
+        Two sources agree on the same moment: the file's own record, and the line the monitor
+        wrote when it went. Two sources agreeing is worth more than either on its own.
+    - id: which-account
+      ask: Which account was signed in when it happened?
+      type: account
+      answer: mara
+      acceptedEvidence:
+        - "log:security/where eventId=4624 and LogonType=10"
+      explain: >-
+        The account is not the same thing as the person. It says whose sign-in was used, which is
+        where the next question starts, not where it ends.
+
+debrief:
+  summary: >-
+    You read the letter, found the file that went missing, and put a time on it that the evidence
+    backs up.
+  whatYouLearned:
+    - A case file holds the story; the evidence is built from it, never written by hand
+    - Every answer on a report points at a piece of evidence somebody else could check
+  ethicsNote: >-
+    The laptop belongs to the yard office, and the office asked for it to be examined. The account
+    name in the logs is not a finding about a person: it says which sign-in was used, and this case
+    goes no further than that.
+  defensiveTakeaway: >-
+    The laptop could be signed into from another machine on the yard network late at night, and
+    nothing asked twice. Limiting who may sign in remotely, and when, would have closed that door.
+  nextTease: Case 1 starts with a laptop, a write-blocker, and a hash that has to match.
+  furtherReading: []

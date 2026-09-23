@@ -1,0 +1,1034 @@
+{
+  "caseId": "_fixture",
+  "disks": [
+    {
+      "clusterSize": 4096,
+      "device": {
+        "model": "Pellmoor 256 GB solid-state drive",
+        "serial": "PM-0260-8820"
+      },
+      "id": "qf-lt-03",
+      "partitions": [
+        {
+          "fs": "NTFS-like",
+          "index": 0,
+          "label": "System reserved",
+          "sectors": 1048576,
+          "startSector": 2048
+        },
+        {
+          "fs": "NTFS-like",
+          "index": 1,
+          "label": "Windows",
+          "sectors": 499067568,
+          "startSector": 1050624
+        }
+      ],
+      "records": [
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\",
+          "record": 5,
+          "size": 0,
+          "times": {
+            "a": 1739606574000,
+            "b": 1739606574000,
+            "c": 1739606574000,
+            "m": 1739606574000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows",
+          "record": 6,
+          "size": 0,
+          "times": {
+            "a": 1739602311000,
+            "b": 1739602311000,
+            "c": 1739602311000,
+            "m": 1739602311000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32",
+          "record": 7,
+          "size": 0,
+          "times": {
+            "a": 1739605189000,
+            "b": 1739605189000,
+            "c": 1739605189000,
+            "m": 1739605189000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\drivers",
+          "record": 8,
+          "size": 0,
+          "times": {
+            "a": 1739604178000,
+            "b": 1739604178000,
+            "c": 1739604178000,
+            "m": 1739604178000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\drivers\\etc",
+          "record": 9,
+          "size": 0,
+          "times": {
+            "a": 1739604178000,
+            "b": 1739604178000,
+            "c": 1739604178000,
+            "m": 1739604178000
+          }
+        },
+        {
+          "clusters": [
+            1000
+          ],
+          "contentB64": "IyBMb2NhbCBuYW1lIGxvb2t1cHMgYXJlIGNoZWNrZWQgaGVyZSBiZWZvcmUgdGhlIG5ldHdvcmsgaXMgYXNrZWQuCjEyNy4wLjAuMSBsb2NhbGhvc3QK",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\drivers\\etc\\hosts",
+          "record": 10,
+          "size": 87,
+          "times": {
+            "a": 1739604178000,
+            "b": 1739604178000,
+            "c": 1739604178000,
+            "m": 1739604178000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Users",
+          "record": 11,
+          "size": 0,
+          "times": {
+            "a": 1739604533000,
+            "b": 1739604533000,
+            "c": 1739604533000,
+            "m": 1739604533000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Users\\Public",
+          "record": 12,
+          "size": 0,
+          "times": {
+            "a": 1739604597000,
+            "b": 1739604597000,
+            "c": 1739604597000,
+            "m": 1739604597000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Users\\Public\\Downloads",
+          "record": 13,
+          "size": 0,
+          "times": {
+            "a": 1739603099000,
+            "b": 1739603099000,
+            "c": 1739603099000,
+            "m": 1739603099000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Program Files",
+          "record": 14,
+          "size": 0,
+          "times": {
+            "a": 1739601717000,
+            "b": 1739601717000,
+            "c": 1739601717000,
+            "m": 1739601717000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\ProgramData",
+          "record": 15,
+          "size": 0,
+          "times": {
+            "a": 1739606930000,
+            "b": 1739606930000,
+            "c": 1739606930000,
+            "m": 1739606930000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\ProgramData\\Quillfen",
+          "record": 16,
+          "size": 0,
+          "times": {
+            "a": 1759473228000,
+            "b": 1759473228000,
+            "c": 1759473228000,
+            "m": 1759473228000
+          }
+        },
+        {
+          "clusters": [
+            1001
+          ],
+          "contentB64": "UXVpbGxmZW4gRnJlaWdodCAtIHlhcmQgaGFuZGJvb2sgKGV4dHJhY3QpCgoxLiBFdmVyeSBwYWxsZXQgZ2V0cyBhIGRvY2tldCBiZWZvcmUgaXQgbGVhdmVzIHRoZSBnYXRlLgoyLiBUaGUgb2ZmaWNlIGxhcHRvcCBzdGF5cyBpbiB0aGUgb2ZmaWNlLiBJZiB5b3UgbmVlZCBpdCBpbiB0aGUgeWFyZCwgc2lnbiBpdCBvdXQuCjMuIElmIGEgc2NyZWVuIGFza3MgZm9yIGEgcGFzc3dvcmQgdHdpY2UsIHN0b3AgYW5kIHRlbGwgdGhlIG9mZmljZS4K",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\ProgramData\\Quillfen\\yard-handbook.txt",
+          "record": 17,
+          "size": 252,
+          "times": {
+            "a": 1759473228000,
+            "b": 1759473228000,
+            "c": 1759473228000,
+            "m": 1759473228000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator",
+          "record": 18,
+          "size": 0,
+          "times": {
+            "a": 1749973627000,
+            "b": 1749973627000,
+            "c": 1749973627000,
+            "m": 1749973627000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\Desktop",
+          "record": 19,
+          "size": 0,
+          "times": {
+            "a": 1749972204000,
+            "b": 1749972204000,
+            "c": 1749972204000,
+            "m": 1749972204000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\Documents",
+          "record": 20,
+          "size": 0,
+          "times": {
+            "a": 1749970535000,
+            "b": 1749970535000,
+            "c": 1749970535000,
+            "m": 1749970535000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\Downloads",
+          "record": 21,
+          "size": 0,
+          "times": {
+            "a": 1749971833000,
+            "b": 1749971833000,
+            "c": 1749971833000,
+            "m": 1749971833000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\AppData",
+          "record": 22,
+          "size": 0,
+          "times": {
+            "a": 1749968270000,
+            "b": 1749968270000,
+            "c": 1749968270000,
+            "m": 1749968270000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\AppData\\Local",
+          "record": 23,
+          "size": 0,
+          "times": {
+            "a": 1749973100000,
+            "b": 1749973100000,
+            "c": 1749973100000,
+            "m": 1749973100000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\AppData\\Local\\Web",
+          "record": 24,
+          "size": 0,
+          "times": {
+            "a": 1749971937000,
+            "b": 1749971937000,
+            "c": 1749971937000,
+            "m": 1749971937000
+          }
+        },
+        {
+          "clusters": [
+            1002
+          ],
+          "contentB64": "IyBPbmUgbGluZSBwZXIgcGFnZSBvcGVuZWQ6IGxvY2FsIHRpbWUsIHRoZW4gdGhlIGFkZHJlc3MuCg==",
+          "deleted": false,
+          "kind": "file",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\AppData\\Local\\Web\\history.log",
+          "record": 25,
+          "size": 58,
+          "times": {
+            "a": 1773299288000,
+            "b": 1773299288000,
+            "c": 1773299288000,
+            "m": 1773299288000
+          }
+        },
+        {
+          "clusters": [
+            1003
+          ],
+          "contentB64": "UGFsbGV0IHdyYXAgc3VwcGxpZXJzClRyYWlsZXIgaW5zcGVjdGlvbiBkYXRlcwpOaWdodCBnYXRlIHJvdGEK",
+          "deleted": false,
+          "kind": "file",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\Documents\\reading-list.txt",
+          "record": 26,
+          "size": 63,
+          "times": {
+            "a": 1772088097000,
+            "b": 1772088097000,
+            "c": 1772088097000,
+            "m": 1772088097000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "mara",
+          "path": "C:\\Users\\mara",
+          "record": 27,
+          "size": 0,
+          "times": {
+            "a": 1749972048000,
+            "b": 1749972048000,
+            "c": 1749972048000,
+            "m": 1749972048000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Desktop",
+          "record": 28,
+          "size": 0,
+          "times": {
+            "a": 1749973959000,
+            "b": 1749973959000,
+            "c": 1749973959000,
+            "m": 1749973959000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Documents",
+          "record": 29,
+          "size": 0,
+          "times": {
+            "a": 1749969125000,
+            "b": 1749969125000,
+            "c": 1749969125000,
+            "m": 1749969125000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Downloads",
+          "record": 30,
+          "size": 0,
+          "times": {
+            "a": 1749973961000,
+            "b": 1749973961000,
+            "c": 1749973961000,
+            "m": 1749973961000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\AppData",
+          "record": 31,
+          "size": 0,
+          "times": {
+            "a": 1749971392000,
+            "b": 1749971392000,
+            "c": 1749971392000,
+            "m": 1749971392000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\AppData\\Local",
+          "record": 32,
+          "size": 0,
+          "times": {
+            "a": 1749970393000,
+            "b": 1749970393000,
+            "c": 1749970393000,
+            "m": 1749970393000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\AppData\\Local\\Web",
+          "record": 33,
+          "size": 0,
+          "times": {
+            "a": 1749974835000,
+            "b": 1749974835000,
+            "c": 1749974835000,
+            "m": 1749974835000
+          }
+        },
+        {
+          "clusters": [
+            1004
+          ],
+          "contentB64": "IyBPbmUgbGluZSBwZXIgcGFnZSBvcGVuZWQ6IGxvY2FsIHRpbWUsIHRoZW4gdGhlIGFkZHJlc3MuCjIwMjYtMDQtMTEgMDk6MjI6MDggKzAxOjAwIGh0dHBzOi8vdXBkYXRlcy5leGFtcGxlLwoyMDI2LTA0LTExIDEwOjIxOjEzICswMTowMCBodHRwczovL3VwZGF0ZXMuZXhhbXBsZS8KMjAyNi0wNC0xMSAxMjowNDowNiArMDE6MDAgaHR0cHM6Ly9tYWlsLmV4YW1wbGUvCjIwMjYtMDQtMTEgMTY6MTk6NTIgKzAxOjAwIGh0dHBzOi8vbWFpbC5leGFtcGxlLwoyMDI2LTA0LTExIDE3OjMwOjI2ICswMTowMCBodHRwczovL3BhcnRzLmV4YW1wbGUvCg==",
+          "deleted": false,
+          "kind": "file",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\AppData\\Local\\Web\\history.log",
+          "record": 34,
+          "size": 310,
+          "times": {
+            "a": 1775925026000,
+            "b": 1773298352000,
+            "c": 1775925026000,
+            "m": 1775925026000
+          }
+        },
+        {
+          "clusters": [
+            1005
+          ],
+          "contentB64": "UGFsbGV0IHdyYXAgc3VwcGxpZXJzClRyYWlsZXIgaW5zcGVjdGlvbiBkYXRlcwpOaWdodCBnYXRlIHJvdGEK",
+          "deleted": false,
+          "kind": "file",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Documents\\reading-list.txt",
+          "record": 35,
+          "size": 63,
+          "times": {
+            "a": 1772091167000,
+            "b": 1772091167000,
+            "c": 1772091167000,
+            "m": 1772091167000
+          }
+        },
+        {
+          "clusters": [
+            1006
+          ],
+          "contentB64": "RG9ja2V0IDQ0NzEKUGFsbGV0czogMTIKR2F0ZTogbm9ydGgKU2lnbmVkIG91dCBieTogdGhlIG5pZ2h0IGdhdGUK",
+          "deleted": true,
+          "kind": "file",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Documents\\docket-4471.txt",
+          "record": 36,
+          "size": 66,
+          "times": {
+            "a": 1775895614000,
+            "b": 1775895614000,
+            "c": 1775944267000,
+            "m": 1775895614000
+          }
+        },
+        {
+          "clusters": [
+            1007
+          ],
+          "contentB64": "TVoAAFRoaXMgcHJvZ3JhbSBjYW5ub3QgYmUgcnVuIGluIERPUyBtb2RlLgBwcmludHNwb29sLmV4ZQA=",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\printspool.exe",
+          "record": 37,
+          "size": 59,
+          "times": {
+            "a": 1775902265000,
+            "b": 1775902265000,
+            "c": 1775902265000,
+            "m": 1775902265000
+          }
+        },
+        {
+          "clusters": [
+            1008
+          ],
+          "contentB64": "TVoAAFRoaXMgcHJvZ3JhbSBjYW5ub3QgYmUgcnVuIGluIERPUyBtb2RlLgBub3RlcGFkLmV4ZQA=",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\notepad.exe",
+          "record": 38,
+          "size": 56,
+          "times": {
+            "a": 1775919335000,
+            "b": 1775919335000,
+            "c": 1775919335000,
+            "m": 1775919335000
+          }
+        },
+        {
+          "clusters": [
+            1009
+          ],
+          "contentB64": "NiBjb3VudGVkLCA1IHN0aWxsIHRvIGNoZWNrLgo=",
+          "deleted": false,
+          "kind": "file",
+          "owner": "mara",
+          "path": "C:\\Users\\mara\\Documents\\tyre-order.txt",
+          "record": 39,
+          "size": 29,
+          "times": {
+            "a": 1775977371000,
+            "b": 1775977371000,
+            "c": 1775977371000,
+            "m": 1775977371000
+          }
+        }
+      ],
+      "sectorSize": 512,
+      "sectors": 500118192,
+      "unallocatedB64": "RG9ja2V0IDQ0NzEKUGFsbGV0czogMTIKR2F0ZTogbm9ydGgKU2lnbmVkIG91dCBieTogdGhlIG5pZ2h0IGdhdGUK"
+    }
+  ],
+  "handover": [
+    {
+      "by": "The Quillfen Freight yard office",
+      "hashes": {
+        "md5": "c616938a9d5dcf6bffbedfc9ee1fae1b",
+        "sha256": "0656c1d271c44de2e2132a1be687506f301e588647748fdd931def465982737c"
+      },
+      "item": "qf-lt-03",
+      "receivedAt": 1775986200000
+    }
+  ],
+  "logs": [
+    {
+      "at": 1775891362000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x301d3",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 1,
+      "source": "security"
+    },
+    {
+      "at": 1775895120000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x303a6",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 2,
+      "source": "security"
+    },
+    {
+      "at": 1775895614000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\explorer.exe",
+        "ProcessId": "1016",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\docket-4471.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 1,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775895728000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 1,
+      "source": "dns"
+    },
+    {
+      "at": 1775899273000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 2,
+      "source": "dns"
+    },
+    {
+      "at": 1775902265000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "NewProcessId": "0x3fc",
+        "NewProcessName": "C:\\Windows\\System32\\printspool.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 3,
+      "source": "security"
+    },
+    {
+      "at": 1775902265000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1020",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 2,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775905446000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 3,
+      "source": "dns"
+    },
+    {
+      "at": 1775912094000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x30579",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 4,
+      "source": "security"
+    },
+    {
+      "at": 1775913855000,
+      "fields": {
+        "answer": "198.51.100.91",
+        "client": "10.60.0.21",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 4,
+      "source": "dns"
+    },
+    {
+      "at": 1775919335000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "NewProcessId": "0x400",
+        "NewProcessName": "C:\\Windows\\System32\\notepad.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 5,
+      "source": "security"
+    },
+    {
+      "at": 1775919335000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1024",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 3,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775920792000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 5,
+      "source": "dns"
+    },
+    {
+      "at": 1775925026000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 6,
+      "source": "dns"
+    },
+    {
+      "at": 1775926920000,
+      "eventId": 4634,
+      "fields": {
+        "LogonType": "2",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x30579",
+        "TargetUserName": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 6,
+      "source": "security"
+    },
+    {
+      "at": 1775944110000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "10.60.0.27",
+        "IpPort": "62510",
+        "LogonProcessName": "User32",
+        "LogonType": "10",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "-",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x3074c",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 7,
+      "source": "security"
+    },
+    {
+      "at": 1775944267000,
+      "eventId": 23,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1024",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\docket-4471.txt",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 4,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775944360000,
+      "eventId": 4634,
+      "fields": {
+        "LogonType": "10",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x3074c",
+        "TargetUserName": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 8,
+      "source": "security"
+    },
+    {
+      "at": 1775977371000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1024",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\tyre-order.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 5,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775983723000,
+      "fields": {
+        "answer": "198.51.100.71",
+        "client": "10.60.0.21",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 7,
+      "source": "dns"
+    }
+  ],
+  "memory": [
+    {
+      "capturedAt": 1775984400000,
+      "connections": [],
+      "host": "qf-lt-03",
+      "id": "qf-lt-03-mem",
+      "modules": [],
+      "processes": [
+        {
+          "cmdline": "",
+          "createdAt": 1775877120000,
+          "name": "System",
+          "path": "C:\\Windows\\System32\\ntoskrnl.exe",
+          "pid": 1000,
+          "ppid": 0,
+          "threads": 96,
+          "user": "SYSTEM"
+        },
+        {
+          "cmdline": "C:\\Windows\\System32\\services.exe",
+          "createdAt": 1775877180000,
+          "name": "services.exe",
+          "path": "C:\\Windows\\System32\\services.exe",
+          "pid": 1004,
+          "ppid": 1000,
+          "threads": 8,
+          "user": "SYSTEM"
+        },
+        {
+          "cmdline": "C:\\Windows\\System32\\lsass.exe",
+          "createdAt": 1775877180000,
+          "name": "lsass.exe",
+          "path": "C:\\Windows\\System32\\lsass.exe",
+          "pid": 1008,
+          "ppid": 1004,
+          "threads": 12,
+          "user": "SYSTEM"
+        },
+        {
+          "cmdline": "C:\\Windows\\System32\\svchost.exe -k netsvcs",
+          "createdAt": 1775877240000,
+          "name": "svchost.exe",
+          "path": "C:\\Windows\\System32\\svchost.exe",
+          "pid": 1012,
+          "ppid": 1004,
+          "threads": 22,
+          "user": "SYSTEM"
+        },
+        {
+          "cmdline": "C:\\Windows\\explorer.exe",
+          "createdAt": 1775880720000,
+          "name": "explorer.exe",
+          "path": "C:\\Windows\\explorer.exe",
+          "pid": 1016,
+          "ppid": 0,
+          "threads": 46,
+          "user": "mara"
+        },
+        {
+          "cmdline": "C:\\Windows\\System32\\printspool.exe",
+          "createdAt": 1775902265000,
+          "name": "printspool.exe",
+          "path": "C:\\Windows\\System32\\printspool.exe",
+          "pid": 1020,
+          "ppid": 1016,
+          "threads": 4,
+          "user": "mara"
+        },
+        {
+          "cmdline": "C:\\Windows\\System32\\notepad.exe",
+          "createdAt": 1775919335000,
+          "name": "notepad.exe",
+          "path": "C:\\Windows\\System32\\notepad.exe",
+          "pid": 1024,
+          "ppid": 1016,
+          "threads": 4,
+          "user": "mara"
+        }
+      ],
+      "regions": [],
+      "strings": [
+        {
+          "offset": 65536,
+          "pid": 1004,
+          "value": "C:\\Windows\\System32\\services.exe"
+        },
+        {
+          "offset": 65792,
+          "pid": 1008,
+          "value": "C:\\Windows\\System32\\lsass.exe"
+        },
+        {
+          "offset": 66048,
+          "pid": 1012,
+          "value": "C:\\Windows\\System32\\svchost.exe -k netsvcs"
+        },
+        {
+          "offset": 66304,
+          "pid": 1016,
+          "value": "C:\\Windows\\explorer.exe"
+        },
+        {
+          "offset": 66560,
+          "pid": 1020,
+          "value": "C:\\Windows\\System32\\printspool.exe"
+        },
+        {
+          "offset": 66816,
+          "pid": 1024,
+          "value": "C:\\Windows\\System32\\notepad.exe"
+        }
+      ]
+    }
+  ],
+  "seed": 20260411,
+  "zones": {}
+}

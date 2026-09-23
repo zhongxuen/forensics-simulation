@@ -1,0 +1,25 @@
+{
+  "caseId": "_fixture",
+  "questions": [
+    {
+      "acceptedRefs": [
+        "disk:qf-lt-03:mft/36",
+        "log:sysmon-lite/4"
+      ],
+      "answer": "2026-04-11T21:51:07Z",
+      "answerAt": 1775944267000,
+      "id": "when-deleted",
+      "toleranceSeconds": 60,
+      "type": "timestamp"
+    },
+    {
+      "acceptedRefs": [
+        "log:security/7"
+      ],
+      "answer": "mara",
+      "id": "which-account",
+      "type": "account"
+    }
+  ],
+  "version": 1
+}

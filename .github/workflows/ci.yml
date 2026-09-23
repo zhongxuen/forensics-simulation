@@ -70,9 +70,9 @@ jobs:
       - run: pnpm test:content
       # TODO(docs/plan/03-case-format-and-generator.md): every case YAML validates and is solvable.
       # - run: pnpm case:validate
-      # TODO(docs/plan/03-case-format-and-generator.md): the committed evidence JSON is what the
-      # generator builds from the case stories today (fails on stale evidence).
-      # - run: pnpm evidence:check
+      # The committed evidence JSON is what the generator builds from the case stories today, so a
+      # story edit that nobody rebuilt fails here (docs/plan/03-case-format-and-generator.md).
+      - run: pnpm evidence:check
 
   integration:
     name: Integration tests (route handlers)

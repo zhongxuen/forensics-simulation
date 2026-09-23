@@ -13,6 +13,8 @@ import { defineConfig } from "vitest/config";
  * - components (jsdom): interactive components, rendered in a simulated browser and clicked.
  */
 const CONTENT_TESTS = [
+  // Cases, and the evidence built from them (docs/plan/03-case-format-and-generator.md).
+  "tests/content/**/*.test.ts",
   "tests/unit/glossary.test.ts",
   "tests/unit/lessons.test.ts",
   "tests/unit/sandbox-workstation.test.ts",

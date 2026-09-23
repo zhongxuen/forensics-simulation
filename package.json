@@ -20,6 +20,8 @@
     "test:e2e": "playwright test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "evidence:build": "tsx scripts/build-evidence.ts",
+    "evidence:check": "tsx scripts/build-evidence.ts --check",
     "bundle:check": "tsx scripts/bundle-size.ts",
     "security:bundle": "tsx scripts/check-client-bundle.ts"
   },

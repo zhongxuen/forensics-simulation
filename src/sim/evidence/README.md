@@ -108,6 +108,14 @@ It is a _test_ builder, not the generator: it checks nothing for consistency or 
 
 `withAcquiredImage` registers the working copy `acquire` writes, `pathsForImage` is why a bare id means "the copy I made", and `rememberOutput` keeps the last tool's lines so `pin` can point back at one. None of it is serialized: a saved case run is a replay of a command log, not an engine snapshot (`docs/plan/00-overview.md` §4 row 9), so evidence is attached again when the scenario is built.
 
-## Coming next
+## The generator (`generate/`)
 
-File 03 adds the generator in `generate/`, which writes evidence from a written story and checks it for consistency and solvability.
+`generate(caseSpec)` plays a written story against a clean machine and returns the evidence it would really have left, plus a **trace** saying which action left what (`docs/plan/03-case-format-and-generator.md`). Nobody writes evidence by hand, so it can never disagree with the story.
+
+- `baselines/` are the clean machine templates: `office-laptop-v1`, `office-server-v1`, and `analyst-workstation-v1`, which is never imaged because it is where evidence is examined.
+- `actions/` is the story vocabulary, one file and one test per action, each leaving every artefact that action really would — MACB times, log records, processes, connections, regions.
+- `noise.ts` is the seeded ordinary activity around a story: turning its density up makes a case harder without touching the story.
+- `accepted.ts` resolves a report question's `acceptedEvidence` patterns (`disk:qf-lt-07:mft/*inv-0412*`) into concrete refs, and fails loudly when one matches nothing.
+- `snapshot.ts` freezes the mutable world into the plain JSON an evidence set is made of.
+
+`scripts/build-evidence.ts` (`pnpm evidence:build`) is the only thing that writes it to disk; `pnpm evidence:check` fails when what is committed isn't what the stories build today.
