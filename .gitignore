@@ -35,3 +35,6 @@ next-env.d.ts
 npm-debug.log*
 .pnpm-debug.log*
 node_modules
+
+# claude code worktrees
+/.claude/worktrees/
