@@ -56,6 +56,23 @@ const OUTPUT_NOTES: Readonly<Record<string, (flags: readonly string[]) => string
   netscan: () => "Every computer that answered is now on your network map.",
   grep: () =>
     "grep's exit status is 0 when it finds a match and 1 when it doesn't, which is how && and || know what happened.",
+  // The disk tools (docs/plan/04-disk-tools.md). Each says how to read what it printed.
+  blocker: () =>
+    "With a write-blocker on, this workstation can read that drive but never write to it, so examining it can't change it. Turning one off is how Case 1 teaches why they exist.",
+  acquire: () =>
+    "The two hashes at the end are fingerprints of the copy's bytes. Compare one with the hash on the handover form (`hashsum --verify`) to show the copy matches the drive you were given.",
+  hashsum: () =>
+    "A hash is a fingerprint of a pile of bytes: the same bytes always give the same fingerprint, and one changed byte gives a completely different one. MATCH means nothing changed; MISMATCH means something did, and finding out what is part of the job.",
+  lsfs: (flags) =>
+    flags.some((flag) => /^-[a-zA-Z]*l/.test(flag))
+      ? "Each row reads: deleted mark, record number, size, owner, then the four MACB times (modified, accessed, changed, born) and the name. A `*` in front means the record was deleted."
+      : "Each row reads: deleted mark, record number, size, name. A `*` in front means the file was deleted, and its record is still there to be read.",
+  inode: () =>
+    'MACB is the four times a record carries: modified, accessed, changed and born. For a deleted record, "Reused" is the line that matters: while nothing has been written over its clusters, `recover` can still write the content out.',
+  recover: () =>
+    "What was written is a copy of bytes still sitting in the image's clusters. The image itself isn't touched, and the record number and cluster list are what a report points at.",
+  pin: () =>
+    "A pin stores the artefact ref, the short string that names exactly one piece of evidence, so the report can point back at this record rather than at your memory of it.",
 };
 
 const REDIRECT_TEXT: Readonly<Record<string, (target: string) => string>> = {

@@ -15,6 +15,12 @@ export interface ToolHelp {
   readonly examples?: readonly { readonly command: string; readonly text: string }[];
   /** Why this matters in security work, including the ethics of using it for real. */
   readonly concept: readonly string[];
+  /**
+   * Forensics addition (docs/plan/04-disk-tools.md): the real tools, menus and commands this
+   * simulated one stands in for, named so a learner can look them up. Real tool names are allowed
+   * here and nowhere else: the registry test bans them as command names.
+   */
+  readonly realWorld?: readonly string[];
 }
 
 /**

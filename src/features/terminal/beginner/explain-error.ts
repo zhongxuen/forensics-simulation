@@ -189,6 +189,20 @@ const OTHER_COPY: {
     "Your account isn't allowed to act as the admin (`root`) on this computer. That's a good protection: only trusted accounts get admin powers. On a real computer the attempt would be written to the security log.",
   NO_MANUAL_ENTRY: (error) =>
     `There's no manual page called \`${error.topic}\`. Manual pages are named after commands: type \`help\` to see them, then \`man\` and a name.`,
+  EVIDENCE_NOT_LOADED: () =>
+    "This workstation has no evidence attached to it yet. The disk tools work on a case's evidence, which arrives when you open a case. Open one from Cases, or try the commands in the sandbox.",
+  NOT_EVIDENCE: (error) =>
+    `\`${error.name}\` isn't a piece of evidence this workstation knows about. It has to be a device under \`/dev/evidence\`, a copy you made with \`acquire\`, or the name of one of those. Type \`blocker\` to see what's attached.`,
+  WRITE_TO_EVIDENCE: (error) =>
+    `\`${error.path}\` is on the evidence device, and nothing you do may write there: that's the one rule the whole job rests on. Pick somewhere in your own folders instead, like \`~/cases\`.`,
+  RECORD_NOT_FOUND: (error) =>
+    `There's no record ${error.record} in \`${error.image}\`. Every file and folder in an image has a record number; type \`lsfs ${error.image} -r\` to see the ones that exist.`,
+  CLUSTERS_REUSED: (error) =>
+    `Record ${error.record} in \`${error.image}\` was deleted, and something has since been written over the clusters its content was in, so those bytes are gone. The record is still evidence: \`inode ${error.image} ${error.record}\` shows the name, the size and the times.`,
+  NOTHING_TO_PIN: (error) =>
+    error.reason === "no-output"
+      ? "Nothing has been printed yet for `pin` to look at. Run an evidence tool first, such as `lsfs` or `inode`, then pin one of the lines it prints."
+      : "There's nothing on that line to pin. Pin a line that names a file, record, process or log entry.",
 };
 
 /** The beginner explanation for an engine error. */

@@ -43,11 +43,12 @@ export { renderTranscript } from "./core/transcript";
 export { stableStringify } from "./core/stable-json";
 
 export { BUILTIN_TOOLS, defaultRegistry, SECURITY_TOOLS } from "./tools";
+export { FORENSICS_TOOLS } from "./tools/forensics";
 export { LINUX_COMMANDS } from "./tools/commands";
 export { commandGroups } from "./tools/commands/help";
 export { listTools } from "./tools/catalog";
 export { createRegistry } from "./tools/registry";
-export { renderHelp, renderManPage, SIMULATED_NOTICE } from "./tools/help";
+export { renderHelp, renderManPage, REAL_WORLD_HEADING, SIMULATED_NOTICE } from "./tools/help";
 export { TOOL_CATEGORIES, TOOL_CATEGORY_LABELS } from "./tools/types";
 
 export { MAX_HISTORY, MAX_OUTPUT_LINES } from "./shell/run";
@@ -73,14 +74,53 @@ export { discoveredHost, hostMapState, isDiscovered, selectTopology } from "./ne
 // The fluent test builder is a namespace, like `vfs` above, because `disk`, `memory` and
 // `evidence` are far too common a set of words to take from the top level: `build.disk("x")`.
 export * as build from "./evidence/builder";
+// The evidence generator (docs/plan/03-case-format-and-generator.md): story -> evidence.
+export {
+  ACTION_KINDS,
+  BASELINE_IDS,
+  BASELINES,
+  EvidencePatternError,
+  generate,
+  GenerateError,
+  generateEvidence,
+  getBaseline,
+  LOGON_TYPES,
+  MACHINE_KINDS,
+  NOISE_DENSITIES,
+  NOISE_PROFILE_IDS,
+  NOISE_PROFILES,
+  requireAcceptedEvidence,
+  resolveAcceptedEvidence,
+  type Actor,
+  type Baseline,
+  type CaseSpec,
+  type EvidenceSelection,
+  type GenerateResult,
+  type LogonType,
+  type MachineKind,
+  type MachineSpec,
+  type NoiseDensity,
+  type NoiseProfileId,
+  type NoiseSpec,
+  type StoryAction,
+  type StoryActionKind,
+  type TracedArtefact,
+  type TraceEntry,
+} from "./evidence";
+
 export {
   ArtefactRefSchema,
+  attachEvidence,
   base64ByteLength,
   baseName,
   ByteWriter,
   decodeBase64,
+  deviceAt,
+  devicePlacard,
   DiskImageSchema,
   encodeBase64,
+  evidenceSession,
+  EVIDENCE_ROOT,
   EvidenceSetSchema,
   FileRecordSchema,
   formatInstant,
@@ -90,10 +130,12 @@ export {
   HASH_ALGORITHMS,
   hashHex,
   IMAGE_FORMAT_MAGIC,
+  imageAt,
   imageBytes,
   imageHash,
   isArtefactRef,
   isBase64,
+  isEvidencePath,
   isHashAlgorithm,
   isImageId,
   isKnownZone,
@@ -109,24 +151,34 @@ export {
   parentPath,
   parseRef,
   PartitionSchema,
+  pathsForImage,
+  readOriginal,
+  rememberOutput,
   renderLog,
   resolveRef,
+  setBlocker,
   SECURITY_EVENTS,
   sha1,
   sha256,
   SYSMON_LITE_EVENTS,
   toHex,
   utf8Bytes,
+  withAcquiredImage,
   UTC_ZONE,
   ZONE_TABLE,
   zonedParts,
   zoneOffsetMinutes,
   zonePeriodAt,
+  type AttachedItem,
+  type AttachOptions,
   type DiskView,
   type EventInfo,
+  type EvidenceSession,
   type FormatInstantOptions,
   type HashAlgorithm,
   type MountWriteOptions,
+  type OriginalRead,
+  type RecalledLine,
   type RenderLogOptions,
   type ZoneEntry,
   type ZonedParts,

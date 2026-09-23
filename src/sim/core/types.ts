@@ -7,6 +7,7 @@
  * commands, the output is byte-identical every run.
  */
 import type { SimError } from "./errors";
+import type { EvidenceSession } from "../evidence/session";
 import type { ArtefactRef } from "../evidence/types";
 import type { Accounts, Vfs } from "../fs/types";
 import type { DiscoveryState, NetworkGraph, NetworkSpec, Protocol } from "../net/types";
@@ -53,6 +54,13 @@ export interface SimState {
   readonly flags: readonly FlagDef[];
   /** Ids of found flags, in the order they were found. */
   readonly flagsFound: readonly string[];
+  /**
+   * Forensics addition (docs/plan/04-disk-tools.md §How evidence reaches the terminal): the case's
+   * evidence, the devices it is attached to, and each device's write-blocker. Absent on a machine
+   * with no evidence, such as the sandbox workstation. `attachEvidence` (evidence/session.ts) puts
+   * it there; only the forensics tools read it.
+   */
+  readonly evidence?: EvidenceSession;
 }
 
 /**
@@ -153,7 +161,51 @@ export type SimEvent =
       readonly matched: number;
     }
   | { readonly type: "hash.identified"; readonly format: string }
-  | { readonly type: "flag.found"; readonly flagId: string };
+  | { readonly type: "flag.found"; readonly flagId: string }
+  // Forensics (docs/plan/04-disk-tools.md §Events). File 10 builds the chain of custody from
+  // these, and a case's objectives match on them. Nothing stores them anywhere else.
+  | {
+      readonly type: "evidence.acquired";
+      /** The evidence device that was imaged, such as "/dev/evidence/qf-lt-07". */
+      readonly device: string;
+      /** Where the working copy was written. */
+      readonly image: string;
+      readonly sectors: number;
+      readonly md5: string;
+      readonly sha256: string;
+    }
+  | {
+      readonly type: "evidence.hashed";
+      /** The device, image or file that was hashed. */
+      readonly target: string;
+      readonly algorithm: string;
+      readonly digest: string;
+      /** Present when `--verify` was used: whether the digest matched. */
+      readonly verified?: boolean;
+    }
+  | {
+      readonly type: "evidence.readOriginal";
+      readonly device: string;
+      /** False means the read went through a normal mount and changed access times. */
+      readonly blocker: boolean;
+      readonly tool: string;
+    }
+  | {
+      readonly type: "evidence.recovered";
+      readonly image: string;
+      readonly record: number;
+      /** Where the recovered content was written on the workstation. */
+      readonly path: string;
+      readonly ref: string;
+      readonly bytes: number;
+    }
+  | {
+      readonly type: "board.pinned";
+      readonly ref: string;
+      /** The output line the pin came from. */
+      readonly line: string;
+      readonly note?: string;
+    };
 
 export type SimEventType = SimEvent["type"];
 

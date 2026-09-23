@@ -4,11 +4,12 @@
  * commands/index.ts).
  */
 import { LINUX_COMMANDS } from "./commands";
+import { FORENSICS_TOOLS } from "./forensics";
 import { logview } from "./logview";
 import { createRegistry } from "./registry";
 import type { Tool } from "./types";
 
-export const SECURITY_TOOLS: readonly Tool[] = [logview];
+export const SECURITY_TOOLS: readonly Tool[] = [logview, ...FORENSICS_TOOLS];
 
 export const BUILTIN_TOOLS: readonly Tool[] = [...SECURITY_TOOLS, ...LINUX_COMMANDS];
 

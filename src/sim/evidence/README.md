@@ -100,6 +100,14 @@ It fills in everything a test doesn't care about, the same way every time: paren
 
 It is a _test_ builder, not the generator: it checks nothing for consistency or solvability (file 03 does that), so what it builds is only as sensible as the test that asked for it. Run `EvidenceSetSchema.parse` when a test wants the shapes checked too. `build` keeps its own namespace because `disk`, `memory` and `evidence` are far too common a set of words to take from the top level of `@/sim`.
 
+## The workstation's evidence (`session.ts`)
+
+`SimState.evidence` is what the disk tools read (`docs/plan/04-disk-tools.md` §How evidence reaches the terminal): the set as it was handed over, the devices it is **attached** to, and the image bytes behind each path a tool can be pointed at.
+
+`attachEvidence(state, set)` lays a device down per disk image under **`/dev/evidence/<id>`**, owned by root, holding a short explanation rather than bytes, so `ls` finds it and `cat` says what it is and what to do instead. Each device has a **write-blocker**, on when evidence arrives: `setBlocker` is what the `blocker` command calls, and `readOriginal` reads the drive the way that flag says. With the blocker on it is `mountRead` and nothing changes; with it off it is `mountWrite`, every live record's access time becomes the time of the read, and the drive's hash moves with them for the rest of the run. Both emit `evidence.readOriginal`, with `blocker` saying which happened.
+
+`withAcquiredImage` registers the working copy `acquire` writes, `pathsForImage` is why a bare id means "the copy I made", and `rememberOutput` keeps the last tool's lines so `pin` can point back at one. None of it is serialized: a saved case run is a replay of a command log, not an engine snapshot (`docs/plan/00-overview.md` §4 row 9), so evidence is attached again when the scenario is built.
+
 ## Coming next
 
 File 03 adds the generator in `generate/`, which writes evidence from a written story and checks it for consistency and solvability.

@@ -7,6 +7,7 @@
 export { SIM_EVENT_TYPES } from "./core/events";
 export { LOG_SOURCES } from "./evidence/types";
 export { FS_ERROR_CODES, SIM_ERROR_CODES } from "./core/errors";
+export type { NothingToPinReason } from "./core/errors";
 export type {
   ExecCommand,
   FileChange,
@@ -91,6 +92,7 @@ export type {
   ShellWord,
   ShellWordPart,
 } from "./shell/types";
+export type { AttachedItem, EvidenceSession, RecalledLine } from "./evidence/session";
 export type {
   ArtefactRef,
   DiskImage,

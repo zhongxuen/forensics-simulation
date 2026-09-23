@@ -93,6 +93,16 @@ const EXAMPLES: Record<SimErrorCode, readonly SimError[]> = {
   OUT_OF_SCOPE: [{ code: "OUT_OF_SCOPE", target: "8.8.8.8" }],
   SUDO_DENIED: [{ code: "SUDO_DENIED", user: "recruit" }],
   NO_MANUAL_ENTRY: [{ code: "NO_MANUAL_ENTRY", topic: "nmap" }],
+  // Forensics (docs/plan/04-disk-tools.md).
+  EVIDENCE_NOT_LOADED: [{ code: "EVIDENCE_NOT_LOADED" }],
+  NOT_EVIDENCE: [{ code: "NOT_EVIDENCE", name: "qf-lt-99" }],
+  WRITE_TO_EVIDENCE: [{ code: "WRITE_TO_EVIDENCE", path: "/dev/evidence/qf-lt-07" }],
+  RECORD_NOT_FOUND: [{ code: "RECORD_NOT_FOUND", image: "qf-lt-07", record: 900 }],
+  CLUSTERS_REUSED: [{ code: "CLUSTERS_REUSED", image: "qf-lt-07", record: 51 }],
+  NOTHING_TO_PIN: [
+    { code: "NOTHING_TO_PIN", reason: "no-output" },
+    { code: "NOTHING_TO_PIN", reason: "no-ref", line: 3 },
+  ],
 };
 
 const CONTEXT = { command: "cat", user: "recruit", cwd: "/home/recruit" };

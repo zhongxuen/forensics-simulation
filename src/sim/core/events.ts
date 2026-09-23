@@ -18,6 +18,12 @@ export const SIM_EVENT_TYPES = [
   "log.queried",
   "hash.identified",
   "flag.found",
+  // Forensics (docs/plan/04-disk-tools.md §Events).
+  "evidence.acquired",
+  "evidence.hashed",
+  "evidence.readOriginal",
+  "evidence.recovered",
+  "board.pinned",
 ] as const satisfies readonly SimEventType[];
 
 // Compile-time check that the list above is complete.

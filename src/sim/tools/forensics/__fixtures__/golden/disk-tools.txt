@@ -1,0 +1,118 @@
+$ blocker
+  blocker (simulated) · write-blockers on this workstation
+
+    DEVICE                  BLOCKER  WHAT IT IS
+    /dev/evidence/qf-lt-07  on       Fenwold M2 solid-state drive, serial FW-2291-0067
+
+  A write-blocker lets this computer read a drive but never write to it, so
+  examining the evidence cannot change it. Leave them on.
+[exit 0]
+  @ command.run {"command":"blocker","exitCode":0,"line":"blocker"}
+
+$ acquire /dev/evidence/qf-lt-07 --out /home/examiner/cases/case-01/images/qf-lt-07.img
+  acquire (simulated) · /dev/evidence/qf-lt-07 → /home/examiner/cases/case-01/images/qf-lt-07.img
+
+    Source         qf-lt-07 · Fenwold M2 solid-state drive · serial FW-2291-0067
+    Geometry       2,048 sectors of 512 bytes
+    Write-blocker  on
+
+    [#####...............] 512 of 2,048 sectors
+    [##########..........] 1,024 of 2,048 sectors
+    [###############.....] 1,536 of 2,048 sectors
+    [####################] 2,048 of 2,048 sectors
+
+    Copied 2,048 sectors in one pass. 0 unreadable sectors.
+
+    MD5      ea31dbfd83bb6f51d30575fb06605d6c
+    SHA-256  cc20b7947fd925ecbd62268a6f2c581c955a807e69380b6abc112c1a6e66b209
+
+  Both hashes are of the image's bytes. Check them against the handover form with:
+    hashsum --verify <hash from the form> /home/examiner/cases/case-01/images/qf-lt-07.img
+[exit 0]
+  @ evidence.readOriginal {"blocker":true,"device":"/dev/evidence/qf-lt-07","tool":"acquire"}
+  @ file.changed {"change":"created","hostId":"ir-ws-01","path":"/home/examiner/cases/case-01/images/qf-lt-07.img"}
+  @ evidence.acquired {"device":"/dev/evidence/qf-lt-07","image":"/home/examiner/cases/case-01/images/qf-lt-07.img","md5":"ea31dbfd83bb6f51d30575fb06605d6c","sectors":2048,"sha256":"cc20b7947fd925ecbd62268a6f2c581c955a807e69380b6abc112c1a6e66b209"}
+  @ command.run {"command":"acquire","exitCode":0,"line":"acquire /dev/evidence/qf-lt-07 --out /home/examiner/cases/case-01/images/qf-lt-07.img"}
+
+$ hashsum --verify cc20b7947fd925ecbd62268a6f2c581c955a807e69380b6abc112c1a6e66b209 /home/examiner/cases/case-01/images/qf-lt-07.img
+  hashsum (simulated) · sha256 · /home/examiner/cases/case-01/images/qf-lt-07.img
+
+    cc20b7947fd925ecbd62268a6f2c581c955a807e69380b6abc112c1a6e66b209
+    image bytes of qf-lt-07 · 2,048 sectors · 10 records
+
+    MATCH
+    The sha256 you were given is the sha256 of what you just hashed, so
+    the two are byte for byte the same. Nothing has changed since that hash was
+    written down.
+[exit 0]
+  @ evidence.hashed {"algorithm":"sha256","digest":"cc20b7947fd925ecbd62268a6f2c581c955a807e69380b6abc112c1a6e66b209","target":"/home/examiner/cases/case-01/images/qf-lt-07.img","verified":true}
+  @ command.run {"command":"hashsum","exitCode":0,"line":"hashsum --verify cc20b7947fd925ecbd62268a6f2c581c955a807e69380b6abc112c1a6e66b209 /home/examiner/cases/case-01/images/qf-lt-07.img"}
+
+$ lsfs qf-lt-07 -r -d -l
+  lsfs (simulated) · qf-lt-07 · C:\ · 2 records, deleted only · times in UTC
+
+       RECORD  SIZE  OWNER  M                     A                     C                     B                     NAME
+    *  51      72    dana   2026-04-11T19:41:02Z  2026-04-10T16:41:00Z  2026-04-11T19:42:03Z  2026-04-10T16:41:00Z  Users\dana\Documents\inv-0413.pdf
+    *  55      33    dana   2026-04-11T17:20:00Z  2026-04-11T17:20:00Z  2026-04-11T17:20:00Z  2026-04-11T17:20:00Z  Users\dana\Documents\handover-note.txt
+
+  * marks a deleted record: the name and times are still here, and the content may be
+  too. Ask about one with: inode qf-lt-07 <record>
+[exit 0]
+  @ command.run {"command":"lsfs","exitCode":0,"line":"lsfs qf-lt-07 -r -d -l"}
+
+$ inode qf-lt-07 51
+  inode (simulated) · qf-lt-07 · record 51
+
+    Path        C:\Users\dana\Documents\inv-0413.pdf
+    Owner       dana
+    Kind        file
+    Size        72 bytes
+    Deleted     yes
+    Clusters    1002-1003 (2 of 4,096 bytes)
+    Reused      no: nothing has been written over those clusters yet
+
+    The content is still on the drive. Write it out with:
+      recover qf-lt-07 51 --out <path>
+
+    Times (UTC)
+      M modified 2026-04-11T19:41:02Z      the content changed
+      A accessed 2026-04-10T16:41:00Z      something opened it
+      C changed  2026-04-11T19:42:03Z      the record changed: a rename, a permission edit
+      B born     2026-04-10T16:41:00Z      it was created
+
+    These are UTC. The machine this drive came from showed Europe/London (+01:00)
+    at that moment, so a screenshot or a witness would name a different hour.
+    Pass --zone local to read them that way.
+
+    Ref         disk:qf-lt-07:mft/51
+    Pin it with: pin
+[exit 0]
+  @ command.run {"command":"inode","exitCode":0,"line":"inode qf-lt-07 51"}
+
+$ recover qf-lt-07 51 --out /home/examiner/cases/case-01/export/inv-0413.pdf
+  recover (simulated) · qf-lt-07 · record 51 → /home/examiner/cases/case-01/export/inv-0413.pdf
+
+    From      C:\Users\dana\Documents\inv-0413.pdf (deleted)
+    Clusters  1002-1003, none reused
+    Written   72 bytes
+    SHA-256   76a913887dc7c505845d2e3b877ca47a96f93fad3772dde2ed5133af14892b91
+
+  The image is untouched. What you wrote is a copy of the bytes still sitting in
+  those clusters. Say so in the report, with the record number and the cluster list.
+[exit 0]
+  @ file.changed {"change":"created","hostId":"ir-ws-01","path":"/home/examiner/cases/case-01/export/inv-0413.pdf"}
+  @ evidence.recovered {"bytes":72,"image":"qf-lt-07","path":"/home/examiner/cases/case-01/export/inv-0413.pdf","record":51,"ref":"disk:qf-lt-07:mft/51"}
+  @ command.run {"command":"recover","exitCode":0,"line":"recover qf-lt-07 51 --out /home/examiner/cases/case-01/export/inv-0413.pdf"}
+
+$ pin -m 'the invoice the office says went missing'
+  pin (simulated) · pinned to the case board
+
+    disk:qf-lt-07:mft/51
+    from  recover qf-lt-07 51 --out /home/examiner/cases/case-01/export/inv-0413.pdf, line 3
+          From      C:\Users\dana\Documents\inv-0413.pdf (deleted)
+    note  the invoice the office says went missing
+
+  The board keeps the ref, so your report can point at this exact record.
+[exit 0]
+  @ board.pinned {"line":"From      C:\\Users\\dana\\Documents\\inv-0413.pdf (deleted)","note":"the invoice the office says went missing","ref":"disk:qf-lt-07:mft/51"}
+  @ command.run {"command":"pin","exitCode":0,"line":"pin -m 'the invoice the office says went missing'"}

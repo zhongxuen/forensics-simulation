@@ -37,6 +37,12 @@ const EXAMPLES: Record<(typeof SIM_ERROR_CODES)[number], SimError> = {
   EFBIG: { code: "EFBIG", path: "big.txt" },
   SUDO_DENIED: { code: "SUDO_DENIED", user: "recruit" },
   NO_MANUAL_ENTRY: { code: "NO_MANUAL_ENTRY", topic: "nmap" },
+  EVIDENCE_NOT_LOADED: { code: "EVIDENCE_NOT_LOADED" },
+  NOT_EVIDENCE: { code: "NOT_EVIDENCE", name: "qf-lt-99" },
+  WRITE_TO_EVIDENCE: { code: "WRITE_TO_EVIDENCE", path: "/dev/evidence/qf-lt-07" },
+  RECORD_NOT_FOUND: { code: "RECORD_NOT_FOUND", image: "qf-lt-07", record: 900 },
+  CLUSTERS_REUSED: { code: "CLUSTERS_REUSED", image: "qf-lt-07", record: 51 },
+  NOTHING_TO_PIN: { code: "NOTHING_TO_PIN", reason: "no-ref", line: 3 },
 };
 
 /** Codes whose real message doesn't start with the tool's name. */
@@ -79,6 +85,7 @@ describe("error codes", () => {
 describe("event types", () => {
   it("are unique and namespaced", () => {
     expect(new Set(SIM_EVENT_TYPES).size).toBe(SIM_EVENT_TYPES.length);
-    for (const type of SIM_EVENT_TYPES) expect(type).toMatch(/^[a-z]+\.[a-z]+$/);
+    // "area.thing", with the thing in camelCase when it needs two words: evidence.readOriginal.
+    for (const type of SIM_EVENT_TYPES) expect(type).toMatch(/^[a-z]+\.[a-z]+([A-Z][a-z]+)*$/);
   });
 });

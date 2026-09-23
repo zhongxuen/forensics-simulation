@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { BUILTIN_TOOLS, defaultRegistry } from ".";
 import { parseArgs } from "./args";
 import { listTools } from "./catalog";
-import { renderHelp } from "./help";
+import { renderHelp, renderManPage, REAL_WORLD_HEADING } from "./help";
 import { createRegistry } from "./registry";
 import type { Tool } from "./types";
 
@@ -23,6 +23,25 @@ const REAL_TOOL_NAMES = [
   "hash-identifier",
   "hashid.py",
   "journalctl",
+  // Forensics (docs/plan/04-disk-tools.md §Names). They may appear in a man page's
+  // "Real-world equivalent" section, and never as a command name.
+  "volatility",
+  "autopsy",
+  "ftkimager",
+  "fls",
+  "istat",
+  "icat",
+  "photorec",
+  "foremost",
+  "dd",
+  "log2timeline",
+  "plaso",
+];
+
+/** The simulated tools this game registers beside the Linux command set. */
+const SECURITY_TOOL_TABLE = [
+  "logview",
+  ...["acquire", "blocker", "hashsum", "inode", "lsfs", "pin", "recover"],
 ];
 
 /** The v1 command table from md-files/05-terminal-module.md, plus echo for redirection. */
@@ -39,8 +58,8 @@ const LINUX_COMMAND_TABLE = [
 describe("tool registry", () => {
   it("registers the security tools and the whole Linux command set", () => {
     const names = defaultRegistry.names();
-    expect(names).toEqual(expect.arrayContaining(["logview", ...LINUX_COMMAND_TABLE]));
-    expect(names).toHaveLength(1 + LINUX_COMMAND_TABLE.length);
+    expect(names).toEqual(expect.arrayContaining([...SECURITY_TOOL_TABLE, ...LINUX_COMMAND_TABLE]));
+    expect(names).toHaveLength(SECURITY_TOOL_TABLE.length + LINUX_COMMAND_TABLE.length);
     expect([...names].sort()).toEqual(names);
     expect(defaultRegistry.has("logview")).toBe(true);
     expect(defaultRegistry.get("nmap")).toBeUndefined();
@@ -66,6 +85,16 @@ describe("tool registry", () => {
     });
     const custom = createRegistry([BUILTIN_TOOLS[0] as Tool]);
     expect(listTools(custom).map((tool) => tool.name)).toEqual(["logview"]);
+  });
+
+  it("names a real tool only in a man page's Real-world equivalent section", () => {
+    const forensics = SECURITY_TOOL_TABLE.filter((name) => name !== "logview");
+    for (const name of forensics) {
+      const tool = defaultRegistry.get(name);
+      expect(tool?.help.realWorld?.length, name).toBeGreaterThan(0);
+      const page = renderManPage(name, (tool as Tool).help).map((line) => line.text);
+      expect(page, name).toContain(REAL_WORLD_HEADING);
+    }
   });
 });
 

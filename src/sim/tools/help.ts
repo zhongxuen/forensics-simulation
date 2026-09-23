@@ -23,8 +23,14 @@ export function renderHelp(name: string, help: ToolHelp): OutputLine[] {
       lines.push(`  ${example.command}`, `      ${example.text}`);
   }
   lines.push("", "WHY IT MATTERS", ...help.concept.map((paragraph) => `  ${paragraph}`));
+  if (help.realWorld?.length) {
+    lines.push("", REAL_WORLD_HEADING, ...help.realWorld.map((entry) => `  ${entry}`));
+  }
   return lines.map(stdout);
 }
+
+/** The section every simulated forensics tool names its real counterpart in. */
+export const REAL_WORLD_HEADING = "REAL-WORLD EQUIVALENT";
 
 const INDENT = "       ";
 const DEEP_INDENT = "              ";
@@ -72,6 +78,13 @@ export function renderManPage(name: string, help: ToolHelp): OutputLine[] {
     if (i > 0) lines.push("");
     lines.push(`${INDENT}${paragraph}`);
   });
+  if (help.realWorld?.length) {
+    lines.push("", REAL_WORLD_HEADING);
+    help.realWorld.forEach((entry, i) => {
+      if (i > 0) lines.push("");
+      lines.push(`${INDENT}${entry}`);
+    });
+  }
   lines.push(
     "",
     "SIMULATED",

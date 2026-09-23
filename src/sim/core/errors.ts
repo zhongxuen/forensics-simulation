@@ -35,6 +35,14 @@ export const SIM_ERROR_CODES = [
   "OUT_OF_SCOPE", // a target outside the simulated network; nothing is ever sent
   "SUDO_DENIED", // the user may not act as root with sudo
   "NO_MANUAL_ENTRY", // `man` has no page by that name
+  // Forensics (docs/plan/04-disk-tools.md). Evidence is read-only data, not the workstation's
+  // filesystem, so its failures are their own codes rather than borrowed POSIX ones.
+  "EVIDENCE_NOT_LOADED", // no evidence set is attached to this workstation
+  "NOT_EVIDENCE", // that name is neither an evidence device nor a disk image
+  "WRITE_TO_EVIDENCE", // refusing to write onto the evidence device itself
+  "RECORD_NOT_FOUND", // no file record with that number in the image
+  "CLUSTERS_REUSED", // a deleted file's clusters hold something else now
+  "NOTHING_TO_PIN", // that output line names no artefact (see `reason`)
 ] as const;
 
 export type FsErrorCode = (typeof FS_ERROR_CODES)[number];
@@ -59,6 +67,9 @@ export interface FsError {
   /** The offending user or group name, for `unknown-user` and `unknown-group`. */
   readonly value?: string;
 }
+
+/** Why a `NOTHING_TO_PIN` happened: nothing printed yet, or a line with no artefact on it. */
+export type NothingToPinReason = "no-output" | "no-ref";
 
 export type BadArgumentReason =
   | "bad-format" // not shaped like what the tool expects
@@ -91,7 +102,18 @@ export type SimError =
     }
   | { readonly code: "OUT_OF_SCOPE"; readonly target: string }
   | { readonly code: "SUDO_DENIED"; readonly user: string }
-  | { readonly code: "NO_MANUAL_ENTRY"; readonly topic: string };
+  | { readonly code: "NO_MANUAL_ENTRY"; readonly topic: string }
+  | { readonly code: "EVIDENCE_NOT_LOADED" }
+  | { readonly code: "NOT_EVIDENCE"; readonly name: string }
+  | { readonly code: "WRITE_TO_EVIDENCE"; readonly path: string }
+  | { readonly code: "RECORD_NOT_FOUND"; readonly image: string; readonly record: number }
+  | { readonly code: "CLUSTERS_REUSED"; readonly image: string; readonly record: number }
+  | {
+      readonly code: "NOTHING_TO_PIN";
+      readonly reason: NothingToPinReason;
+      /** The line number asked for, when one was. */
+      readonly line?: number;
+    };
 
 const FS_MESSAGES: Record<FsErrorCode, string> = {
   ENOENT: "No such file or directory",
@@ -158,6 +180,20 @@ export function formatError(tool: string, error: SimError): string {
       return `${tool}: ${error.user} is not in the sudoers file. This incident will be reported.`;
     case "NO_MANUAL_ENTRY":
       return `No manual entry for ${error.topic}`;
+    case "EVIDENCE_NOT_LOADED":
+      return `${tool}: no evidence is attached to this workstation`;
+    case "NOT_EVIDENCE":
+      return `${tool}: ${error.name}: not an evidence device or a disk image`;
+    case "WRITE_TO_EVIDENCE":
+      return `${tool}: ${error.path}: refusing to write onto the evidence device`;
+    case "RECORD_NOT_FOUND":
+      return `${tool}: ${error.image}: no record ${error.record} in this image`;
+    case "CLUSTERS_REUSED":
+      return `${tool}: ${error.image} record ${error.record}: those clusters hold something else now`;
+    case "NOTHING_TO_PIN":
+      return error.reason === "no-output"
+        ? `${tool}: nothing has been printed yet to pin`
+        : `${tool}: line ${error.line ?? 0} has nothing to pin`;
     default:
       return formatFsError(tool, error);
   }
