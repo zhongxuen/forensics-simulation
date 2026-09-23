@@ -3,9 +3,11 @@ import type { DiskImage, EvidenceSet, FileRecord, LogRecord, MemoryImage } from 
 
 /**
  * A small hand-built evidence set for the evidence-model tests (tests/unit/evidence-*.test.ts).
- * Prompt 02.2 adds the fluent builder; until then, this is written out in full. Every name is from
- * the story world (docs/plan/99-reference.md): Quillfen Freight, `.example` domains, private and
- * RFC 5737 addresses.
+ * It is written out in full on purpose: these tests check what the model does with exactly these
+ * bytes, times and fields, so nothing should be filled in behind them. Tests of the tools built on
+ * the model use the fluent builder instead (`build` in src/sim/evidence/builder.ts). Every name is
+ * from the story world (docs/plan/99-reference.md): Quillfen Freight, `.example` domains, private
+ * and RFC 5737 addresses.
  */
 const at = (iso: string) => Date.parse(iso);
 const text = (value: string) => encodeBase64(new TextEncoder().encode(value));

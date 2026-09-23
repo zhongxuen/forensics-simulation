@@ -70,10 +70,14 @@ export { canReach, hostById, reachableHosts, resolveHostname, servicesOn } from 
 export { discoveredHost, hostMapState, isDiscovered, selectTopology } from "./net/discovery";
 
 // The evidence model (docs/plan/02-evidence-model.md). Its types come through "./types" above.
+// The fluent test builder is a namespace, like `vfs` above, because `disk`, `memory` and
+// `evidence` are far too common a set of words to take from the top level: `build.disk("x")`.
+export * as build from "./evidence/builder";
 export {
   ArtefactRefSchema,
   base64ByteLength,
   baseName,
+  ByteWriter,
   decodeBase64,
   DiskImageSchema,
   encodeBase64,
@@ -83,8 +87,14 @@ export {
   formatOffset,
   formatRef,
   HandoverItemSchema,
+  HASH_ALGORITHMS,
+  hashHex,
+  IMAGE_FORMAT_MAGIC,
+  imageBytes,
+  imageHash,
   isArtefactRef,
   isBase64,
+  isHashAlgorithm,
   isImageId,
   isKnownZone,
   isLogSource,
@@ -92,6 +102,7 @@ export {
   LogRecordSchema,
   LogSourceSchema,
   MacbTimesSchema,
+  md5,
   MemoryImageSchema,
   mountRead,
   mountWrite,
@@ -101,7 +112,11 @@ export {
   renderLog,
   resolveRef,
   SECURITY_EVENTS,
+  sha1,
+  sha256,
   SYSMON_LITE_EVENTS,
+  toHex,
+  utf8Bytes,
   UTC_ZONE,
   ZONE_TABLE,
   zonedParts,
@@ -110,6 +125,7 @@ export {
   type DiskView,
   type EventInfo,
   type FormatInstantOptions,
+  type HashAlgorithm,
   type MountWriteOptions,
   type RenderLogOptions,
   type ZoneEntry,

@@ -4,6 +4,20 @@
  */
 export * from "./types";
 export { decodeBase64, encodeBase64, base64ByteLength, isBase64 } from "./base64";
+export { ByteWriter, utf8Bytes } from "./bytes";
+export {
+  hashHex,
+  isHashAlgorithm,
+  md5,
+  sha1,
+  sha256,
+  toHex,
+  HASH_ALGORITHMS,
+  type HashAlgorithm,
+} from "./hash";
+export { imageBytes, imageHash, IMAGE_FORMAT_MAGIC } from "./image";
+// The fluent test builder keeps its own namespace: `build.disk("x")`, `build.evidence("case-01")`.
+export * as build from "./builder";
 export {
   formatInstant,
   formatOffset,
