@@ -19,9 +19,9 @@ On `https://hacker-simulation.vercel.app/learn/…`: `forensics-what-logs-are`, 
 | Track | Lesson id | Cites |
 |---|---|---|
 | Foundations | `foundations-what-forensics-is` | NIST SP 800-86 §3 |
-| | `foundations-order-of-volatility` | RFC 3227 §2.1 |
-| | `foundations-chain-of-custody` | NIST SP 800-86 §3.1.1; NIST IR 8387 |
-| | `foundations-hashing-for-evidence` | FIPS 180-4; RFC 1321 (and why MD5 alone isn't enough, RFC 6151) |
+| | `foundations-order-of-volatility` | RFC 3227 §2.1, §2.2; NIST SP 800-86 §5.2.1.3 |
+| | `foundations-chain-of-custody` | NIST SP 800-86 §3.1.2 (was §3.1.1: checked 2026-09-23, the chain of custody is in §3.1.2); NIST IR 8387 §3.2 |
+| | `foundations-hashing-for-evidence` | FIPS 180-4 §1, §6.2; RFC 1321 §1 (and why MD5 alone isn't enough, RFC 6151 §2.1); NIST SP 800-86 §4.2.2; NIST IR 8387 §3.2 |
 | Disk | `disk-partitions-and-filesystems` | Carrier, *File System Forensic Analysis*, ch. 5, 11 |
 | | `disk-macb-timestamps` | Carrier ch. 13; SANS "Windows Forensic Analysis" poster |
 | | `disk-deleted-vs-overwritten` | Carrier ch. 8 |

@@ -1,0 +1,136 @@
+---
+id: foundations-order-of-volatility
+title: What to collect first
+topic: forensics
+level: 2
+readingMinutes: 7
+analogy: "Photographing footprints in snow on a sunny morning: the footprints go first, the snowman lasts until lunch, and the fence will be there next week. You photograph in that order."
+summary: Some evidence vanishes in seconds and some lasts for months, so you collect in order of how fast it disappears.
+prerequisites: [foundations-what-forensics-is]
+externalPrerequisites: [forensics-evidence-care]
+relatedCommands: [ps, cat]
+glossaryTerms: [volatile-data, order-of-volatility, process, forensic-image]
+cites: [rfc-3227-s2-1, rfc-3227-s2-2, nist-sp-800-86-s5-2-1-3]
+---
+
+## The one-sentence version
+
+Collect evidence in the <Term id="order-of-volatility">order of volatility</Term>: whatever
+disappears fastest comes first, and whatever will still be there next week comes last.
+
+Picture footprints in snow on a sunny morning. The footprints melt first, the snowman lasts until
+lunch, and the fence will be there next week. If you photograph the fence first, you lose the
+footprints, and the footprints were the part that said who walked through.
+
+<Quiz
+  question="A server is still switched on after a break-in. Which of these disappears first if nobody collects it?"
+  options={[
+    {
+      text: "The list of connections it has open to other computers right now",
+      correct: true,
+      explanation:
+        "A connection can close at any moment, whether anyone touches the machine or not. The standard advice from NIST starts collecting with network connections and who's logged in, for exactly that reason.",
+    },
+    {
+      text: "The files on its disk",
+      explanation:
+        "The disk survives a power cut and will still be there tomorrow. It isn't safe from change, since every running program writes to it, but it's near the end of the queue.",
+    },
+    {
+      text: "The copies of its logs kept on another server",
+      explanation:
+        "Logs sent elsewhere are among the longest-lasting evidence you have. They're kept until the other server rotates them away, which is usually weeks.",
+    },
+    {
+      text: "The monthly backup tapes",
+      explanation:
+        "Archives are the least volatile thing on the list: they're made to last months or years. Collect them last, and don't forget them.",
+    },
+  ]}
+/>
+
+## Why it matters in security
+
+The most useful evidence is often the most fragile. Which program is talking to an address outside
+the building, which account is signed in right now, what an attacker typed a minute ago: all of
+that is <Term id="volatile-data">volatile data</Term>. It lives in memory and nowhere else, and it's
+gone the moment the power is.
+
+That's why "turn it off and on again" is the most common way evidence dies. So is the opposite
+mistake: spending the first hour carefully copying a disk that wasn't going anywhere, while the
+connection you needed quietly closes.
+
+## How it actually works
+
+RFC 3227, a published internet guideline for evidence collection, gives an example order (§2.1),
+from most to least volatile:
+
+1. Registers and cache, the processor's own scratch space
+2. The routing table, network caches, the list of running programs, and memory
+3. Temporary file systems, which are wiped at restart
+4. The disk
+5. Logs and monitoring data kept on other machines
+6. The physical setup and how the network is wired
+7. Archive media, such as backups
+
+In practice nobody can capture the processor's registers from outside, so a real collection starts at
+item 2. NIST SP 800-86 (§5.2.1.3) goes further inside that item and suggests, first to last: network
+connections, who is logged in, the contents of memory, the running programs, open files, network
+settings, and the computer's clock.
+
+### Collecting changes things too
+
+On a live machine, every command you run starts a <Term id="process">process</Term> of its own and
+takes a little memory. You can't avoid that. What you can do is change as little as possible, and
+write down exactly what you ran and when, so the traces you left can be told apart from the ones you
+found. RFC 3227 (§2.2) adds a warning worth remembering: don't trust the programs on the machine
+you're examining. An attacker may have swapped them. Bring your own tools, on your own media.
+
+### Then the disk
+
+Once the volatile data is safe, the disk gets its turn, as a <Term id="forensic-image">forensic
+image</Term>: an exact copy, made without writing to the original. The next two lessons cover
+proving who had that copy and proving it's exact.
+
+### It's an order, not a law
+
+The order tells you what's at risk. It doesn't decide for you. If a machine is actively deleting
+files, cutting the power may save more than it costs. If the machine is a hospital's booking system,
+switching it off has costs of its own. Decide on purpose, write down why, and the decision will
+stand up to questions.
+
+## See it
+
+On your workstation, the list of running programs is a good example of volatile data: there's no
+file on the disk that holds it.
+
+<MiniTerminal
+  scenario="ir-ws-practice"
+  commands={["ps", "ps aux", "cat collection-plan.txt"]}
+  task="Type `ps` and press Enter to see the programs running right now."
+  expect="ps"
+  success="That list exists only in memory. Switch the workstation off and there's no file anywhere that records it. Now read `collection-plan.txt` and see where it sits in the order."
+/>
+
+The plan puts memory and the running programs second, behind connections and signed-in accounts,
+and the disk fourth. Notice the right-hand column: it isn't how important each thing is, it's how
+long it survives.
+
+## In practice
+
+[Case 3, Something Is Still Running](/cases/case-03) opens with Quillfen Freight's dispatch server
+still switched on, and Kit reaching for the power cord. You make the call. Whichever you pick, Noor
+walks you through what it keeps and what it costs, and you can choose again.
+
+## Common misconceptions
+
+- **"Switching it off preserves it."** It preserves the disk, and throws away memory, connections
+  and the list of running programs. Unplugging the network cable stops an attacker without that
+  loss.
+- **"The most important evidence goes first."** The most _fragile_ evidence goes first. The disk may
+  hold the answer, and it's still collected later, because it will wait.
+- **"A good examiner leaves no trace on a live machine."** Every command leaves some. The skill is
+  leaving as few as possible and recording each one.
+- **"Once memory is captured, the machine doesn't matter."** Memory is one snapshot. The disk, the
+  logs on other machines and the backups still hold things memory never did, like what happened
+  last week.

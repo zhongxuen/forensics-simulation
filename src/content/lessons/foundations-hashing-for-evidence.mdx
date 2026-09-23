@@ -1,0 +1,131 @@
+---
+id: foundations-hashing-for-evidence
+title: Proving a copy is exact
+topic: forensics
+level: 2
+readingMinutes: 8
+analogy: "Two copies of a thousand-page book, compared by reading both aloud side by side. A hash does the same comparison in a moment, and a single changed comma still shows."
+summary: How a hash proves a forensic copy matches the original, why you take it at collection, and why MD5 alone isn't enough.
+prerequisites: [foundations-chain-of-custody]
+externalPrerequisites: [crypto-hashing]
+relatedCommands: [grep, ls, cat]
+glossaryTerms: [hash, integrity, sha-256, md5, collision, forensic-image]
+cites: [nist-sp-800-86-s4-2-2, fips-180-4, rfc-1321-s1, rfc-6151-s2-1, nist-ir-8387-s3-2]
+---
+
+{/* TODO(04): when `acquire` and `hashsum` exist, the See it section images a practice device and runs `hashsum --verify` against the handover form, instead of reading recorded hashes. */}
+
+## The one-sentence version
+
+Work out a <Term id="hash">hash</Term> of the original when you collect it, work out one of your
+copy, and if the two match, the copy is exact down to the last bit.
+
+Imagine checking two copies of a thousand-page book by reading them aloud side by side. A hash does
+that comparison in a moment, and it doesn't get tired: one changed comma on page 612 still gives a
+completely different result.
+
+<Quiz
+  question="Your copy of a laptop's disk and the original are exactly the same size. Is that enough to say the copy is exact?"
+  options={[
+    {
+      text: "Yes: if even one byte were missing, the sizes would differ",
+      explanation:
+        "A missing byte would change the size, but a changed byte wouldn't. A time that reads 16:46 instead of 16:40 is the same number of characters. Size tells you nothing got lost, not that nothing changed.",
+    },
+    {
+      text: "No: you need the hash of each, and they have to match",
+      correct: true,
+      explanation:
+        "Two files the same size can still differ in every byte. Matching hashes are what show the contents are identical, which is why every acquisition records one.",
+    },
+    {
+      text: "No: you need to open both and compare them file by file",
+      explanation:
+        "That would work in theory, and it would take days on a real disk. It also means opening things, and every opening is a chance to change something. A hash compares everything at once, including the parts no file uses.",
+    },
+  ]}
+/>
+
+## Why it matters in security
+
+Every conclusion in your report rests on the copy you examined. If anyone can argue the copy differs
+from the original, every conclusion can be argued with too. A matching hash ends that argument: it
+shows the <Term id="integrity">integrity</Term> of the copy, meaning nothing about it changed.
+
+It also protects you from yourself. Hash your copy at the start of the work and again at the end,
+and you can show your own examination changed nothing, which is harder to promise than it sounds.
+
+## How it actually works
+
+A hash recipe reads every bit of its input and produces a short, fixed-length fingerprint. Change
+anything, even one bit, and the fingerprint changes completely. The same input always gives the same
+fingerprint, on any computer.
+
+### When to hash
+
+NIST SP 800-86 (§4.2.2) describes the routine. Connect the original through a write-blocker, so the
+examiner's computer can't write to it. Work out the original's hash. Then make the copy and work
+out its hash. If the two match, the <Term id="forensic-image">forensic image</Term> is exact. Record
+both, with the time.
+
+Timing matters. A hash proves nothing changed _since it was taken_. If the original was altered
+before anyone hashed it, the hash will happily vouch for the altered version. That's why NIST IR
+8387 (§3.2) says to hash as close to collection as possible, and to store the hashes somewhere the
+examiner can't quietly change them.
+
+### Which recipe
+
+<Term id="sha-256">SHA-256</Term>, from the United States' Secure Hash Standard (FIPS 180-4, §6.2),
+gives a 256-bit fingerprint, written as 64 characters. It's the one to rely on today.
+
+<Term id="md5">MD5</Term> (RFC 1321) gives a 128-bit fingerprint, written as 32 characters. It was
+the forensic standard for years, and you'll still see it on old handover forms. The problem is
+<Term id="collision">collisions</Term>: two different inputs with the same fingerprint. For MD5,
+people can now manufacture them on purpose, in about a minute on a laptop (RFC 6151, §2.1).
+
+What that means for evidence is subtle. MD5 still catches accidental change: a bad cable or a
+careless examiner won't happen to produce a collision. What it can't rule out is deliberate forgery,
+where someone prepares two different versions of a file that share one MD5. So examiners record
+SHA-256, and often MD5 as well, to match older records. Never MD5 alone.
+
+### What a hash doesn't tell you
+
+A hash says two things are identical. It doesn't say where the original came from, who had it, or
+whether the contents are true. Those questions belong to the chain of custody, which is why the two
+always travel together.
+
+## See it
+
+Your workstation has two copies of a note from a practice USB stick, a handover form with the hash
+taken before handover, and a file of hashes worked out for each copy. Which copy is exact?
+
+<MiniTerminal
+  scenario="ir-ws-practice"
+  commands={["ls -l copies/copy-a copies/copy-b", "cat handover.txt", "grep 5be6f708 hashes.txt"]}
+  task="Look at the handover form's SHA-256, then type `grep 5be6f708 hashes.txt` to find the copy whose hash starts the same way."
+  expect="grep"
+  success="Only copy-a matches the handover form. Both copies are 115 bytes, and copy-b still differs: one character, 16:40 became 16:46. The size never showed it; the hash did."
+/>
+
+Checking the first eight characters is a handy way to find a line, and a real verification compares
+all 64. The two hashes here were worked out from those very files, so they're genuine. Try
+`cat copies/copy-b/note.txt` to find the changed character yourself.
+
+## In practice
+
+[Case 1, The Clean Copy](/cases/case-01) turns on this lesson. Quillfen Freight's handover form
+carries a SHA-256 taken on site. You image the laptop, then check your image's hash against the
+form. If you look at the original before imaging it, with the write-blocker off, reading it updates
+its last-opened times, and the hash no longer matches. Noor explains what happened, and you can
+reset and do it again.
+
+## Common misconceptions
+
+- **"A matching hash means the evidence is genuine."** It means the copy matches the original at the
+  moment the hash was taken. Whether the original is what someone says it is is a custody question.
+- **"MD5 is broken, so MD5 hashes are worthless."** MD5 still catches accidental change. It can't
+  rule out a deliberate collision, which is why you record SHA-256 too.
+- **"Looking doesn't change anything."** Opening a disk without a write-blocker can update
+  last-opened times, and a single changed time changes the whole hash.
+- **"The hash is stored with the image, so it's safe."** If one person can change the image and the
+  hash together, the hash proves nothing. Keep the record somewhere separate.

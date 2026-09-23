@@ -7,7 +7,7 @@ readingMinutes: 4
 analogy: "A port is like a numbered door on a building; a service is whoever answers it."
 summary: Numbered doors on a computer, and the programs that answer them.
 prerequisites: [fx-intro]
-relatedCommands: [netscan]
+relatedCommands: [logview]
 glossaryTerms: [port, service]
 ---
 
@@ -22,7 +22,7 @@ Every computer has numbered doors called <Term id="port">ports</Term>.
 A <Term id="service">service</Term> listens behind a port.
 
 ```console title="Try this"
-$ netscan 10.0.0.12
+$ logview /var/log/auth.log
 ```
 
 | Port | Usually       |

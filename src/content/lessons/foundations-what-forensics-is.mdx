@@ -1,0 +1,127 @@
+---
+id: foundations-what-forensics-is
+title: What digital forensics is
+topic: forensics
+level: 1
+readingMinutes: 5
+analogy: "A fire investigator arrives after the flames are out. Nothing can be un-burned, so every answer comes from what was left behind, handled so that someone else can check it."
+summary: Working out what happened on a computer from what it left behind, in four steps someone else could repeat.
+externalPrerequisites: [forensics-evidence-care, blue-incident-response]
+relatedCommands: [cat, ls]
+glossaryTerms: [digital-forensics, digital-evidence, authorization, scope, acquisition]
+cites: [nist-sp-800-86-s3]
+---
+
+## The one-sentence version
+
+<Term id="digital-forensics">Digital forensics</Term> is working out what happened on a computer
+from the traces it left behind, in a way that someone else can check step by step.
+
+Think of a fire investigator. They arrive after the flames are out, and they can't rewind the fire.
+Everything they conclude has to come from what's still there: scorch marks, a melted plug, a
+window left open. Your job on the blue team is the same, with files, logs and memory instead of
+ash.
+
+<Quiz
+  question="A client says: 'Someone got into our office laptop last weekend. Can you tell us what happened?' Before you look at anything, what do you need?"
+  options={[
+    {
+      text: "Their signed permission, saying what you may examine",
+      correct: true,
+      explanation:
+        "Every case starts here. The letter says who asked, what you may look at, and what questions they want answered. Without it you're a stranger reading someone else's computer, however good your reasons.",
+    },
+    {
+      text: "The laptop's password, so you can sign in and look around",
+      explanation:
+        "Signing in to the original changes it: new log entries, new last-opened times. You'll examine a copy, and even that comes after permission.",
+    },
+    {
+      text: "The name of the person who did it",
+      explanation:
+        "That's what the evidence might tell you at the end, not something you start from. Starting with a suspect makes it tempting to see only the traces that fit.",
+    },
+    {
+      text: "Nothing: it's their laptop and they asked, so start now",
+      explanation:
+        "Asking out loud isn't the same as a written scope. A letter protects the client, the people whose files are on the laptop, and you, if anyone later asks why you looked where you did.",
+    },
+  ]}
+/>
+
+## Why it matters in security
+
+When something goes wrong, people want three things: to stop it, to understand it, and to make
+sure it doesn't happen again. Forensics is the understanding part, and the other two lean on it. A
+fix aimed at the wrong way in leaves the real door open.
+
+It also matters because your answer will be questioned. The client's insurer, a regulator, a
+manager or the person whose account was used may all ask: _how do you know?_ Your conclusions are
+only as good as the <Term id="digital-evidence">digital evidence</Term> behind them, and evidence is
+only good if you can show it wasn't changed along the way.
+
+## How it actually works
+
+The United States' standards body, NIST, describes forensics in four phases (NIST SP 800-86, §3).
+Nearly every team uses some version of them:
+
+1. **Collection.** Find where the evidence lives and copy it, while protecting it from change. Making
+   that forensic copy is called <Term id="acquisition">acquisition</Term>.
+2. **Examination.** Use tools to pull out what's relevant from the copy: the files, the log records,
+   the programs that were running.
+3. **Analysis.** Put the pieces together to answer the questions you were asked. When did it start?
+   Which account? What changed?
+4. **Reporting.** Write down what you found, how you found it, and what the client should fix. Say
+   when the evidence supports more than one explanation.
+
+Two ideas run through all four phases.
+
+**Permission and edges.** A case starts with <Term id="authorization">authorization</Term>: a
+client who asked, and signed a letter saying so. The letter also sets the <Term id="scope">scope</Term>:
+which machines, which accounts, which questions. A personal phone on the desk may hold the answer,
+and if the letter doesn't cover it, it stays out.
+
+**Nothing you do should change the evidence.** Every phase after collection works on the copy, and
+you write down each step so that another examiner could repeat it and get the same result. That
+repeatability is what turns "I think" into "here is how you can check".
+
+## See it
+
+Your practice workstation has a small examination laid out on it. Start the way every case
+starts: read the letter.
+
+<MiniTerminal
+  scenario="ir-ws-practice"
+  commands={["cat letter.txt", "ls copies", "cat copies/copy-a/note.txt"]}
+  task="Type `cat letter.txt` and press Enter to read what you're allowed to examine."
+  expect="cat"
+  success="That's the scope: one USB stick, two questions, and a signature. Everything else on this workstation is outside it, however interesting it looks."
+/>
+
+Notice what the letter gives you: _what_ you may examine (one stick), _what for_ (two questions),
+and _who_ said so. The copies folder is the collection phase already done. Reading the note is
+examination. Deciding when it was written, and whether you trust that, is analysis.
+
+## In practice
+
+[Case 1, The Clean Copy](/cases/case-01) opens with a signed letter from Quillfen Freight, a small
+haulage yard, and a laptop in a sealed bag. The whole case is the collection phase done properly:
+copy the laptop without changing it, prove the copy is exact, and only then start examining.
+
+The next lessons in this track cover the parts of collection that trip people up:
+[what to collect first](/learn/foundations-order-of-volatility),
+[recording who had the evidence](/learn/foundations-chain-of-custody), and
+[proving a copy is exact](/learn/foundations-hashing-for-evidence).
+
+## Common misconceptions
+
+- **"Forensics is about catching someone."** It's about finding out what happened. Sometimes the
+  evidence clears the person everyone suspected, and that's a result worth as much as any other.
+- **"Forensics only happens when the police are involved."** Most investigations are for the
+  organisation itself: to understand a break-in, fix it and tell the right people. The same care
+  makes the report hold up either way.
+- **"The expert looks at the machine and knows."** Conclusions come from steps someone else can
+  repeat. If you can't show how you got there, it's an opinion.
+- **"Collect everything."** The scope decides what you may collect, and the questions decide what's
+  worth it. A copy of every device in the building is slower to examine, and some of it you had no
+  right to take.

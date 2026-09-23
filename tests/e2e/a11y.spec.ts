@@ -30,6 +30,8 @@ const ROUTES = [
   ...CASES,
   "/sandbox",
   "/learn",
+  "/learn/glossary",
+  "/learn/commands",
   "/settings",
   "/this-page-does-not-exist",
   ...LESSONS,

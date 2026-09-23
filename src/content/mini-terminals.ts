@@ -8,7 +8,8 @@ import type { FsEntrySpec, ScenarioSpec } from "@/sim/types";
  * They're all on the Range, Candlewright's practice lab (md-files/story-bible.md, "World facts":
  * range.candlewright.example, 192.168.60.0/24), and small on purpose: a handful of files or
  * computers, enough for one idea. A lesson picks one by id; the lesson tests fail on an id that
- * isn't here.
+ * isn't here. `ir-ws-practice` is this game's own: the analyst workstation, for the forensics
+ * lessons. The Range machines came with the vendored pipeline.
  */
 
 export interface MiniTerminalScenario {
@@ -268,12 +269,143 @@ const WEB: MiniTerminalScenario = {
   },
 };
 
+/**
+ * The analyst workstation `ir-ws-01` (docs/plan/99-reference.md, "New world facts") with a practice
+ * examination laid out in the home folder, for the Foundations lessons (docs/plan/13-learning-center.md).
+ * The evidence is a USB stick from Candlewright's own training cupboard, so no client's case is
+ * spoiled. `copy-a` is exact and `copy-b` differs by one character; the SHA-256 values in
+ * `handover.txt` and `hashes.txt` are the real hashes of those files (tests/unit/lesson-content.test.ts
+ * recomputes them).
+ *
+ * TODO(04): once `acquire` and `hashsum` exist, the Foundations lessons image a practice device and
+ * verify it here instead of reading recorded hashes.
+ */
+export const PRACTICE_NOTE = [
+  "Practice note on TRAIN-07",
+  "Written 2026-09-20 at 16:40 by the training team.",
+  "If you can read this, the copy worked.",
+  "",
+].join("\n");
+
+/** The same note with one character changed: 16:40 became 16:46. */
+export const PRACTICE_NOTE_CHANGED = PRACTICE_NOTE.replace("16:40", "16:46");
+
+/** SHA-256 of PRACTICE_NOTE and PRACTICE_NOTE_CHANGED, as recorded in the practice files. */
+export const PRACTICE_NOTE_SHA256 =
+  "5be6f7083ca52026d09c505362abc446e8d64a06d80705dfdd62ef88e151cbaa";
+export const PRACTICE_NOTE_CHANGED_SHA256 =
+  "ba0c71fa42ba7533389d2e7cc01fd24e9ce3efe65297ff7180ac684448341ad2";
+
+const PRACTICE: MiniTerminalScenario = {
+  id: "ir-ws-practice",
+  title: "examiner@ir-ws-01 (practice)",
+  description:
+    "Your analyst workstation with a practice examination: a signed letter, a custody log, recorded hashes and two copies of one note.",
+  seed: 9201,
+  scenario: {
+    id: "ir-ws-practice",
+    startTime: "2026-09-22T09:00:00Z",
+    network: {
+      subnets: [{ cidr: "10.20.0.0/24", name: "Candlewright blue-team room" }],
+      hosts: [
+        {
+          id: "ir-ws-01",
+          hostname: "ir-ws-01.candlewright.example",
+          interfaces: [{ ip: "10.20.0.11", subnet: "10.20.0.0/24" }],
+          os: linux,
+          users: [{ name: "examiner", uid: 1000, groups: ["adm"] }],
+          fs: {
+            entries: [
+              {
+                path: "/home/examiner/letter.txt",
+                content: [
+                  "Letter of authorisation (practice)",
+                  "",
+                  "Candlewright Security may examine one USB stick, label TRAIN-07,",
+                  "from the training cupboard. Nothing else.",
+                  "",
+                  "Questions the examination should answer:",
+                  "  1. What is on the stick?",
+                  "  2. When was the note on it written?",
+                  "",
+                  "Signed: Theo Ashgrove, team lead, 2026-09-21",
+                  "",
+                ].join("\n"),
+              },
+              {
+                path: "/home/examiner/collection-plan.txt",
+                content: [
+                  "Collection plan for a machine that is still switched on",
+                  "Most volatile first. Stop when the letter's questions are answered.",
+                  "",
+                  "1. network connections and who is logged in   gone in seconds",
+                  "2. memory, and the programs running in it     gone at power-off",
+                  "3. temporary files                            gone at restart",
+                  "4. the disk                                   stays, but every use changes it",
+                  "5. logs kept on other machines                stay until rotated away",
+                  "6. backups and archives                       stay for months",
+                  "",
+                ].join("\n"),
+              },
+              {
+                path: "/home/examiner/handover.txt",
+                content: [
+                  "Handover form: USB stick TRAIN-07 (practice)",
+                  "Handed over by: Theo Ashgrove, 2026-09-21 09:05 UTC",
+                  "Received by:    Idris Fenwick",
+                  "Seal:           bag 0412, intact",
+                  `SHA-256 of the note, taken before handover: ${PRACTICE_NOTE_SHA256}`,
+                  "",
+                ].join("\n"),
+              },
+              {
+                path: "/home/examiner/custody-log.txt",
+                content: [
+                  "Custody log: USB stick TRAIN-07 (practice). Times in UTC.",
+                  "2026-09-21 09:02  Theo Ashgrove        took TRAIN-07 from the training cupboard, sealed it in bag 0412",
+                  "2026-09-21 09:05  Theo Ashgrove        handed bag 0412 to Idris Fenwick, seal intact",
+                  "2026-09-21 09:20  Idris Fenwick        opened bag 0412, write-blocker on, copied the note to copy-a",
+                  "2026-09-21 09:31  Idris Fenwick        recorded the SHA-256 of copy-a in hashes.txt",
+                  "2026-09-21 09:33  Idris Fenwick        sealed TRAIN-07 in bag 0413, locked it in cabinet 2",
+                  "2026-09-22 08:47  Kit Nakashima-Reyes  copied the note to copy-b for a demonstration",
+                  "",
+                ].join("\n"),
+              },
+              {
+                path: "/home/examiner/hashes.txt",
+                content: [
+                  "SHA-256 of each copy, worked out on this workstation",
+                  `${PRACTICE_NOTE_SHA256}  copies/copy-a/note.txt`,
+                  `${PRACTICE_NOTE_CHANGED_SHA256}  copies/copy-b/note.txt`,
+                  "",
+                ].join("\n"),
+              },
+              {
+                path: "/home/examiner/copies/copy-a/note.txt",
+                content: PRACTICE_NOTE,
+                mode: "444",
+              },
+              {
+                path: "/home/examiner/copies/copy-b/note.txt",
+                content: PRACTICE_NOTE_CHANGED,
+                mode: "444",
+              },
+            ],
+          },
+        },
+      ],
+    },
+    session: { host: "ir-ws-01", user: "examiner" },
+  },
+};
+
 export const MINI_TERMINALS: readonly MiniTerminalScenario[] = [
   HOME,
   PERMISSIONS,
   LOGS,
   NETWORK,
   WEB,
+  PRACTICE,
 ];
 
 export const MINI_TERMINAL_IDS: readonly string[] = MINI_TERMINALS.map((mini) => mini.id);

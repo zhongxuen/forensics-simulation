@@ -2,6 +2,12 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { FOCUS_RING } from "@/components/ui/focus-ring";
+import {
+  externalLessonUrl,
+  getCitation,
+  getExternalLesson,
+  type Citation,
+} from "@/content/references";
 import { LESSON_LEVEL_LABELS, LESSON_TOPICS } from "@/content/topics";
 import { cx } from "@/lib/cx";
 import { Term } from "../glossary/term";
@@ -49,6 +55,41 @@ function LessonLinks({ lessons }: { lessons: readonly Lesson[] }) {
   );
 }
 
+/** Hacker Simulation's gentler lessons on the same ground, opened in a new tab. */
+function ExternalLessonLinks({ ids }: { ids: readonly Lesson["externalPrerequisites"][number][] }) {
+  return (
+    <ul className="flex flex-wrap gap-x-4 gap-y-1">
+      {ids.map((id) => (
+        <li key={id}>
+          <a href={externalLessonUrl(id)} target="_blank" rel="noopener" className={LINK}>
+            {getExternalLesson(id)?.title ?? id}
+            <span className="sr-only"> (Hacker Simulation, opens in a new tab)</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** The primary sources a lesson cites, each with the exact section. */
+function Sources({ citations }: { citations: readonly Citation[] }) {
+  return (
+    <ul className="space-y-2">
+      {citations.map((citation) => (
+        <li key={citation.id}>
+          <a href={citation.url} target="_blank" rel="noopener" className={LINK}>
+            {citation.source}, {citation.section}
+            <span className="sr-only"> (opens in a new tab)</span>
+          </a>
+          <span className="block text-sm">
+            <cite>{citation.title}</cite>. {citation.publisher}, {citation.year}.
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function Related({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div>
@@ -72,7 +113,12 @@ export function LessonArticle({
   missionTitles = {},
 }: LessonArticleProps) {
   const topic = LESSON_TOPICS[lesson.topic];
+  const citations = lesson.cites.flatMap((id) => {
+    const citation = getCitation(id);
+    return citation ? [citation] : [];
+  });
   const hasRelated =
+    citations.length > 0 ||
     lesson.glossaryTerms.length > 0 ||
     lesson.relatedCommands.length > 0 ||
     lesson.relatedMissions.length > 0 ||
@@ -107,6 +153,17 @@ export function LessonArticle({
               <p className="text-sm font-semibold text-primary">Best read first</p>
               <div className="mt-1 text-sm">
                 <LessonLinks lessons={prerequisites} />
+              </div>
+            </div>
+          )}
+          {lesson.externalPrerequisites.length > 0 && (
+            <div className="mt-6 rounded-lg border border-subtle bg-surface-raised px-4 py-3">
+              <p className="text-sm font-semibold text-primary">Start here if this is new</p>
+              <p className="mt-1 text-sm text-secondary">
+                A gentler first look, on Hacker Simulation, our sister site:
+              </p>
+              <div className="mt-1 text-sm">
+                <ExternalLessonLinks ids={lesson.externalPrerequisites} />
               </div>
             </div>
           )}
@@ -189,6 +246,11 @@ export function LessonArticle({
             {readNext.length > 0 && (
               <Related title="Read next">
                 <LessonLinks lessons={readNext} />
+              </Related>
+            )}
+            {citations.length > 0 && (
+              <Related title="Sources">
+                <Sources citations={citations} />
               </Related>
             )}
           </footer>
