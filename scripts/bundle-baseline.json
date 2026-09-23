@@ -1,12 +1,13 @@
 {
-  "/": 146145,
-  "/_not-found": 144103,
-  "/cases": 175766,
-  "/cases/case-01": 175766,
-  "/cases/case-02": 175766,
-  "/cases/case-03": 175766,
-  "/learn": 175766,
-  "/privacy": 149562,
-  "/sandbox": 176288,
-  "/settings": 180559
+  "/": 146148,
+  "/_not-found": 144105,
+  "/cases": 178930,
+  "/cases/case-01": 185629,
+  "/cases/case-02": 185629,
+  "/cases/case-03": 185629,
+  "/cases/practice": 185629,
+  "/learn": 178930,
+  "/privacy": 153132,
+  "/sandbox": 179449,
+  "/settings": 183723
 }

@@ -4,13 +4,14 @@ import { describe, expect, it } from "vitest";
 import { findStorageAccess } from "./helpers/find-storage-access";
 
 /**
- * No mission data in browser storage (md-files/03-app-state-and-privacy.md, rule 1). The only
- * code allowed to touch localStorage, sessionStorage, indexedDB or cookies is the settings module
- * in src/lib/settings/, which holds display settings and nothing else.
+ * Browser storage has two doors and no others. The settings module in src/lib/settings/ holds
+ * display settings, and src/lib/case-storage/ holds saved case runs (docs/plan/05-workspace-ui.md,
+ * a deliberate divergence from Hacker Simulation, 00 §4 row 9). Nothing else may touch
+ * localStorage, sessionStorage, indexedDB or cookies.
  */
 
 const ROOT = join(import.meta.dirname, "../..");
-const ALLOWED_DIR = "src/lib/settings/";
+const ALLOWED_DIRS = ["src/lib/settings/", "src/lib/case-storage/"];
 const FIXTURES = join(import.meta.dirname, "fixtures/storage-guard");
 
 function sourceFiles(dir: string): string[] {
@@ -52,23 +53,23 @@ describe("findStorageAccess", () => {
 });
 
 describe("storage guard", () => {
-  it("finds no browser storage access in src/ outside src/lib/settings/", () => {
+  it("finds no browser storage access in src/ outside the two storage modules", () => {
     const offenders = sourceFiles(join(ROOT, "src"))
       .map((path) => relative(ROOT, path).replaceAll("\\", "/"))
-      .filter((path) => !path.startsWith(ALLOWED_DIR))
+      .filter((path) => !ALLOWED_DIRS.some((dir) => path.startsWith(dir)))
       .flatMap((path) =>
         scan(join(ROOT, path)).map((access) => `${path}:${access.line} uses ${access.name}`),
       );
 
     expect(
       offenders,
-      "Only src/lib/settings/ may touch browser storage, and only for settings. Use getSettings/updateSettings from @/lib/settings; mission runs live in memory.",
+      "Only src/lib/settings/ and src/lib/case-storage/ may touch browser storage. Use @/lib/settings for settings and @/lib/case-storage for saved case runs.",
     ).toEqual([]);
   });
 
-  it("still sees the settings module's own storage access", () => {
-    // Proves the scan reaches src/lib/settings/, so the exemption above is doing the work.
-    const settingsAccess = sourceFiles(join(ROOT, ALLOWED_DIR)).flatMap(scan);
-    expect(settingsAccess.map((access) => access.name)).toContain("localStorage");
+  it.each(ALLOWED_DIRS)("still sees %s's own storage access", (dir) => {
+    // Proves the scan reaches each allowed folder, so the exemption above is doing the work.
+    const access = sourceFiles(join(ROOT, dir)).flatMap(scan);
+    expect(access.map((found) => found.name)).toContain("localStorage");
   });
 });
