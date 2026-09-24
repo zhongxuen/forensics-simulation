@@ -10,11 +10,14 @@ import { stripAnsi } from "./ansi";
 import { failure, formatArgv, success } from "./output";
 import { createRng, deriveSeed } from "./rng";
 import type { OutputLine, SimEvent, SimResult, SimState } from "./types";
+import type { ArtefactRef } from "../evidence/types";
 
 export interface RunToolOptions {
   readonly registry: ToolRegistry;
   readonly now: number;
   readonly stdin?: string;
+  /** The ref each piped-in line carried (shell/run.ts). */
+  readonly stdinRefs?: readonly (ArtefactRef | undefined)[];
   readonly tty?: boolean;
 }
 
@@ -49,6 +52,7 @@ export function runTool(
       tty: options.tty ?? false,
       registry: options.registry,
       ...(options.stdin !== undefined && { stdin: options.stdin }),
+      ...(options.stdinRefs !== undefined && { stdinRefs: options.stdinRefs }),
     });
   }
 

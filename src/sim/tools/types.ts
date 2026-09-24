@@ -1,5 +1,6 @@
 import type { Rng } from "../core/rng";
 import type { SimResult, SimState } from "../core/types";
+import type { ArtefactRef } from "../evidence/types";
 
 /**
  * Educational help for one tool, shown by `<tool> --help` and by `man <tool>`. Written for a
@@ -66,6 +67,11 @@ export interface ToolContext {
   readonly tick: number;
   /** Text piped in, if any. */
   readonly stdin?: string;
+  /**
+   * Forensics addition (docs/plan/07-carve-strings-logq.md): the artefact ref each piped-in line
+   * carried, by line number, so a filter like `grep` can keep it on the lines it passes through.
+   */
+  readonly stdinRefs?: readonly (ArtefactRef | undefined)[];
   /**
    * The output goes straight to the learner's screen: not into a pipe or a file. Tools like `ls`
    * and `grep` only add colour then, like real ones. Always false for `exec` commands, so tests

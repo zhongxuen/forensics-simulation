@@ -71,6 +71,14 @@ const OUTPUT_NOTES: Readonly<Record<string, (flags: readonly string[]) => string
     'MACB is the four times a record carries: modified, accessed, changed and born. For a deleted record, "Reused" is the line that matters: while nothing has been written over its clusters, `recover` can still write the content out.',
   recover: () =>
     "What was written is a copy of bytes still sitting in the image's clusters. The image itself isn't touched, and the record number and cluster list are what a report points at.",
+  carve: () =>
+    "Each row is one object found in the drive's free space by its first bytes: where it starts, what type it looks like, and how big it is. A partial one lost its end to something written later. None of them has a name or times, because those lived in the file record.",
+  strings: () =>
+    "Each line is a run of readable characters found in the bytes, in the order they sit. With `-o`, the number in front is how far in it was found. A string shows that some text was there, not who put it there.",
+  logq: (flags) =>
+    flags.some((flag) => flag.startsWith("--count-by"))
+      ? "Each row is one value of the field you counted by, how many records have it, and when it first and last appears. Many records sharing one value in a short time is what a burst looks like."
+      : "Each record is printed the way its source writes it, with every line carrying the record's ref, so a line you keep with `grep` can still be pinned.",
   pin: () =>
     "A pin stores the artefact ref, the short string that names exactly one piece of evidence, so the report can point back at this record rather than at your memory of it.",
 };
