@@ -158,14 +158,21 @@ export const grep: Tool = {
         else if (entry.kind === "file") addFile(path);
       }
     };
+    // Piped-in lines keep the artefact ref they carried (docs/plan/07-carve-strings-logq.md).
+    const piped = new Set<TextInput>();
+    const addStdin = () => {
+      const input = { name: STDIN_NAME, text: ctx.stdin ?? "" };
+      inputs.push(input);
+      piped.add(input);
+    };
     const files = positionals.length > 0 ? positionals : recursive ? ["."] : [];
     if (files.length === 0) {
       if (ctx.stdin === undefined) return missingFile(NAME, state);
-      inputs.push({ name: STDIN_NAME, text: ctx.stdin });
+      addStdin();
     }
     for (const name of files) {
       if (name === "-") {
-        inputs.push({ name: STDIN_NAME, text: ctx.stdin ?? "" });
+        addStdin();
         continue;
       }
       const info = stat(vfs, fsCtx, name);
@@ -189,16 +196,18 @@ export const grep: Tool = {
     let anyMatch = false;
     for (const input of inputs) {
       let count = 0;
+      const refs = piped.has(input) ? ctx.stdinRefs : undefined;
       splitLines(input.text).forEach((line, index) => {
+        const ref = refs?.[index];
+        const emit = (text: string) => output.push(ref ? { ...stdout(text), ref } : stdout(text));
         if (tester.test(line) === on("invert")) return;
         count++;
         if (on("count") || on("filesWithMatches") || on("quiet")) return;
         const number = on("lineNumber") ? index + 1 : undefined;
         if (on("onlyMatching") && !on("invert")) {
           for (const match of line.matchAll(finder)) {
-            if (match[0] !== "") {
-              output.push(stdout(`${prefix(input.name, number)}${paintIf(SGR.match, match[0])}`));
-            }
+            if (match[0] !== "")
+              emit(`${prefix(input.name, number)}${paintIf(SGR.match, match[0])}`);
           }
           return;
         }
@@ -206,7 +215,7 @@ export const grep: Tool = {
           color && !on("invert")
             ? line.replace(finder, (match) => (match === "" ? match : paint(SGR.match, match)))
             : line;
-        output.push(stdout(`${prefix(input.name, number)}${shown}`));
+        emit(`${prefix(input.name, number)}${shown}`);
       });
       if (count > 0) anyMatch = true;
       if (on("quiet")) continue;

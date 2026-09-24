@@ -24,6 +24,10 @@ export const SIM_EVENT_TYPES = [
   "evidence.readOriginal",
   "evidence.recovered",
   "board.pinned",
+  // Carving, strings and log queries (docs/plan/07-carve-strings-logq.md).
+  "evidence.carved",
+  "evidence.searched",
+  "logs.queried",
 ] as const satisfies readonly SimEventType[];
 
 // Compile-time check that the list above is complete.
