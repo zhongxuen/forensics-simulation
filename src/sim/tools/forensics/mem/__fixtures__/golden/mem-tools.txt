@@ -1,0 +1,149 @@
+$ mem info qf-srv-01-mem
+  mem info (simulated) · qf-srv-01-mem · qf-srv-01
+
+    Image         qf-srv-01-mem
+    Host          qf-srv-01
+    Captured      2026-04-12T08:40:00Z
+                  2026-04-12 09:40:00 +01:00 on the host's clock (Europe/London)
+    Processes     12 found by a scan, 10 in the active list
+    Connections   6
+    Regions       4 stretches of memory with their protection recorded
+
+  A memory image is a snapshot of one moment: what it holds was true when it was
+  captured, and says nothing about after. Start with: mem ps qf-srv-01-mem
+[exit 0]
+  @ memory.inspected {"image":"qf-srv-01-mem","view":"info"}
+  @ command.run {"command":"mem","exitCode":0,"line":"mem info qf-srv-01-mem"}
+
+$ mem ps qf-srv-01-mem
+  mem ps (simulated) · qf-srv-01-mem · 10 processes · the active list · times in UTC
+
+    PID   PPID  NAME                CREATED               USER
+    4     0     System              2026-04-09T05:58:12Z  SYSTEM
+    388   4     smss.exe            2026-04-09T05:58:13Z  SYSTEM
+    496   388   wininit.exe         2026-04-09T05:58:20Z  SYSTEM
+    628   496   services.exe        2026-04-09T05:58:21Z  SYSTEM
+    640   496   lsass.exe           2026-04-09T05:58:21Z  SYSTEM
+    812   628   svchost.exe         2026-04-09T05:58:25Z  SYSTEM
+    904   628   svchost.exe         2026-04-09T05:58:26Z  NT AUTHORITY\NETWORK SERVICE
+    2044  1988  explorer.exe        2026-04-11T07:02:40Z  QUILLFEN\dispatch
+    2312  2044  dispatch-board.exe  2026-04-11T07:03:05Z  QUILLFEN\dispatch
+    4120  2044  svchost.exe         2026-04-11T19:43:05Z  QUILLFEN\dispatch
+
+  This is the list the operating system keeps of what is running. Something that
+  wants to hide can take itself out of it. To look past the list:
+  mem psscan qf-srv-01-mem
+[exit 0]
+  @ memory.listed {"image":"qf-srv-01-mem","processes":10,"view":"ps"}
+  @ command.run {"command":"mem","exitCode":0,"line":"mem ps qf-srv-01-mem"}
+
+$ mem psscan qf-srv-01-mem
+  mem psscan (simulated) · qf-srv-01-mem · 12 processes, 1 unlinked, 1 exited · times in UTC
+
+    PID   PPID  NAME                CREATED               USER                          EXITED                NOTE
+    4     0     System              2026-04-09T05:58:12Z  SYSTEM                        -
+    388   4     smss.exe            2026-04-09T05:58:13Z  SYSTEM                        -
+    496   388   wininit.exe         2026-04-09T05:58:20Z  SYSTEM                        -
+    628   496   services.exe        2026-04-09T05:58:21Z  SYSTEM                        -
+    640   496   lsass.exe           2026-04-09T05:58:21Z  SYSTEM                        -
+    812   628   svchost.exe         2026-04-09T05:58:25Z  SYSTEM                        -
+    904   628   svchost.exe         2026-04-09T05:58:26Z  NT AUTHORITY\NETWORK SERVICE  -
+    2044  1988  explorer.exe        2026-04-11T07:02:40Z  QUILLFEN\dispatch             -
+    2312  2044  dispatch-board.exe  2026-04-11T07:03:05Z  QUILLFEN\dispatch             -
+    4120  2044  svchost.exe         2026-04-11T19:43:05Z  QUILLFEN\dispatch             -
+    3920  4120  cmd.exe             2026-04-11T19:44:00Z  QUILLFEN\dispatch             2026-04-11T19:44:01Z  exited
+    4188  4120  taskhost-upd.exe    2026-04-11T19:45:12Z  QUILLFEN\dispatch             -                     unlinked
+
+  unlinked: still running, but missing from the active list, so mem ps doesn't show it.
+  exited:   finished before the capture; its record hadn't been cleared away yet.
+[exit 0]
+  @ memory.scanned {"found":12,"image":"qf-srv-01-mem","unlinked":1,"view":"psscan"}
+  @ command.run {"command":"mem","exitCode":0,"line":"mem psscan qf-srv-01-mem"}
+
+$ mem pstree qf-srv-01-mem
+  mem pstree (simulated) · qf-srv-01-mem · 10 processes · the active list · times in UTC
+
+    NAME                  PID   PPID  CREATED
+    System                4     0     2026-04-09T05:58:12Z
+      smss.exe            388   4     2026-04-09T05:58:13Z
+        wininit.exe       496   388   2026-04-09T05:58:20Z
+          services.exe    628   496   2026-04-09T05:58:21Z
+            svchost.exe   812   628   2026-04-09T05:58:25Z
+            svchost.exe   904   628   2026-04-09T05:58:26Z
+          lsass.exe       640   496   2026-04-09T05:58:21Z
+    explorer.exe          2044  1988  2026-04-11T07:02:40Z
+      dispatch-board.exe  2312  2044  2026-04-11T07:03:05Z
+      svchost.exe         4120  2044  2026-04-11T19:43:05Z
+
+  Each process sits under its parent, the process that started it. Windows starts its
+  own services in a known order, so a familiar name under an unfamiliar parent is
+  worth a second look.
+[exit 0]
+  @ memory.listed {"image":"qf-srv-01-mem","processes":10,"view":"pstree"}
+  @ command.run {"command":"mem","exitCode":0,"line":"mem pstree qf-srv-01-mem"}
+
+$ mem netscan qf-srv-01-mem
+  mem netscan (simulated) · qf-srv-01-mem · 6 connections · times in UTC
+
+    PROTO  LOCAL             REMOTE            STATE        PID   OWNER               CREATED
+    TCPv4  0.0.0.0:135       0.0.0.0:0         LISTENING    904   svchost.exe         2026-04-09T05:58:27Z
+    TCPv4  10.60.1.10:8443   10.60.0.21:51022  ESTABLISHED  2312  dispatch-board.exe  2026-04-12T07:55:10Z
+    TCPv4  10.60.1.10:49811  203.0.113.47:443  CLOSE_WAIT   4120  svchost.exe         2026-04-12T08:36:58Z
+    TCPv4  10.60.1.10:49812  203.0.113.47:443  CLOSE_WAIT   4120  svchost.exe         2026-04-12T08:37:58Z
+    TCPv4  10.60.1.10:49813  203.0.113.47:443  CLOSE_WAIT   4120  svchost.exe         2026-04-12T08:38:58Z
+    TCPv4  10.60.1.10:49814  203.0.113.47:443  ESTABLISHED  4120  svchost.exe         2026-04-12T08:39:58Z
+
+  LOCAL is this computer's end, REMOTE the other end. LISTENING means waiting for
+  someone to connect; the same remote address again and again, at a steady interval,
+  is a program checking in with somewhere on a timer.
+[exit 0]
+  @ memory.scanned {"found":6,"image":"qf-srv-01-mem","view":"netscan"}
+  @ command.run {"command":"mem","exitCode":0,"line":"mem netscan qf-srv-01-mem"}
+
+$ mem cmdline qf-srv-01-mem
+  mem cmdline (simulated) · qf-srv-01-mem · 12 processes
+
+    PID   NAME                COMMAND LINE
+    4     System              (none: this is Windows itself, which no command starts)
+    388   smss.exe            C:\Windows\System32\smss.exe
+    496   wininit.exe         C:\Windows\System32\wininit.exe
+    628   services.exe        C:\Windows\System32\services.exe
+    640   lsass.exe           C:\Windows\System32\lsass.exe
+    812   svchost.exe         C:\Windows\System32\svchost.exe -k DcomLaunch -p
+    904   svchost.exe         C:\Windows\System32\svchost.exe -k RPCSS -p
+    2044  explorer.exe        C:\Windows\explorer.exe
+    2312  dispatch-board.exe  "C:\Program Files\Quillfen\Dispatch Board\dispatch-board.exe" --yard main
+    4120  svchost.exe         C:\Users\dispatch\AppData\Roaming\svchost.exe -k netsvcs -relay cdn-sync.example:443
+    3920  cmd.exe             (not in memory: the process had exited before the capture)
+    4188  taskhost-upd.exe    C:\ProgramData\taskhost-upd.exe --quiet --stage 2   [unlinked]
+
+  A name is only what the file is called. The path says where it really lives, and
+  the arguments after it say what it was asked to do.
+[exit 0]
+  @ memory.inspected {"image":"qf-srv-01-mem","view":"cmdline"}
+  @ command.run {"command":"mem","exitCode":0,"line":"mem cmdline qf-srv-01-mem"}
+
+$ mem malfind qf-srv-01-mem
+  mem malfind (simulated) · qf-srv-01-mem · 2 regions
+
+    dispatch-board.exe  pid 2312  at 0x02a10000  65,536 bytes
+    PAGE_EXECUTE_READWRITE, private: no file on disk is behind it
+      0x02a10000  55 48 8b ec 48 83 ec 30  48 89 4d 10 48 8b 45 10  UH..H..0H.M.H.E.
+      0x02a10010  ff 50 18 48 83 c4 30 5d  c3 cc cc cc cc cc cc cc  .P.H..0]........
+      0x02a10020  55 48 8b ec 48 83 ec 20  33 c0 48 89 45 f8 8b 4d  UH..H.. 3.H.E..M
+      0x02a10030  18 e8 2c 01 00 00 48 83  c4 20 5d c3 cc cc cc cc  ..,...H.. ].....
+
+    svchost.exe  pid 4120  at 0x00520000  16,384 bytes
+    PAGE_EXECUTE_READWRITE, private: no file on disk is behind it
+      0x00520000  4d 5a 90 00 03 00 00 00  04 00 00 00 ff ff 00 00  MZ..............
+      0x00520010  b8 00 00 00 00 00 00 00  40 00 00 00 00 00 00 00  ........@.......
+      0x00520020  72 65 6c 61 79 20 63 64  6e 2d 73 79 6e 63 2e 65  relay cdn-sync.e
+      0x00520030  78 61 6d 70 6c 65 3a 34  34 33 20 65 76 65 72 79  xample:443 every
+
+  Code a program loads from its own file can run but not be changed. Memory that can
+  be written and run, with no file behind it, was filled while the program ran: by
+  injected code, or by a runtime compiling code as it goes. Which process it is in,
+  and what the first bytes are, tell the two apart. man mem says how.
+[exit 0]
+  @ memory.scanned {"found":2,"image":"qf-srv-01-mem","view":"malfind"}
+  @ command.run {"command":"mem","exitCode":0,"line":"mem malfind qf-srv-01-mem"}

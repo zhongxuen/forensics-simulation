@@ -199,6 +199,33 @@ export type SimEvent =
       readonly ref: string;
       readonly bytes: number;
     }
+  // Memory (docs/plan/08-memory-tools.md). `view` is the `mem` subcommand that ran.
+  | {
+      readonly type: "memory.listed";
+      /** The memory image, such as "qf-srv-01-mem". */
+      readonly image: string;
+      /** A walk of the active process list, which an unlinked process is missing from. */
+      readonly view: "ps" | "pstree";
+      readonly processes: number;
+    }
+  | {
+      readonly type: "memory.scanned";
+      readonly image: string;
+      /** A scan of the whole image, which finds what the lists leave out. */
+      readonly view: "psscan" | "netscan" | "malfind";
+      /** Processes, connections or regions found. */
+      readonly found: number;
+      /** `psscan` only: how many of those are missing from the active list. */
+      readonly unlinked?: number;
+      /** Present when the scan was narrowed with `--pid`. */
+      readonly pid?: number;
+    }
+  | {
+      readonly type: "memory.inspected";
+      readonly image: string;
+      readonly view: "info" | "cmdline" | "strings";
+      readonly pid?: number;
+    }
   | {
       readonly type: "board.pinned";
       readonly ref: string;

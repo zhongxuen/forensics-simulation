@@ -203,6 +203,10 @@ const OTHER_COPY: {
     error.reason === "no-output"
       ? "Nothing has been printed yet for `pin` to look at. Run an evidence tool first, such as `lsfs` or `inode`, then pin one of the lines it prints."
       : "There's nothing on that line to pin. Pin a line that names a file, record, process or log entry.",
+  MEMORY_NOT_FOUND: (error) =>
+    `\`${error.name}\` isn't a memory image attached to this case. Memory images are named after the computer they were captured from, like \`qf-srv-01-mem\`. Type \`mem\` on its own to see the ones this case has.`,
+  PROCESS_NOT_FOUND: (error) =>
+    `There's no process ${error.pid} in \`${error.image}\`. Every process has a number, its pid; type \`mem psscan ${error.image}\` to see every one the image holds, hidden ones included.`,
 };
 
 /** The beginner explanation for an engine error. */
