@@ -7,6 +7,7 @@ import { CharacterMessage } from "@/components/ui/character-message";
 import { Dialog } from "@/components/ui/dialog";
 import { CheckIcon, DownloadIcon } from "@/components/ui/icons";
 import { getCastMember } from "@/content/cast";
+import { CHAPTER_ONE } from "@/content/cases/chapter";
 import {
   MentorReviewCard,
   type MentorSession,
@@ -30,6 +31,7 @@ import type { CaseRunAction, CaseRunState } from "../../run/case-run";
 import { caseProgress } from "../../run/evaluate";
 import { CaseText } from "../case-text";
 import { SUMMARY_QUESTION } from "../report/report-screen";
+import { ChapterClosing } from "./chapter-closing";
 import { CustodyList } from "./custody-list";
 
 interface DebriefScreenProps {
@@ -159,6 +161,8 @@ export function DebriefScreen({
           <CaseText text={caseDef.debrief.nextTease} />
         </p>
       )}
+
+      {caseDef.slug === CHAPTER_ONE.cases.at(-1) && <ChapterClosing chapter={CHAPTER_ONE} />}
 
       {summary && (
         <section aria-labelledby="debrief-summary" className="mt-6">

@@ -51,8 +51,9 @@ const LISTINGS: readonly CaseListing[] = [
   {
     slug: "case-03",
     title: "Something is still running",
-    summary: "A server is behaving oddly, and whatever did it may still be in memory.",
-    status: "planned",
+    summary:
+      "A server is talking to a stranger once a minute. Find out what is running, before anybody pulls the plug.",
+    status: "playable",
   },
   {
     slug: PRACTICE_CASE.slug,

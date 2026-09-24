@@ -43,7 +43,9 @@ describe("the chapter", () => {
       CHAPTER_ONE.title,
       CHAPTER_ONE.client,
       CHAPTER_ONE.opening,
-      CHAPTER_ONE.closing,
+      CHAPTER_ONE.closing.text,
+      CHAPTER_ONE.upNext.text,
+      CHAPTER_ONE.upNext.label,
     ]) {
       expect(findBannedWords(line), line).toEqual([]);
     }

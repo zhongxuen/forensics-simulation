@@ -103,8 +103,11 @@ interface RunState {
 export function playCase(built: BuiltCase, steps: readonly PlaythroughStep[]): CasePlayResult {
   const entry = built.case;
   const { scenario, seed, startsAt } = caseScenario(entry, built.evidence);
+  // A case with nothing handed over (the scaffold's) has no evidence to attach. One with only a
+  // memory capture and logs (case-03) still does, as the browser's workstation always attaches.
+  const { disks, memory, logs } = built.evidence;
   const attach = (sim: SimState): SimState =>
-    built.evidence.disks.length === 0
+    disks.length + memory.length + logs.length === 0
       ? sim
       : attachEvidence(sim, built.evidence, { now: startsAt });
 
