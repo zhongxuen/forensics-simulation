@@ -90,6 +90,7 @@ export function toRunnableCase(built: BuiltCase): RunnableCase {
         }),
         acceptedRefs: built.acceptedRefs.get(question.id) ?? [],
         explain: question.explain,
+        ...(question.feedback && { feedback: question.feedback }),
       })),
     },
     debrief: {

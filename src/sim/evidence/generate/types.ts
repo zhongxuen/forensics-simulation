@@ -120,6 +120,12 @@ export type StoryAction =
         /** The file that takes them over. Defaults to a temporary file. */
         readonly by?: string;
         readonly content?: string;
+        /**
+         * How many of the deleted file's clusters, from its start, are left alone. Without it
+         * every cluster is taken; with it the file is **partly** overwritten, and its first part
+         * can still be carved, header and all, with no end.
+         */
+        readonly keep?: number;
       }
     >
   | Action<
@@ -243,6 +249,12 @@ export type NoiseDensity = (typeof NOISE_DENSITIES)[number];
 export interface NoiseSpec {
   readonly profile: NoiseProfileId;
   readonly density: NoiseDensity;
+  /**
+   * Whether the background carries on through Saturday and Sunday, on each machine's own clock.
+   * On by default. A case whose story turns on who was in at the weekend turns it off, so the
+   * only weekend activity is the story's own.
+   */
+  readonly weekends?: boolean;
 }
 
 // ---------------------------------------------------------------------------------------------

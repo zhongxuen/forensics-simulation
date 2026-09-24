@@ -459,6 +459,7 @@ const ACTION_SCHEMAS = {
     path: WindowsPathSchema,
     by: z.optional(WindowsPathSchema),
     content: z.optional(z.string()),
+    keep: z.optional(z.int().min(1)),
   }),
   "usb-insert": action("usb-insert", {
     device: machineRef("an id for the drive, like `qf-usb-01`"),
@@ -635,6 +636,8 @@ const NoiseSchema = strict(
       required("which kind of ordinary day to put around the story"),
     ),
     density: z.enum(["none", "low", "medium", "high"], required("how much of it there is")),
+    /** Whether it carries on through Saturday and Sunday. On unless a case says otherwise. */
+    weekends: z.optional(z.boolean()),
   },
   "the background activity (profile, density)",
 );
@@ -652,6 +655,26 @@ const EvidenceSchema = strict(
     ),
   },
   "what the client handed over (disks, logs, memory)",
+);
+
+/** The two files every case folder already has, which a document may not replace. */
+export const CASE_FOLDER_FILES = ["letter.txt", "handover.txt"] as const;
+
+const DocumentSchema = strict(
+  {
+    file: z
+      .string(required("the file name it has in the case folder, like `door-log.txt`"))
+      .regex(
+        /^[a-z0-9][a-z0-9-]*\.txt$/,
+        "Use a lowercase .txt file name with hyphens, like `door-log.txt`.",
+      )
+      .refine(
+        (file) => !(CASE_FOLDER_FILES as readonly string[]).includes(file),
+        `Every case folder already has ${CASE_FOLDER_FILES.join(" and ")}. Pick another name.`,
+      ),
+    content: text("what the document says"),
+  },
+  "a document (file, content)",
 );
 
 // ---------------------------------------------------------------------------------------------
@@ -935,6 +958,25 @@ const ReportQuestionSchema = strict(
       .min(1, "Add at least one evidence pattern: every answer points at evidence."),
     explain: text("what this answer means, without giving the next one away"),
     answerFrom: z.optional(ContentIdSchema),
+    /**
+     * For a choice question that is a **choice beat** (docs/plan/99-reference.md, rule 6): what a
+     * character says when the player picks one of the other choices. It is the consequence,
+     * shown on the debrief in place of "not yet", and Change your report offers the choice again.
+     */
+    feedback: z.optional(
+      z
+        .array(
+          strict(
+            {
+              choice: text("the choice this answers, exactly as it is written in choices"),
+              speaker: SpeakerSchema,
+              text: text("what the character says about that choice"),
+            },
+            "feedback on a choice (choice, speaker, text)",
+          ),
+        )
+        .min(1, "Add at least one piece of feedback, or leave feedback out."),
+    ),
   },
   "a report question",
 )
@@ -954,6 +996,27 @@ const ReportQuestionSchema = strict(
     } else if (question.choices) {
       problem(["choices"], `Only a choice question has choices. This one is a ${question.type}.`);
     }
+
+    const seen = new Set<string>();
+    question.feedback?.forEach((item, index) => {
+      if (question.type !== "choice") {
+        problem(
+          ["feedback"],
+          `Only a choice question has feedback. This one is a ${question.type}.`,
+        );
+      } else if (item.choice === question.answer) {
+        problem(
+          ["feedback", index, "choice"],
+          "That is the answer. Feedback is for the other choices; the answer's own words are its explain.",
+        );
+      } else if (!question.choices?.includes(item.choice)) {
+        problem(["feedback", index, "choice"], `"${item.choice}" isn't one of the choices.`);
+      }
+      if (seen.has(item.choice)) {
+        problem(["feedback", index, "choice"], `Two pieces of feedback answer "${item.choice}".`);
+      }
+      seen.add(item.choice);
+    });
 
     if (question.type === "timestamp") {
       if (parseCaseTime(question.answer) === undefined) {
@@ -1044,6 +1107,13 @@ export const CaseSchema = strict(
       .min(1, "Add at least one story action."),
     noise: z.optional(NoiseSchema),
     evidence: EvidenceSchema,
+    /**
+     * Paperwork that arrived with the evidence besides the letter and the handover form — a
+     * message from the client, a printout of the door log — which the player reads in the case
+     * folder. Like the letter, these are realistic documents rather than game copy, and nothing
+     * in them is evidence a report can cite: a time in one is what somebody wrote down.
+     */
+    documents: z.array(DocumentSchema).default([]),
     beats: z.array(BeatSchema).default([]),
     objectives: z
       .array(
@@ -1138,6 +1208,14 @@ export const CaseSchema = strict(
       );
     });
   }
+
+  const documentFiles = new Set<string>();
+  entry.documents.forEach((document, index) => {
+    if (documentFiles.has(document.file)) {
+      problem(["documents", index, "file"], `Two documents are called "${document.file}".`);
+    }
+    documentFiles.add(document.file);
+  });
 
   const objectiveIds = new Set<string>();
   entry.objectives.forEach((objective, index) => {

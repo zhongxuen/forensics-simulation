@@ -3,8 +3,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";
+import { CharacterMessage } from "@/components/ui/character-message";
 import { Dialog } from "@/components/ui/dialog";
 import { CheckIcon, DownloadIcon } from "@/components/ui/icons";
+import { getCastMember } from "@/content/cast";
 import { formatInstant } from "@/sim";
 import type { EvidenceSet } from "@/sim/types";
 import { custodyLog, custodyText } from "../../custody";
@@ -217,6 +219,38 @@ function nextStep(reason: FindingReason, question: CaseReportQuestion): string {
   }
 }
 
+interface ChoiceFeedbackProps {
+  question: CaseReportQuestion;
+  answer: string | undefined;
+  reason: FindingReason;
+}
+
+/**
+ * A choice beat's consequence (docs/plan/99-reference.md, rule 6): when the choice picked has
+ * feedback in the case file, the character says why it isn't the one, above the usual next step.
+ * No fail screen: Change your report offers the choice again.
+ */
+function ChoiceFeedback({ question, answer, reason }: ChoiceFeedbackProps) {
+  if (reason !== "incorrect" || answer === undefined) return null;
+  const picked = answer.trim().toLowerCase();
+  const item = question.feedback?.find((entry) => entry.choice.trim().toLowerCase() === picked);
+  if (!item) return null;
+  const speaker = getCastMember(item.speaker);
+  return (
+    <div className="mt-3">
+      <CharacterMessage
+        speaker={{
+          name: speaker?.name ?? item.speaker,
+          ...(speaker && { role: speaker.role, initials: speaker.initials }),
+        }}
+        tone={speaker?.tone ?? "teammate"}
+      >
+        {item.text}
+      </CharacterMessage>
+    </div>
+  );
+}
+
 interface FindingsProps {
   report: CaseReportSpec;
   run: CaseRunState;
@@ -261,6 +295,7 @@ function Findings({ report, run, onChangeReport }: FindingsProps) {
                   "nothing"
                 )}
               </p>
+              <ChoiceFeedback question={question} answer={answer} reason={finding.reason} />
               <p className="mt-2 leading-7">{nextStep(finding.reason, question)}</p>
               {finding.verdict === "supported" && (
                 <p className="mt-2 leading-7 text-secondary">

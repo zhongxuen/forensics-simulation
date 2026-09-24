@@ -65,6 +65,18 @@ export interface CaseReportQuestion {
   readonly acceptedRefs: readonly string[];
   /** What the answer means, shown once it is given. */
   readonly explain: string;
+  /**
+   * For a choice beat: what a character says about each of the other choices, shown on the
+   * debrief when that one was picked, in place of "not yet".
+   */
+  readonly feedback?: readonly CaseChoiceFeedback[];
+}
+
+export interface CaseChoiceFeedback {
+  readonly choice: string;
+  /** A speaker id from the cast (`src/content/cast.ts`). */
+  readonly speaker: string;
+  readonly text: string;
 }
 
 export interface CaseDebriefSpec {
