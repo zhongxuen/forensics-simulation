@@ -23,6 +23,10 @@ export const SIM_EVENT_TYPES = [
   "evidence.hashed",
   "evidence.readOriginal",
   "evidence.recovered",
+  // Memory (docs/plan/08-memory-tools.md).
+  "memory.listed",
+  "memory.scanned",
+  "memory.inspected",
   "board.pinned",
   // Carving, strings and log queries (docs/plan/07-carve-strings-logq.md).
   "evidence.carved",

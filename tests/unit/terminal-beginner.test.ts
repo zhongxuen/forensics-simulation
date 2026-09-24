@@ -103,6 +103,8 @@ const EXAMPLES: Record<SimErrorCode, readonly SimError[]> = {
     { code: "NOTHING_TO_PIN", reason: "no-output" },
     { code: "NOTHING_TO_PIN", reason: "no-ref", line: 3 },
   ],
+  MEMORY_NOT_FOUND: [{ code: "MEMORY_NOT_FOUND", name: "qf-srv-99-mem" }],
+  PROCESS_NOT_FOUND: [{ code: "PROCESS_NOT_FOUND", image: "qf-srv-01-mem", pid: 7 }],
 };
 
 const CONTEXT = { command: "cat", user: "recruit", cwd: "/home/recruit" };

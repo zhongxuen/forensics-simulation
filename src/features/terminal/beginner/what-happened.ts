@@ -79,8 +79,31 @@ const OUTPUT_NOTES: Readonly<Record<string, (flags: readonly string[]) => string
     flags.some((flag) => flag.startsWith("--count-by"))
       ? "Each row is one value of the field you counted by, how many records have it, and when it first and last appears. Many records sharing one value in a short time is what a burst looks like."
       : "Each record is printed the way its source writes it, with every line carrying the record's ref, so a line you keep with `grep` can still be pinned.",
+  // The memory tools (docs/plan/08-memory-tools.md): one note per subcommand.
+  mem: (args) => {
+    const sub = args.find((arg) => !arg.startsWith("-")) ?? "";
+    return Object.hasOwn(MEM_NOTES, sub) ? MEM_NOTES[sub] : undefined;
+  },
   pin: () =>
     "A pin stores the artefact ref, the short string that names exactly one piece of evidence, so the report can point back at this record rather than at your memory of it.",
+};
+
+/** How to read each `mem` subcommand's output. */
+const MEM_NOTES: Readonly<Record<string, string>> = {
+  info: "A memory image is one moment on one computer: everything in it was true at the capture time, and says nothing about after.",
+  ps: "Each row is one running process: its number (PID), the number of the process that started it (PPID), its name, when it started and whose account it runs as. This is the list Windows keeps, and it can be tampered with.",
+  psscan:
+    "This searched the whole image for processes instead of trusting the list. A row marked `unlinked` is still running but was taken out of the list `mem ps` reads; compare the two.",
+  pstree:
+    "Each process sits under the one that started it. Most of Windows starts in a known order, so a familiar name under an unfamiliar parent is worth a look.",
+  netscan:
+    "LOCAL is this computer's end of a connection and REMOTE the other end. The same REMOTE address over and over, a steady time apart, is a program checking in on a timer. Note it; never connect to it.",
+  cmdline:
+    "The command line is the full instruction a process started with: where its file really is, and what it was asked to do.",
+  malfind:
+    "Each block is memory that can be written and run, with no file behind it, and its first 64 bytes. Injected code looks like this, and so does a runtime compiling code as it goes: which process it's in, and whether it starts with `MZ`, tell them apart.",
+  strings:
+    "Reading the text out of a process's memory isn't built yet. `mem cmdline` holds most of the text worth reading.",
 };
 
 const REDIRECT_TEXT: Readonly<Record<string, (target: string) => string>> = {

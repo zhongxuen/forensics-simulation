@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 import type { BrowsedImage, EvidenceSet, SimState } from "@/sim/types";
 import { FilesView } from "./components/files-view";
+import { ProcessesView } from "./memory/processes-view";
 
 /** What the Evidence Browser, and each of its tabs, gets from the workspace. */
 export interface EvidenceBrowserProps {
@@ -37,8 +38,8 @@ export interface BrowserTab {
 
 /**
  * The Evidence Browser's views, in tab order. The browser loads as one chunk when the Evidence
- * pane first opens, so a tab added here arrives with it. File 08 adds a Processes tab from
- * `./memory/` with one line; the tabs only show once there's more than one to choose from.
+ * pane first opens, so a tab added here arrives with it. Processes (file 08, `./memory/`) shows
+ * when the case has a memory image; the tabs only show once there's more than one to choose from.
  */
 export const BROWSER_TABS: readonly BrowserTab[] = [
   {
@@ -46,5 +47,11 @@ export const BROWSER_TABS: readonly BrowserTab[] = [
     label: "Files",
     available: (evidence) => evidence.disks.length > 0,
     Component: FilesView,
+  },
+  {
+    id: "processes",
+    label: "Processes",
+    available: (evidence) => evidence.memory.length > 0,
+    Component: ProcessesView,
   },
 ];

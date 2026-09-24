@@ -43,6 +43,8 @@ const EXAMPLES: Record<(typeof SIM_ERROR_CODES)[number], SimError> = {
   RECORD_NOT_FOUND: { code: "RECORD_NOT_FOUND", image: "qf-lt-07", record: 900 },
   CLUSTERS_REUSED: { code: "CLUSTERS_REUSED", image: "qf-lt-07", record: 51 },
   NOTHING_TO_PIN: { code: "NOTHING_TO_PIN", reason: "no-ref", line: 3 },
+  MEMORY_NOT_FOUND: { code: "MEMORY_NOT_FOUND", name: "qf-srv-99-mem" },
+  PROCESS_NOT_FOUND: { code: "PROCESS_NOT_FOUND", image: "qf-srv-01-mem", pid: 7 },
 };
 
 /** Codes whose real message doesn't start with the tool's name. */

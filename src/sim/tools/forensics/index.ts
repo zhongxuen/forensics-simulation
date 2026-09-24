@@ -14,6 +14,7 @@ import { hashsum } from "./hashsum";
 import { inode } from "./inode";
 import { logq } from "./logq";
 import { lsfs } from "./lsfs";
+import { mem } from "./mem";
 import { pin } from "./pin";
 import { recover } from "./recover";
 import { strings } from "./strings";
@@ -28,10 +29,24 @@ export const FORENSICS_TOOLS: readonly Tool[] = [
   inode,
   logq,
   lsfs,
+  mem,
   pin,
   recover,
   strings,
   timeline,
 ];
 
-export { acquire, blocker, carve, hashsum, inode, logq, lsfs, pin, recover, strings, timeline };
+export {
+  acquire,
+  blocker,
+  carve,
+  hashsum,
+  inode,
+  logq,
+  lsfs,
+  mem,
+  pin,
+  recover,
+  strings,
+  timeline,
+};
