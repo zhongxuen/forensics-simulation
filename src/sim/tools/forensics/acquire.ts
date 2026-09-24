@@ -67,6 +67,7 @@ export const acquire: Tool = {
       "Command-line imagers: dd, dcfldd and dc3dd on Linux, and ewfacquire for the EnCase (E01) format.",
       "This tool writes one whole image in one pass. Real imagers also offer split images, compression, and re-verification of a finished image.",
     ],
+    lesson: "foundations-hashing-for-evidence",
   },
 
   run(args, state, ctx) {

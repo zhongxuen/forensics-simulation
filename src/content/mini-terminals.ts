@@ -8,8 +8,9 @@ import type { FsEntrySpec, ScenarioSpec } from "@/sim/types";
  * They're all on the Range, Candlewright's practice lab (md-files/story-bible.md, "World facts":
  * range.candlewright.example, 192.168.60.0/24), and small on purpose: a handful of files or
  * computers, enough for one idea. A lesson picks one by id; the lesson tests fail on an id that
- * isn't here. `ir-ws-practice` is this game's own: the analyst workstation, for the forensics
- * lessons. The Range machines came with the vendored pipeline.
+ * isn't here. `ir-ws-practice` and `ir-ws-disk` are this game's own: the analyst workstation, for
+ * the forensics lessons, each with a practice drive attached as evidence. The Range machines came
+ * with the vendored pipeline.
  */
 
 export interface MiniTerminalScenario {
@@ -21,6 +22,17 @@ export interface MiniTerminalScenario {
   readonly title: string;
   readonly seed: number;
   readonly scenario: ScenarioSpec;
+  /**
+   * The practice evidence attached under /dev/evidence, write-blockers on: the id of a story in
+   * src/content/practice/stories.ts, generated into `<id>.evidence.json` by `pnpm evidence:build`.
+   */
+  readonly evidence?: string;
+  /**
+   * Commands run once the evidence is attached and before the learner arrives, such as making the
+   * working copy, so a lesson can start where its idea does. Each must succeed (the lesson tests
+   * run them). Run again on Reset machine.
+   */
+  readonly prepare?: readonly string[];
 }
 
 const RANGE = "192.168.60.0/24";
@@ -277,8 +289,10 @@ const WEB: MiniTerminalScenario = {
  * `handover.txt` and `hashes.txt` are the real hashes of those files (tests/unit/lesson-content.test.ts
  * recomputes them).
  *
- * TODO(04): once `acquire` and `hashsum` exist, the Foundations lessons image a practice device and
- * verify it here instead of reading recorded hashes.
+ * The stick itself is attached as evidence, `/dev/evidence/train-07`, generated from its story in
+ * src/content/practice/stories.ts, so the hashing lesson can image it with `acquire` and check the
+ * copy with `hashsum --verify` against the SHA-256 on the handover form. That SHA-256 is the one
+ * the story's hand-over took (the lesson tests check the two agree).
  */
 export const PRACTICE_NOTE = [
   "Practice note on TRAIN-07",
@@ -296,12 +310,16 @@ export const PRACTICE_NOTE_SHA256 =
 export const PRACTICE_NOTE_CHANGED_SHA256 =
   "ba0c71fa42ba7533389d2e7cc01fd24e9ce3efe65297ff7180ac684448341ad2";
 
+/** SHA-256 of the TRAIN-07 stick's image, as its hand-over recorded it. */
+export const TRAIN_07_SHA256 = "2585ba7c94d34cfbbdce3bde416725b97208e9d5a8368e57da087d34e560bdd4";
+
 const PRACTICE: MiniTerminalScenario = {
   id: "ir-ws-practice",
   title: "examiner@ir-ws-01 (practice)",
   description:
-    "Your analyst workstation with a practice examination: a signed letter, a custody log, recorded hashes and two copies of one note.",
+    "Your analyst workstation with a practice examination: a signed letter, a custody log, recorded hashes, two copies of one note, and the TRAIN-07 stick attached as evidence.",
   seed: 9201,
+  evidence: "train-07",
   scenario: {
     id: "ir-ws-practice",
     startTime: "2026-09-22T09:00:00Z",
@@ -354,7 +372,11 @@ const PRACTICE: MiniTerminalScenario = {
                   "Handed over by: Theo Ashgrove, 2026-09-21 09:05 UTC",
                   "Received by:    Idris Fenwick",
                   "Seal:           bag 0412, intact",
-                  `SHA-256 of the note, taken before handover: ${PRACTICE_NOTE_SHA256}`,
+                  "Device:         /dev/evidence/train-07 (Wrenfold 8 GB memory stick)",
+                  "",
+                  "Taken before handover:",
+                  `SHA-256 of the stick:        ${TRAIN_07_SHA256}`,
+                  `SHA-256 of the note on it:   ${PRACTICE_NOTE_SHA256}`,
                   "",
                 ].join("\n"),
               },
@@ -380,6 +402,7 @@ const PRACTICE: MiniTerminalScenario = {
                   "",
                 ].join("\n"),
               },
+              { path: "/home/examiner/images", type: "dir" },
               {
                 path: "/home/examiner/copies/copy-a/note.txt",
                 content: PRACTICE_NOTE,
@@ -399,6 +422,67 @@ const PRACTICE: MiniTerminalScenario = {
   },
 };
 
+/** Where the Disk lessons' practice examination lives on the workstation. */
+export const DISK_PRACTICE_DIR = "/home/examiner/cases/practice";
+
+/**
+ * The analyst workstation with Candlewright's practice laptop attached, for the Disk lessons
+ * (docs/plan/13-learning-center.md). The drive, `train-lt-01`, is generated from its story in
+ * src/content/practice/stories.ts: a week of a trainee's Documents folder, with a file changed and
+ * then read, a draft deleted and left alone, a note deleted and written over, and a deleted PDF
+ * handout for carving. The working copy is already made when the learner arrives, so each lesson
+ * starts on the copy, the way an examination does.
+ */
+const DISK: MiniTerminalScenario = {
+  id: "ir-ws-disk",
+  title: "examiner@ir-ws-01 (practice)",
+  description:
+    "Your analyst workstation with Candlewright's practice laptop attached and a working copy already made: deleted files, one written over, and a PDF to carve.",
+  seed: 9202,
+  evidence: "train-lt-01",
+  prepare: [`acquire /dev/evidence/train-lt-01 --out ${DISK_PRACTICE_DIR}/images/train-lt-01.img`],
+  scenario: {
+    id: "ir-ws-disk",
+    startTime: "2026-09-22T09:00:00Z",
+    network: {
+      subnets: [{ cidr: "10.20.0.0/24", name: "Candlewright blue-team room" }],
+      hosts: [
+        {
+          id: "ir-ws-01",
+          hostname: "ir-ws-01.candlewright.example",
+          interfaces: [{ ip: "10.20.0.11", subnet: "10.20.0.0/24" }],
+          os: linux,
+          users: [{ name: "examiner", uid: 1000, groups: ["adm"] }],
+          fs: {
+            entries: [
+              {
+                path: `${DISK_PRACTICE_DIR}/letter.txt`,
+                content: [
+                  "Letter of authorisation (practice)",
+                  "",
+                  "Candlewright Security may examine one laptop, label TRAIN-LT-01,",
+                  "from the training cupboard. Nothing else.",
+                  "",
+                  "Questions the examination should answer:",
+                  "  1. What did the trainee's Documents folder hold that week?",
+                  "  2. What was deleted, and can it be read back?",
+                  "",
+                  "Signed: Theo Ashgrove, team lead, 2026-09-21",
+                  "",
+                ].join("\n"),
+              },
+              { path: `${DISK_PRACTICE_DIR}/images`, type: "dir" },
+              { path: `${DISK_PRACTICE_DIR}/recovered`, type: "dir" },
+              { path: `${DISK_PRACTICE_DIR}/carved`, type: "dir" },
+            ],
+          },
+        },
+      ],
+    },
+    session: { host: "ir-ws-01", user: "examiner", cwd: DISK_PRACTICE_DIR },
+  },
+};
+
 export const MINI_TERMINALS: readonly MiniTerminalScenario[] = [
   HOME,
   PERMISSIONS,
@@ -406,6 +490,7 @@ export const MINI_TERMINALS: readonly MiniTerminalScenario[] = [
   NETWORK,
   WEB,
   PRACTICE,
+  DISK,
 ];
 
 export const MINI_TERMINAL_IDS: readonly string[] = MINI_TERMINALS.map((mini) => mini.id);

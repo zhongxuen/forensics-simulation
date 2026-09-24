@@ -26,11 +26,19 @@ export function renderHelp(name: string, help: ToolHelp): OutputLine[] {
   if (help.realWorld?.length) {
     lines.push("", REAL_WORLD_HEADING, ...help.realWorld.map((entry) => `  ${entry}`));
   }
+  if (help.lesson !== undefined) lines.push("", LESSON_HEADING, `  ${lessonLine(help.lesson)}`);
   return lines.map(stdout);
 }
 
 /** The section every simulated forensics tool names its real counterpart in. */
 export const REAL_WORLD_HEADING = "REAL-WORLD EQUIVALENT";
+
+/** The section that points at the Learning Center lesson behind a tool. */
+export const LESSON_HEADING = "LESSON";
+
+/** Where a tool's lesson lives, as one line: the address the Learning Center serves it at. */
+export const lessonLine = (lesson: string): string =>
+  `The idea behind this tool is explained in the Learning Center: /learn/${lesson}`;
 
 const INDENT = "       ";
 const DEEP_INDENT = "              ";
@@ -85,6 +93,8 @@ export function renderManPage(name: string, help: ToolHelp): OutputLine[] {
       lines.push(`${INDENT}${entry}`);
     });
   }
+  if (help.lesson !== undefined)
+    lines.push("", LESSON_HEADING, `${INDENT}${lessonLine(help.lesson)}`);
   lines.push(
     "",
     "SIMULATED",

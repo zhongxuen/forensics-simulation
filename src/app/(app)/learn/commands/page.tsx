@@ -3,8 +3,9 @@ import Link from "next/link";
 import { FOCUS_RING } from "@/components/ui/focus-ring";
 import { SimulatedBadge } from "@/components/ui/simulated-badge";
 import { ManPage } from "@/features/learning";
+import { getLesson } from "@/features/learning/server";
 import { cx } from "@/lib/cx";
-import { listTools, TOOL_CATEGORIES, TOOL_CATEGORY_LABELS } from "@/sim";
+import { defaultRegistry, listTools, TOOL_CATEGORIES, TOOL_CATEGORY_LABELS } from "@/sim";
 
 export const metadata: Metadata = {
   title: "Command manual",
@@ -95,6 +96,7 @@ export default function CommandManualPage() {
                     {tool.summary.charAt(0).toUpperCase() + tool.summary.slice(1)}
                   </p>
                   <ManPage name={tool.name} className="mt-3" />
+                  <LessonLink name={tool.name} />
                 </section>
               ))}
             </div>
@@ -102,5 +104,23 @@ export default function CommandManualPage() {
         ))}
       </div>
     </div>
+  );
+}
+
+/** The lesson a command's manual page points at, as a link, when it has one. */
+function LessonLink({ name }: { name: string }) {
+  const id = defaultRegistry.get(name)?.help.lesson;
+  const lesson = id === undefined ? undefined : getLesson(id);
+  if (!lesson) return null;
+  return (
+    <p className="mt-2 leading-7 text-secondary">
+      The lesson behind it:{" "}
+      <Link
+        href={`/learn/${lesson.id}`}
+        className={cx("rounded-sm font-medium text-accent hover:underline", FOCUS_RING)}
+      >
+        {lesson.title}
+      </Link>
+    </p>
   );
 }

@@ -1,0 +1,125 @@
+---
+id: disk-macb-timestamps
+title: The four times on every file
+topic: forensics
+level: 2
+readingMinutes: 8
+analogy: "A library book's slip, stamped four ways: when the book joined the library, when a page was last rewritten, when someone last took it off the shelf, and when its catalogue card was last changed."
+summary: What each of a file's four MACB times records, what moves each one, and how far to trust them.
+prerequisites: [disk-partitions-and-filesystems]
+externalPrerequisites: [forensics-timelines]
+relatedCommands: [inode, lsfs]
+glossaryTerms: [macb-times, coordinated-universal-time]
+cites: [carrier-fsfa-ch13, ms-learn-file-times]
+---
+
+## The one-sentence version
+
+Every file record holds four times, Modified, Accessed, Changed and Born, and each one moves for a
+different reason, so together they tell a short story about the file.
+
+Picture a library book whose slip gets stamped four ways: when it joined the library, when a page
+was last rewritten, when someone last took it off the shelf, and when its catalogue card was last
+edited. No single stamp tells you much. All four side by side tell you what happened to it.
+
+<Quiz
+  question="A file's modified time is 14:20 on Wednesday and its accessed time is 09:00 on Thursday. What's the most likely story?"
+  options={[
+    {
+      text: "Somebody changed it on Wednesday afternoon and opened it again on Thursday morning",
+      correct: true,
+      explanation:
+        "Writing to a file moves M (and A with it). Opening it later moves only A. So the last change was Wednesday, and the last opening was Thursday.",
+    },
+    {
+      text: "Somebody changed it on Thursday morning",
+      explanation:
+        "A change would have moved the modified time to Thursday too. M staying on Wednesday says nobody wrote to it after that.",
+    },
+    {
+      text: "The times disagree, so one of them can't be right",
+      explanation:
+        "They don't disagree: they answer different questions. That's exactly why a file has four of them.",
+    },
+  ]}
+/>
+
+## Why it matters in security
+
+"When?" is in almost every question a client asks. When was the invoice deleted? Was the price list
+opened before or after the remote logon? Was this file on the laptop before the break-in, or did it
+arrive with it? The <Term id="macb-times">MACB times</Term> are often the only answer on the drive,
+and they end up in the report next to the evidence they came from.
+
+They can also mislead, which is why an examiner learns exactly what moves each one before relying
+on any of them.
+
+## How it actually works
+
+### The four times
+
+In NTFS, each file's standard information holds four times (Carrier, _File System Forensic
+Analysis_, chapter 13). Examiners write them as MACB:
+
+| Letter | Name     | Moves when                                                    |
+| ------ | -------- | ------------------------------------------------------------- |
+| M      | Modified | the file's content is written                                 |
+| A      | Accessed | the file is opened or read                                    |
+| C      | Changed  | the record itself changes: a rename, a permission, a deletion |
+| B      | Born     | the file is created, and never again                          |
+
+So writing to a file moves M, A and C together, opening it moves A alone, and deleting it moves C.
+B stays where it was.
+
+### Stored in UTC
+
+NTFS stores these times in <Term id="coordinated-universal-time">coordinated universal time</Term>,
+so they don't shift with time zones or summer time (Microsoft Learn, "File Times"). The computer
+converts them to its own zone when it shows them. This game's tools print UTC, ending in Z, and say
+which zone the laptop showed. The practice laptop was in the UK in September, so its screen read
+one hour later than the times you'll see.
+
+### How far to trust each one
+
+- **B and M** are the steadiest, since only creating and writing move them.
+- **A is the weakest.** Microsoft Learn says NTFS may wait up to an hour before updating it. In this
+  game, reading a file moves A at once, which makes the idea easier to see than real Windows does.
+- **All four can be set on purpose.** Windows lets a program set a file's times without touching
+  its content, with a function called SetFileTime (Microsoft Learn, "File Times"). Tools built to
+  hide activity do exactly this, which is why one time on its own is never a conclusion. Look for
+  times that agree with each other, and with other evidence such as logs.
+
+## See it
+
+A trainee's plan was created on a Tuesday, had a line added on Thursday, and was read on Friday.
+The practice laptop's drive recorded all of it. Read the times.
+
+<MiniTerminal
+  scenario="ir-ws-disk"
+  commands={["inode train-lt-01 15", "inode train-lt-01 16", "inode train-lt-01 17"]}
+  task="Type `inode train-lt-01 16` and read the four times on `plan.txt`."
+  expect="inode"
+  success="Born on the 15th, modified and changed on the 17th at 14:20, accessed on the 18th at 09:00. Four times, four moments: created, edited, then opened."
+/>
+
+Compare the other two. Record 15, `rota.txt`, was written once and never touched again, so all four
+times match. Record 17, `letter-draft.txt`, has three times at 11:00 and C at 11:30: that half-hour
+later change to the record is the moment it was deleted.
+
+## In practice
+
+In [Case 1, The Clean Copy](/cases/case-01), reading the original drive with the write-blocker off
+moves every file's A time, and that's what changes the drive's hash. Case 2, still being written,
+turns on the M and C times of deleted invoices, and on converting a witness's local times to UTC
+before comparing them.
+
+## Common misconceptions
+
+- **"Accessed means a person opened it."** A virus scanner, a backup or a search index reads files
+  too, and moves A the same way.
+- **"Created is when the file first existed anywhere."** B is when this record was created on this
+  drive. A file copied from elsewhere is born at the moment of the copy.
+- **"The times on the screen are the times on the drive."** The screen shows local time; NTFS keeps
+  UTC. Convert before you compare.
+- **"Timestamps prove when something happened."** They're strong evidence, and they can be edited.
+  Back each one up with something else.

@@ -1,6 +1,6 @@
 # src/content/lessons
 
-Learning Center lessons: one `.mdx` file per lesson, written for complete beginners and going deeper than Hacker Simulation's forensics lessons, which they link to instead of repeating (`docs/plan/13-learning-center.md`). The tracks and their reading order are in `src/content/tracks.ts`. The Foundations track is written; Disk, Memory, and Logs and timelines follow in prompts 13.2 and 13.3.
+Learning Center lessons: one `.mdx` file per lesson, written for complete beginners and going deeper than Hacker Simulation's forensics lessons, which they link to instead of repeating (`docs/plan/13-learning-center.md`). The tracks and their reading order are in `src/content/tracks.ts`. The Foundations and Disk tracks are written; Memory, and Logs and timelines follow in prompt 13.3.
 
 ## Writing a lesson
 
@@ -33,7 +33,12 @@ House rules, enforced while the lesson compiles and in CI (`tests/unit/content-r
 - No `import` or `export`. Use the lesson components:
   - `<Term id="…">words</Term>` the first time a glossary word appears. Every `glossaryTerms` id needs one.
   - `<Quiz question="…" options={[{ text, correct: true, explanation }, { text, explanation }]} />`: exactly one correct option, and an explanation on every option. Every lesson has one.
-  - `<MiniTerminal scenario="ir-ws-practice" commands={["cat letter.txt"]} task="…" expect="cat" success="…" />` in the "See it" section: the real terminal on a practice machine from `src/content/mini-terminals.ts`. `ir-ws-practice` is the analyst workstation with a practice examination on it (a letter, a custody log, a handover form, recorded hashes and two copies of a note). Every suggested command is run in CI and must succeed. Until file 04 lands, lessons use the workstation's commands only; where a lesson wants `acquire` or `hashsum`, leave a `{/* TODO(04): … */}` comment.
+  - `<MiniTerminal scenario="ir-ws-practice" commands={["cat letter.txt"]} task="…" expect="cat" success="…" />` in the "See it" section: the real terminal on a practice machine from `src/content/mini-terminals.ts`. Every suggested command is run in CI, with the machine's practice evidence attached, and must succeed; a command that is meant to be refused goes in the prose, not the chips. The forensics machines:
+    - `ir-ws-practice`, the analyst workstation with a practice examination (a letter, a custody log, a handover form, recorded hashes and two copies of a note) and the TRAIN-07 stick attached as `/dev/evidence/train-07`, for the Foundations lessons.
+    - `ir-ws-disk`, the analyst workstation with Candlewright's practice laptop attached as `/dev/evidence/train-lt-01` and a working copy already made in `cases/practice/images`, for the Disk lessons.
+
+    Their evidence is generated, never written by hand: each drive is a story in `src/content/practice/stories.ts`, played by the case generator. Change a story, run `pnpm evidence:build`, and read the new output before quoting it in a lesson.
+
   - `<Annotated>` and `<PacketDiagram>` break output or a message down part by part. Copy output from a real run of the engine.
 - "In practice" links the case where the player meets the idea: `[Case 1, The Clean Copy](/cases/case-01)`.
 - The voice rules in `docs/plan/99-reference.md`: second person, short sentences, plain words first, and none of the banned words in `src/content/voice.ts`.

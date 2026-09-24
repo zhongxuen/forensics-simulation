@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { use, useCallback, useMemo, useState } from "react";
 import { ObjectiveTick } from "@/components/ui/objective-tick";
 import { getMiniTerminal, type MiniTerminalScenario } from "@/content/mini-terminals";
 import type { MiniTerminalProps } from "@/content/schemas/lesson-components";
 import { Terminal, useTerminalSession } from "@/features/terminal";
-import type { SimEvent } from "@/sim/types";
+import type { EvidenceSet, SimEvent } from "@/sim/types";
 import { GlossaryText } from "../glossary/glossary-text";
+import { practiceEvidence, practiceSetup } from "../practice/practice-evidence";
 
 /**
  * A terminal inside a lesson: the real phase 05 terminal, running the real engine, on one of the
@@ -15,21 +16,40 @@ import { GlossaryText } from "../glossary/glossary-text";
  *
  * With `expect`, the lesson's small exercise ticks with its success line once that command works.
  * Nothing is kept: leaving the page or pressing Reset machine starts it fresh.
+ *
+ * A machine with practice evidence waits for that drive (its own small chunk) before it starts,
+ * inside the lazy terminal's Suspense boundary, then attaches it under /dev/evidence.
  */
 export function MiniTerminalView(props: MiniTerminalProps) {
   const mini = getMiniTerminal(props.scenario);
   if (!mini) throw new Error(`<MiniTerminal> has no practice machine called "${props.scenario}".`);
+  if (mini.evidence !== undefined) {
+    return <MiniTerminalWithEvidence mini={mini} id={mini.evidence} {...props} />;
+  }
   return <MiniTerminalSession mini={mini} {...props} />;
+}
+
+function MiniTerminalWithEvidence({
+  id,
+  ...props
+}: MiniTerminalProps & { mini: MiniTerminalScenario; id: string }) {
+  const evidence = use(practiceEvidence(id));
+  return <MiniTerminalSession {...props} evidence={evidence} />;
 }
 
 function MiniTerminalSession({
   mini,
+  evidence,
   commands,
   task,
   expect,
   success,
-}: MiniTerminalProps & { mini: MiniTerminalScenario }) {
+}: MiniTerminalProps & { mini: MiniTerminalScenario; evidence?: EvidenceSet }) {
   const [done, setDone] = useState(false);
+  const setup = useMemo(
+    () => (evidence === undefined ? undefined : practiceSetup(mini, evidence)),
+    [mini, evidence],
+  );
   const onEvents = useCallback(
     (events: readonly SimEvent[]) => {
       if (
@@ -44,7 +64,12 @@ function MiniTerminalSession({
     },
     [expect],
   );
-  const session = useTerminalSession({ scenario: mini.scenario, seed: mini.seed, onEvents });
+  const session = useTerminalSession({
+    scenario: mini.scenario,
+    seed: mini.seed,
+    onEvents,
+    ...(setup && { setup }),
+  });
 
   return (
     <figure className="mt-8">

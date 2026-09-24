@@ -18,7 +18,7 @@ import {
   renderLessonBody,
   type LessonCatalog,
 } from "@/features/learning/server";
-import { listTools } from "@/sim";
+import { defaultRegistry, listTools, renderHelp, renderManPage } from "@/sim";
 
 /**
  * CI fails on a dead cross-reference anywhere in the learning content
@@ -96,6 +96,34 @@ describe("the real content", () => {
   });
 });
 
+describe("the manual pages", () => {
+  const lessonIds = new Set(loadLessonCatalog().lessons.map((lesson) => lesson.id));
+  const lessonOf = (name: string) => defaultRegistry.get(name)?.help.lesson;
+
+  it("link only to lessons that exist", () => {
+    const dead = defaultRegistry.names().flatMap((name) => {
+      const lesson = lessonOf(name);
+      return lesson === undefined || lessonIds.has(lesson) ? [] : [`${name} → ${lesson}`];
+    });
+    expect(dead).toEqual([]);
+  });
+
+  it("link every disk tool to the lesson that teaches it", () => {
+    // pin, logq and timeline gain theirs with the Memory and Logs lessons (prompt 13.3).
+    const disk = ["acquire", "blocker", "carve", "hashsum", "inode", "lsfs", "recover", "strings"];
+    expect(disk.filter((name) => lessonOf(name) === undefined)).toEqual([]);
+  });
+
+  it("print where the lesson is, in man and in --help", () => {
+    const help = defaultRegistry.get("carve")?.help;
+    expect(help).toBeDefined();
+    if (!help) return;
+    for (const lines of [renderManPage("carve", help), renderHelp("carve", help)]) {
+      expect(lines.map((line) => line.text).join("\n")).toContain("/learn/disk-carving");
+    }
+  });
+});
+
 describe("the citations", () => {
   it("have unique ids in the content id format", () => {
     const ids = CITATIONS.map((citation) => citation.id);
@@ -103,9 +131,10 @@ describe("the citations", () => {
     for (const id of ids) expect(id).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
   });
 
-  it("each name a section, a free link and the date it was checked against the source", () => {
+  it("each name a section or chapter, a link and the date it was checked against the source", () => {
     for (const citation of CITATIONS) {
-      expect(citation.section, citation.id).toMatch(/§\d/);
+      // A standard's numbered section, a book's numbered chapter, or a short unnumbered page.
+      expect(citation.section, citation.id).toMatch(/§\d|\bChapter \d|^The whole page\b/);
       expect(citation.url, citation.id).toMatch(/^https:\/\//);
       expect(citation.checked, citation.id).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(citation.supports, citation.id).toMatch(/\.$/);

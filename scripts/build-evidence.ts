@@ -17,10 +17,15 @@
  *
  * What those two files hold lives in scripts/lib/evidence-files.ts, so `pnpm case:new` and
  * `pnpm case:validate` agree with this script about what "up to date" means.
+ *
+ * It also builds the lessons' practice evidence the same way: each story in
+ * `src/content/practice/stories.ts` becomes `src/content/practice/<id>.evidence.json`.
  */
-import { readdirSync, rmSync } from "node:fs";
+import { readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Case } from "@/content/cases/schema";
+import { PRACTICE_STORIES } from "@/content/practice/stories";
+import { generateEvidence, stableStringify } from "@/sim";
 import {
   buildCase,
   CASES_DIR,
@@ -36,16 +41,23 @@ import {
   writeEvidenceFiles,
 } from "./lib/evidence-files";
 
+/** Where the lessons' practice evidence is written, beside the stories it is built from. */
+const PRACTICE_DIR = join(process.cwd(), "src", "content", "practice");
+
 const args = process.argv.slice(2);
 const check = args.includes("--check");
 const wanted = args.filter((arg) => !arg.startsWith("-"));
 
 const catalog = load();
 const cases = wanted.length === 0 ? catalog : catalog.filter((entry) => wanted.includes(entry.id));
+const practice =
+  wanted.length === 0
+    ? PRACTICE_STORIES
+    : PRACTICE_STORIES.filter((story) => wanted.includes(story.id));
 
-if (cases.length === 0) {
-  const known = catalog.map((entry) => entry.id).join(", ");
-  fail(`No case matches ${wanted.join(", ")}. The cases are: ${known}.`);
+if (cases.length === 0 && practice.length === 0) {
+  const known = [...catalog, ...PRACTICE_STORIES].map((entry) => entry.id).join(", ");
+  fail(`No case or practice story matches ${wanted.join(", ")}. They are: ${known}.`);
 }
 
 const problems: string[] = [];
@@ -117,6 +129,41 @@ for (const name of existing()) {
   console.log(`${name}: removed (its case is gone)`);
 }
 
+// The lessons' practice evidence: one generated file per story, beside the stories.
+for (const story of practice) {
+  const path = join(PRACTICE_DIR, `${story.id}.evidence.json`);
+  const contents = `${stableStringify(generateEvidence(story), 2)}\n`;
+  const before = readIfThere(path);
+  if (before === contents) continue;
+  changed++;
+  if (check) {
+    problems.push(
+      before === undefined
+        ? `practice/${story.id}.evidence.json has never been built. Run \`pnpm evidence:build\`.`
+        : `practice/${story.id}.evidence.json is out of date: its story has changed since it was built. Run \`pnpm evidence:build\` and commit the result.`,
+    );
+  } else {
+    writeFileSync(path, contents, "utf8");
+    console.log(`practice ${story.id}: ${kb(contents)}`);
+  }
+}
+
+// Practice evidence whose story is gone would be loaded by nothing, and sit there for ever.
+const storyIds = new Set(PRACTICE_STORIES.map((story) => story.id));
+for (const name of readdirSync(PRACTICE_DIR)) {
+  const id = /^(.+)\.evidence\.json$/.exec(name)?.[1];
+  if (id === undefined || storyIds.has(id)) continue;
+  if (check) {
+    problems.push(
+      `practice/${name} has no story any more. Run \`pnpm evidence:build\` to clear it out.`,
+    );
+    continue;
+  }
+  rmSync(join(PRACTICE_DIR, name));
+  changed++;
+  console.log(`practice ${id}: removed (its story is gone)`);
+}
+
 if (problems.length > 0) {
   for (const problem of problems) console.error(`\n${problem}`);
   fail(
@@ -128,10 +175,10 @@ if (problems.length > 0) {
 
 console.log(
   check
-    ? `Every case's evidence is what its story builds today (${cases.length} checked).`
+    ? `Every case's evidence is what its story builds today (${cases.length} cases and ${practice.length} practice stories checked).`
     : changed === 0
-      ? `Nothing changed (${cases.length} checked).`
-      : `Built ${cases.length} case${cases.length === 1 ? "" : "s"}.`,
+      ? `Nothing changed (${cases.length} cases and ${practice.length} practice stories checked).`
+      : `Built ${cases.length} case${cases.length === 1 ? "" : "s"} and ${practice.length} practice ${practice.length === 1 ? "story" : "stories"}.`,
 );
 
 // ---------------------------------------------------------------------------------------------

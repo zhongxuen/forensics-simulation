@@ -256,6 +256,7 @@ export const strings: Tool = {
       "bstrings, which adds regular-expression searches, and Autopsy's keyword search, which extracts strings from unallocated space as it indexes.",
       "For memory, the Volatility 3 approach: run strings over the capture, then map each offset back to its process with the windows.strings plugin.",
     ],
+    lesson: "disk-carving",
   },
 
   run(args, state, ctx) {

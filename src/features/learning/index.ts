@@ -14,3 +14,4 @@ export {
   type ReferenceContext,
   type ReferenceSuggestions,
 } from "./reference/suggest";
+export { practiceEvidence, practiceSetup } from "./practice/practice-evidence";

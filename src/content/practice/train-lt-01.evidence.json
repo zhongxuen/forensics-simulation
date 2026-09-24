@@ -1,0 +1,319 @@
+{
+  "caseId": "train-lt-01",
+  "disks": [
+    {
+      "clusterSize": 4096,
+      "device": {
+        "model": "Pellmoor 128 GB solid-state drive",
+        "serial": "PM-TRN-0001"
+      },
+      "id": "train-lt-01",
+      "partitions": [
+        {
+          "fs": "NTFS-like",
+          "index": 0,
+          "label": "System reserved",
+          "sectors": 1048576,
+          "startSector": 2048
+        },
+        {
+          "fs": "NTFS-like",
+          "index": 1,
+          "label": "Windows",
+          "sectors": 249019056,
+          "startSector": 1050624
+        }
+      ],
+      "records": [
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\",
+          "record": 5,
+          "size": 0,
+          "times": {
+            "a": 1772087760000,
+            "b": 1772087760000,
+            "c": 1772087760000,
+            "m": 1772087760000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows",
+          "record": 6,
+          "size": 0,
+          "times": {
+            "a": 1772092014000,
+            "b": 1772092014000,
+            "c": 1772092014000,
+            "m": 1772092014000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\Temp",
+          "record": 7,
+          "size": 0,
+          "times": {
+            "a": 1772089857000,
+            "b": 1772089857000,
+            "c": 1772089857000,
+            "m": 1772089857000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Users",
+          "record": 8,
+          "size": 0,
+          "times": {
+            "a": 1772087081000,
+            "b": 1772087081000,
+            "c": 1772087081000,
+            "m": 1772087081000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Users\\Public",
+          "record": 9,
+          "size": 0,
+          "times": {
+            "a": 1772091884000,
+            "b": 1772091884000,
+            "c": 1772091884000,
+            "m": 1772091884000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Users\\Public\\Downloads",
+          "record": 10,
+          "size": 0,
+          "times": {
+            "a": 1772090700000,
+            "b": 1772090700000,
+            "c": 1772090700000,
+            "m": 1772090700000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator",
+          "record": 11,
+          "size": 0,
+          "times": {
+            "a": 1784184391000,
+            "b": 1784184391000,
+            "c": 1784184391000,
+            "m": 1784184391000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\Documents",
+          "record": 12,
+          "size": 0,
+          "times": {
+            "a": 1784187467000,
+            "b": 1784187467000,
+            "c": 1784187467000,
+            "m": 1784187467000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee",
+          "record": 13,
+          "size": 0,
+          "times": {
+            "a": 1784183749000,
+            "b": 1784183749000,
+            "c": 1784183749000,
+            "m": 1784183749000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee\\Documents",
+          "record": 14,
+          "size": 0,
+          "times": {
+            "a": 1784185367000,
+            "b": 1784185367000,
+            "c": 1784185367000,
+            "m": 1784185367000
+          }
+        },
+        {
+          "clusters": [
+            1000
+          ],
+          "contentB64": "UHJhY3RpY2Ugcm90YQpNb246IE5vb3IKVHVlOiBJZHJpcwpXZWQ6IEtpdAo=",
+          "deleted": false,
+          "kind": "file",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee\\Documents\\rota.txt",
+          "record": 15,
+          "size": 44,
+          "times": {
+            "a": 1789373400000,
+            "b": 1789373400000,
+            "c": 1789373400000,
+            "m": 1789373400000
+          }
+        },
+        {
+          "clusters": [
+            1001
+          ],
+          "contentB64": "VHJhaW5pbmcgcGxhbiwgd2VlayAzOAoxLiBPcmRlciBvZiB2b2xhdGlsaXR5CjIuIENoYWluIG9mIGN1c3RvZHkK",
+          "deleted": false,
+          "kind": "file",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee\\Documents\\plan.txt",
+          "record": 16,
+          "size": 66,
+          "times": {
+            "a": 1789722000000,
+            "b": 1789466400000,
+            "c": 1789654800000,
+            "m": 1789654800000
+          }
+        },
+        {
+          "clusters": [
+            1002
+          ],
+          "contentB64": "VGhlbywgVFJBSU4tMDcgaXMgYmFjayBpbiBjYWJpbmV0IDIuIEtpdAo=",
+          "deleted": true,
+          "kind": "file",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee\\Documents\\letter-draft.txt",
+          "record": 17,
+          "size": 41,
+          "times": {
+            "a": 1789556400000,
+            "b": 1789556400000,
+            "c": 1789558200000,
+            "m": 1789556400000
+          }
+        },
+        {
+          "clusters": [
+            1003
+          ],
+          "contentB64": "QmxvY2tlciBvbiBiZWZvcmUgYW55dGhpbmcgZWxzZS4K",
+          "deleted": true,
+          "kind": "file",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee\\Documents\\old-note.txt",
+          "record": 18,
+          "size": 33,
+          "times": {
+            "a": 1789560000000,
+            "b": 1789560000000,
+            "c": 1789560300000,
+            "m": 1789560000000
+          }
+        },
+        {
+          "clusters": [
+            1003
+          ],
+          "contentB64": "dXBkYXRlIHN0YXJ0ZWQgMDc6MDAKdXBkYXRlIGZpbmlzaGVkIDA3OjAyCg==",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\Temp\\update.log",
+          "record": 19,
+          "size": 43,
+          "times": {
+            "a": 1789628400000,
+            "b": 1789628400000,
+            "c": 1789628400000,
+            "m": 1789628400000
+          }
+        },
+        {
+          "clusters": [
+            1005
+          ],
+          "contentB64": "JVBERi0xLjQKMSAwIG9iaiA8PCAvVGl0bGUgKENhcnZpbmcgcHJhY3RpY2UgaGFuZG91dCkgL0F1dGhvciAoQ2FuZGxld3JpZ2h0IHRyYWluaW5nKSA+PiBlbmRvYmoKMiAwIG9iaiA8PCAvTGVuZ3RoIDU4ID4+IHN0cmVhbQpDYXJ2ZWQgZmlsZXMgaGF2ZSBubyBuYW1lIGFuZCBubyB0aW1lcy4gU2F5IHdoZXJlIHlvdSBmb3VuZCB0aGVtLgplbmRzdHJlYW0gZW5kb2JqCnRyYWlsZXIgPDwgL1Jvb3QgMSAwIFIgPj4KJSVFT0YK",
+          "deleted": true,
+          "kind": "file",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee\\Documents\\handout.pdf",
+          "record": 20,
+          "size": 243,
+          "times": {
+            "a": 1789725600000,
+            "b": 1789725600000,
+            "c": 1789727400000,
+            "m": 1789725600000
+          }
+        }
+      ],
+      "sectorSize": 512,
+      "sectors": 250069680,
+      "unallocatedB64": "VGhlbywgVFJBSU4tMDcgaXMgYmFjayBpbiBjYWJpbmV0IDIuIEtpdAp1cGRhdGUgc3RhcnRlZCAwNzowMAp1cGRhdGUgZmluaXMlUERGLTEuNAoxIDAgb2JqIDw8IC9UaXRsZSAoQ2FydmluZyBwcmFjdGljZSBoYW5kb3V0KSAvQXV0aG9yIChDYW5kbGV3cmlnaHQgdHJhaW5pbmcpID4+IGVuZG9iagoyIDAgb2JqIDw8IC9MZW5ndGggNTggPj4gc3RyZWFtCkNhcnZlZCBmaWxlcyBoYXZlIG5vIG5hbWUgYW5kIG5vIHRpbWVzLiBTYXkgd2hlcmUgeW91IGZvdW5kIHRoZW0uCmVuZHN0cmVhbSBlbmRvYmoKdHJhaWxlciA8PCAvUm9vdCAxIDAgUiA+PgolJUVPRgo="
+    }
+  ],
+  "handover": [
+    {
+      "by": "Theo Ashgrove",
+      "hashes": {
+        "md5": "1298d5ad1c604b52b6c22c63322c3fe3",
+        "sha256": "6d7123cc2b0e071f902b2db91181c8e8193d9271ddff106af8bed29bdad7c6ab"
+      },
+      "item": "train-lt-01",
+      "receivedAt": 1789981500000
+    }
+  ],
+  "logs": [],
+  "memory": [],
+  "seed": 9302,
+  "zones": {
+    "disk": "Europe/London"
+  }
+}

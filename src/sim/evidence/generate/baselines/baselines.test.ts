@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { at, caseOf, LAPTOP, SERVER, WORKSTATION } from "../__fixtures__/case";
+import { at, caseOf, LAPTOP, SERVER, TRAINING_LAPTOP, WORKSTATION } from "../__fixtures__/case";
 import { generate } from "../generate";
 import type { MachineSpec, StoryAction } from "../types";
 import { BASELINE_IDS, BASELINES, getBaseline } from "./index";
@@ -17,6 +17,7 @@ const SPECS: Readonly<Record<string, MachineSpec>> = {
   "office-laptop-v1": LAPTOP,
   "office-server-v1": SERVER,
   "analyst-workstation-v1": WORKSTATION,
+  "training-laptop-v1": TRAINING_LAPTOP,
 };
 
 /** Enough of a story to build the machine without touching it. */

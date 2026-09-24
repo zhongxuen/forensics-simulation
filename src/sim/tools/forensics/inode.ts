@@ -90,6 +90,7 @@ export const inode: Tool = {
       "Autopsy's metadata tab, and the MFT entry view in tools such as MFTECmd and MFTExplorer.",
       "stat on Linux and Get-Item on Windows show the same kind of record for a live file.",
     ],
+    lesson: "disk-macb-timestamps",
   },
 
   run(args, state, ctx) {

@@ -1,13 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
   getMiniTerminal,
+  MINI_TERMINALS,
   PRACTICE_NOTE,
   PRACTICE_NOTE_CHANGED,
   PRACTICE_NOTE_CHANGED_SHA256,
   PRACTICE_NOTE_SHA256,
+  TRAIN_07_SHA256,
+  type MiniTerminalScenario,
 } from "@/content/mini-terminals";
+import { PRACTICE_STORY_IDS } from "@/content/practice/stories";
 import { TRACKS } from "@/content/tracks";
 import { findBannedWords } from "@/content/voice";
+import { practiceEvidence, practiceSetup } from "@/features/learning";
 import { compileLessonBody, loadLessonCatalog, type Lesson } from "@/features/learning/server";
 import { createTerminalSession, submitLine } from "@/features/terminal";
 import { utf8Bytes } from "@/sim/evidence";
@@ -25,12 +30,16 @@ import { hashHex } from "@/sim/evidence/hash";
 const catalog = loadLessonCatalog();
 const lessons = catalog.lessons;
 
-/** Every lesson written so far, by track. Prompts 13.2 and 13.3 add the other three tracks. */
+/** Every lesson written so far, by track. Prompt 13.3 adds the Memory and Logs tracks. */
 const EXPECTED_LESSONS = [
   "foundations-what-forensics-is",
   "foundations-order-of-volatility",
   "foundations-chain-of-custody",
   "foundations-hashing-for-evidence",
+  "disk-partitions-and-filesystems",
+  "disk-macb-timestamps",
+  "disk-deleted-vs-overwritten",
+  "disk-carving",
 ];
 
 /** The six sections, in order. Level 0 lessons may leave out "how it works" and misconceptions. */
@@ -72,8 +81,24 @@ function miniTerminals(body: string): { scenario: string; commands: string[] }[]
     const list = /commands=\{\[([\s\S]*?)\]\}/.exec(props)?.[1] ?? "";
     return {
       scenario: /scenario="([^"]+)"/.exec(props)?.[1] ?? "",
-      commands: [...list.matchAll(/"((?:[^"\\]|\\.)*)"/g)].map((command) => command[1] ?? ""),
+      // Each command is a JavaScript string in the lesson, so `\\` in the source is one backslash.
+      commands: [...list.matchAll(/"((?:[^"\\]|\\.)*)"/g)].map(
+        (command) => JSON.parse(`"${command[1] ?? ""}"`) as string,
+      ),
     };
+  });
+}
+
+/** A fresh practice terminal on this machine, with its practice evidence attached and prepared. */
+async function practiceSession(mini: MiniTerminalScenario) {
+  const setup =
+    mini.evidence === undefined
+      ? undefined
+      : practiceSetup(mini, await practiceEvidence(mini.evidence));
+  return createTerminalSession({
+    scenario: mini.scenario,
+    seed: mini.seed,
+    ...(setup && { setup }),
   });
 }
 
@@ -140,7 +165,7 @@ describe.each(eachLesson)("lesson %s", (_id, lesson: Lesson) => {
     expect(section(lesson.body, /^(See it|Try it)\b/)).toMatch(/<MiniTerminal\b/);
   });
 
-  it("suggests only commands that work on its practice machine", () => {
+  it("suggests only commands that work on its practice machine", async () => {
     const minis = miniTerminals(lesson.body);
     expect(minis.length).toBeGreaterThan(0);
     for (const { scenario, commands } of minis) {
@@ -148,7 +173,7 @@ describe.each(eachLesson)("lesson %s", (_id, lesson: Lesson) => {
       expect(mini, scenario).toBeDefined();
       if (!mini) continue;
       expect(commands.length, scenario).toBeGreaterThan(0);
-      let session = createTerminalSession({ scenario: mini.scenario, seed: mini.seed });
+      let session = await practiceSession(mini);
       for (const command of commands) {
         session = submitLine(session, command);
         expect(session.blocks.at(-1)?.exitCode, `${lesson.id}: ${command}`).toBe(0);
@@ -224,6 +249,12 @@ describe("the practice workstation", () => {
     expect(files.get("/home/examiner/handover.txt")).toContain(PRACTICE_NOTE_SHA256);
   });
 
+  it("puts the stick's real SHA-256 on the handover form: the one its hand-over took", async () => {
+    const evidence = await practiceEvidence("train-07");
+    expect(evidence.handover[0]?.hashes?.sha256).toBe(TRAIN_07_SHA256);
+    expect(files.get("/home/examiner/handover.txt")).toContain(TRAIN_07_SHA256);
+  });
+
   it("keeps the two copies the same size, so only the hash tells them apart", () => {
     expect(utf8Bytes(PRACTICE_NOTE).length).toBe(utf8Bytes(PRACTICE_NOTE_CHANGED).length);
     expect(PRACTICE_NOTE).not.toBe(PRACTICE_NOTE_CHANGED);
@@ -234,4 +265,23 @@ describe("the practice workstation", () => {
     expect(log.split("\n").filter((line) => line.includes("0413"))).toHaveLength(1);
     expect(log).toMatch(/copy-b/);
   });
+});
+
+describe("the practice evidence", () => {
+  const withEvidence = MINI_TERMINALS.filter((mini) => mini.evidence !== undefined);
+
+  it("names only practice stories that exist", () => {
+    const named = withEvidence.map((mini) => mini.evidence ?? "");
+    expect(named.filter((id) => !PRACTICE_STORY_IDS.includes(id))).toEqual([]);
+  });
+
+  it.each(withEvidence.map((mini) => [mini.id, mini] as const))(
+    "%s starts with its evidence attached, write-blockers on",
+    async (_id, mini) => {
+      const session = await practiceSession(mini);
+      const attached = Object.values(session.sim.evidence?.attached ?? {});
+      expect(attached.map((item) => item.id)).toEqual([mini.evidence]);
+      expect(attached.every((item) => item.blocker)).toBe(true);
+    },
+  );
 });

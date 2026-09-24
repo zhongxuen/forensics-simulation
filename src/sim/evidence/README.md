@@ -116,7 +116,7 @@ It is a _test_ builder, not the generator: it checks nothing for consistency or 
 
 `generate(caseSpec)` plays a written story against a clean machine and returns the evidence it would really have left, plus a **trace** saying which action left what (`docs/plan/03-case-format-and-generator.md`). Nobody writes evidence by hand, so it can never disagree with the story.
 
-- `baselines/` are the clean machine templates: `office-laptop-v1`, `office-server-v1`, and `analyst-workstation-v1`, which is never imaged because it is where evidence is examined.
+- `baselines/` are the clean machine templates: `office-laptop-v1`, `office-server-v1`, `analyst-workstation-v1`, which is never imaged because it is where evidence is examined, and `training-laptop-v1`, Candlewright's practice laptop, which only the lessons' practice stories use (`src/content/practice/`).
 - `actions/` is the story vocabulary, one file and one test per action, each leaving every artefact that action really would — MACB times, log records, processes, connections, regions.
 - `noise.ts` is the seeded ordinary activity around a story: turning its density up makes a case harder without touching the story.
 - `accepted.ts` resolves a report question's `acceptedEvidence` patterns (`disk:qf-lt-07:mft/*inv-0412*`) into concrete refs, and fails loudly when one matches nothing.

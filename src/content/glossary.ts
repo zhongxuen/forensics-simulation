@@ -1201,6 +1201,101 @@ const ENTRIES: readonly GlossaryEntryInput[] = [
     relatedTerms: ["hash", "md5", "integrity", "collision"],
     relatedLessons: ["foundations-hashing-for-evidence"],
   },
+  // Disk forensics: what's inside a drive, and what deleting leaves behind.
+  {
+    id: "partition",
+    term: "Partition",
+    topic: "forensics",
+    short:
+      "One section of a drive, set apart from the rest, which holds its own separate collection of files.",
+    long: "A small table at the start of the drive says where each partition begins and how long it is. A Windows laptop usually has a small System reserved partition and a large Windows one, each with its own file system. Investigators image the whole drive, not one partition, so nothing in between is missed.",
+    relatedTerms: ["sector", "file-system", "forensic-image"],
+    relatedLessons: ["disk-partitions-and-filesystems"],
+  },
+  {
+    id: "sector",
+    term: "Sector",
+    topic: "forensics",
+    short: "The smallest piece of a drive that can be read or written at once, usually 512 bytes.",
+    long: "A drive is one long row of numbered sectors. Imaging copies them in order, from the first to the last, which is why `acquire` counts its progress in sectors. A file system groups several sectors together into clusters.",
+    relatedTerms: ["cluster", "partition", "forensic-image"],
+    relatedLessons: ["disk-partitions-and-filesystems"],
+  },
+  {
+    id: "cluster",
+    term: "Cluster",
+    topic: "forensics",
+    short: "A fixed-size block of a drive, often 4,096 bytes, that holds some of a file's content.",
+    long: "A file system hands out space a cluster at a time, never less: a 41-byte note still takes a whole one. The file record lists which clusters hold the file. Delete the file and they're marked free, content and all, and the next file written may take them over.",
+    relatedTerms: ["sector", "file-record", "unallocated-space"],
+    relatedLessons: ["disk-partitions-and-filesystems", "disk-deleted-vs-overwritten"],
+  },
+  {
+    id: "file-record",
+    term: "File record",
+    aka: ["MFT record", "MFT entry"],
+    topic: "forensics",
+    short:
+      "The entry a drive keeps for each file and folder, with its name, size, owner, four times, and where its content sits.",
+    long: "On Windows the records live in one big table, the Master File Table, and each has a number. Deleting a file marks its record free but leaves the name, size and times in it, which is why `lsfs` still lists deleted files and `inode` can show one in full.",
+    relatedTerms: ["cluster", "macb-times", "file-system"],
+    relatedLessons: ["disk-partitions-and-filesystems", "disk-deleted-vs-overwritten"],
+  },
+  {
+    id: "macb-times",
+    term: "MACB times",
+    aka: ["MACB"],
+    topic: "forensics",
+    short:
+      "The four times a drive keeps for each file: when its content was Modified, when it was Accessed, when its record Changed, and when it was Born.",
+    long: "Each answers a different question. Writing to a file moves M and C, opening it moves A, deleting it moves C, and B stays where it was. Windows keeps them in coordinated universal time. The accessed time is the one to trust least: Windows may wait up to an hour before updating it.",
+    relatedTerms: ["timestamp", "file-record", "coordinated-universal-time", "timeline"],
+    relatedLessons: ["disk-macb-timestamps"],
+  },
+  {
+    id: "unallocated-space",
+    term: "Unallocated space",
+    aka: ["free space"],
+    topic: "forensics",
+    short:
+      "The parts of a drive that no file is using right now, which can still hold whatever was there before.",
+    long: "When a file is deleted, its clusters join the unallocated space with their content still in them. Nothing wipes them; the next write might land on top. Carving searches this space for files by their first bytes.",
+    relatedTerms: ["cluster", "file-carving", "file-record"],
+    relatedLessons: ["disk-deleted-vs-overwritten", "disk-carving"],
+  },
+  {
+    id: "file-carving",
+    term: "File carving",
+    aka: ["carving", "carve"],
+    topic: "forensics",
+    short:
+      "Finding files in a drive's raw bytes by what their content looks like, with no record of their names or where they were.",
+    long: "Most formats begin with fixed magic bytes and many end with a marker, so a carver cuts out everything from a start to its end. What it finds has no name and no times, because those lived in the file record. It can't join up a file stored in pieces, which is what fragmentation means for carving.",
+    relatedTerms: ["magic-bytes", "unallocated-space", "fragmentation"],
+    relatedLessons: ["disk-carving"],
+  },
+  {
+    id: "magic-bytes",
+    term: "Magic bytes",
+    aka: ["file signature", "magic number"],
+    topic: "forensics",
+    short:
+      "The fixed bytes a kind of file always starts with, which give away what it is even when its name is gone.",
+    long: "A PDF document starts `%PDF-`, a ZIP archive starts `PK`, and a JPEG photo starts with the bytes FF D8 FF. Each comes from the format's own specification. A file's name can lie about what it is; its first bytes rarely do. Plain text has none, which is why a carver can't find a deleted text file.",
+    relatedTerms: ["file-carving", "file"],
+    relatedLessons: ["disk-carving"],
+  },
+  {
+    id: "fragmentation",
+    term: "Fragmentation",
+    aka: ["fragmented file"],
+    topic: "forensics",
+    short:
+      "When one file's content is stored in several separate pieces around a drive instead of in one run.",
+    long: "It happens when no single free gap is big enough, or when a file grows later. While the file record survives, it lists every piece, so the file reads back whole. Without the record, a carver has to find and join the pieces itself, and a simple start-to-end carver can't.",
+    relatedTerms: ["cluster", "file-carving", "file-record"],
+    relatedLessons: ["disk-carving"],
+  },
   // Defending: spotting attacks early and keeping systems safe.
   {
     id: "blue-team",

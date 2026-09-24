@@ -105,6 +105,7 @@ export const carve: Tool = {
       "Autopsy's carving ingest module (it runs PhotoRec over unallocated space) and bulk_extractor.",
       "Signatures come from the formats' own specifications: ISO 32000 for PDF, PKWARE's APPNOTE for ZIP, ITU-T T.81 for JPEG and the W3C PNG specification.",
     ],
+    lesson: "disk-carving",
   },
 
   run(args, state, ctx) {

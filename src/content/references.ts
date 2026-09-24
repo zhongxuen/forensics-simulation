@@ -31,7 +31,7 @@ export interface Citation {
   readonly section: string;
   /** What that part says that the lesson relies on, in one plain sentence. */
   readonly supports: string;
-  /** Where to read it, free of charge. */
+  /** Where to read it, free of charge where it can be; for a book, the publisher's page. */
   readonly url: string;
   /** When the section number and wording were checked against the document (YYYY-MM-DD). */
   readonly checked: string;
@@ -43,6 +43,14 @@ const SP_800_86 = {
   publisher: "National Institute of Standards and Technology",
   year: 2006,
   url: "https://doi.org/10.6028/NIST.SP.800-86",
+} as const;
+
+const FSFA = {
+  source: "Carrier",
+  title: "File System Forensic Analysis",
+  publisher: "Brian Carrier, Addison-Wesley Professional",
+  year: 2005,
+  url: "https://www.informit.com/store/file-system-forensic-analysis-9780321268174",
 } as const;
 
 export const CITATIONS: readonly Citation[] = [
@@ -148,6 +156,64 @@ export const CITATIONS: readonly Citation[] = [
       "MD5 collisions can be found in about a minute on a laptop, so MD5 is no longer acceptable where collision resistance is required.",
     url: "https://www.rfc-editor.org/rfc/rfc6151#section-2.1",
     checked: "2026-09-23",
+  },
+  // The Disk track. Carrier's book isn't free to read; the publisher's page lists its contents,
+  // which is where the chapter and section names below were checked.
+  {
+    id: "carrier-fsfa-ch5",
+    ...FSFA,
+    section: "Chapter 5, PC-based Partitions (DOS Partitions; Analysis Considerations)",
+    supports:
+      "A PC drive is divided into partitions by a table near its start that gives where each one begins and how long it is, and an examiner checks the space no partition claims.",
+    checked: "2026-09-24",
+  },
+  {
+    id: "carrier-fsfa-ch8",
+    ...FSFA,
+    section: "Chapter 8, File System Analysis (Content Category; Metadata Category)",
+    supports:
+      "A file system's data falls into categories, content in data units and metadata about each file, and deleting a file leaves both behind until the space is allocated to something else.",
+    checked: "2026-09-24",
+  },
+  {
+    id: "carrier-fsfa-ch11",
+    ...FSFA,
+    section: "Chapter 11, NTFS Concepts (Everything is a File; MFT Concepts)",
+    supports:
+      "In NTFS every file and folder has an entry in the Master File Table, and the file system's own bookkeeping is stored as files too.",
+    checked: "2026-09-24",
+  },
+  {
+    id: "carrier-fsfa-ch13",
+    ...FSFA,
+    section: "Chapter 13, NTFS Data Structures (Standard File Attributes)",
+    supports:
+      "Each file's $STANDARD_INFORMATION attribute holds four times: when it was created, when its content was last modified, when its MFT entry was last modified, and when it was last accessed.",
+    checked: "2026-09-24",
+  },
+  {
+    id: "ms-learn-file-times",
+    source: "Microsoft Learn",
+    title: "File Times",
+    publisher: "Microsoft",
+    year: 2018,
+    section: "The whole page, which has no numbered sections",
+    supports:
+      "NTFS stores file times in UTC, may delay updating a file's last-access time by up to an hour, and SetFileTime can change a file's times without changing its content.",
+    url: "https://learn.microsoft.com/en-us/windows/win32/sysinfo/file-times",
+    checked: "2026-09-24",
+  },
+  {
+    id: "garfinkel-2007-carving",
+    source: "Garfinkel",
+    title: "Carving contiguous and fragmented files with fast object validation",
+    publisher: "Digital Investigation 4S, pp. S2–S12 (Elsevier), from the 2007 DFRWS conference",
+    year: 2007,
+    section: "§1, Introduction; §3.2, Fragmentation distribution; §5.1.1, Header/footer carving",
+    supports:
+      "Carving rebuilds files from their content instead of the metadata that points to it; 6% of the files recovered from the study's drives were fragmented; and header/footer carving cuts out everything between a start marker and an end marker.",
+    url: "https://hdl.handle.net/10945/38489",
+    checked: "2026-09-24",
   },
 ];
 

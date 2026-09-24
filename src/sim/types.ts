@@ -118,3 +118,10 @@ export type {
   ResolvedArtefact,
   ZonedSource,
 } from "./evidence/types";
+export type {
+  Actor,
+  CaseSpec,
+  EvidenceSelection,
+  MachineSpec,
+  StoryAction,
+} from "./evidence/generate/types";

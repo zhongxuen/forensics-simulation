@@ -22,6 +22,12 @@ export interface ToolHelp {
    * here and nowhere else: the registry test bans them as command names.
    */
   readonly realWorld?: readonly string[];
+  /**
+   * The Learning Center lesson that teaches the idea behind this tool, by id
+   * (docs/plan/13-learning-center.md: "each tool's man page links to its lesson"). The page prints
+   * where to find it; tests/unit/content-references.test.ts checks the lesson exists.
+   */
+  readonly lesson?: string;
 }
 
 /**

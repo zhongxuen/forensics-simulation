@@ -4,8 +4,8 @@
  * gate: every lesson is open, and a track never nags about lessons skipped.
  *
  * tests/unit/lesson-content.test.ts checks that every id here is a real lesson, that every lesson
- * is in a track, and that no lesson comes before its own prerequisites. The Disk, Memory and Logs
- * and timelines tracks arrive with prompts 13.2 and 13.3.
+ * is in a track, and that no lesson comes before its own prerequisites. The Memory and Logs and
+ * timelines tracks arrive with prompt 13.3.
  */
 
 export interface Track {
@@ -30,4 +30,17 @@ export const FOUNDATIONS: Track = {
   ],
 };
 
-export const TRACKS: readonly Track[] = [FOUNDATIONS];
+export const DISK: Track = {
+  id: "disk",
+  title: "Disk",
+  description:
+    "Four lessons on what a drive holds and what deleting leaves behind: partitions and file systems, the four times on every file, deleted versus overwritten, and carving files with no name.",
+  lessons: [
+    "disk-partitions-and-filesystems",
+    "disk-macb-timestamps",
+    "disk-deleted-vs-overwritten",
+    "disk-carving",
+  ],
+};
+
+export const TRACKS: readonly Track[] = [FOUNDATIONS, DISK];

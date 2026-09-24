@@ -1,0 +1,125 @@
+---
+id: disk-carving
+title: Finding files with no name
+topic: forensics
+level: 3
+readingMinutes: 8
+analogy: 'Sorting a box of loose pages with no covers. A letter starts "Dear" and ends with a signature, so you can pull letters out by their shape even though nobody wrote a title on them.'
+summary: How carving finds files in free space by their first and last bytes, what it can't tell you, and why fragmented files defeat it.
+prerequisites: [disk-deleted-vs-overwritten]
+externalPrerequisites: [forensics-evidence-care]
+relatedCommands: [carve, strings, lsfs]
+glossaryTerms: [file-carving, magic-bytes, fragmentation]
+cites: [garfinkel-2007-carving]
+---
+
+## The one-sentence version
+
+Carving searches a drive's raw bytes for the fixed start and end of known file formats and cuts out
+what lies between, which finds files that no record points at any more, with no name and no times.
+
+Imagine a box of loose pages with no covers. You can still pull out the letters, because a letter
+starts with "Dear" and ends with a signature. You won't know who filed them or when, but you'll
+have the letters.
+
+<Quiz
+  question="You carve a PDF out of a drive's free space. What can you say about it in your report?"
+  options={[
+    {
+      text: "Its name and when it was created, read from inside the carved file",
+      explanation:
+        "The name and the four times lived in the file record, and carving works without one. A document may carry a title or a date inside it, but that's what the document says about itself, not what the drive recorded.",
+    },
+    {
+      text: "Which image it came from, where in the free space it started, and what it contains",
+      correct: true,
+      explanation:
+        "That's everything carving knows: the image, the offset, the type it matched and the bytes. Say exactly that, and say how you know what it is.",
+    },
+    {
+      text: "Nothing, because carved files aren't evidence",
+      explanation:
+        "They are evidence, as long as you describe where they came from. Carving is often the only way to find a file whose record was reused.",
+    },
+  ]}
+/>
+
+## Why it matters in security
+
+Recovering by record only works while the record survives. When the record has been reused, or the
+file system is damaged, nothing on the drive points at the content any more, and yet the bytes can
+still be sitting in the free space. Garfinkel's 2007 paper (§1) puts it plainly: carving can
+recover files that were deleted and had their directory entries given to other files, as long as
+the data itself hasn't been overwritten.
+
+Carving also finds things nobody deleted on purpose: an attachment a mail program unpacked and
+cleaned up, a document an application saved a temporary copy of. Those copies can outlive the
+original.
+
+## How it actually works
+
+### Signatures
+
+Most file formats begin with fixed <Term id="magic-bytes">magic bytes</Term>, set by the format's
+own specification. A PDF starts `%PDF-` and ends `%%EOF`. A ZIP archive starts `PK` followed by the
+bytes 03 04. A JPEG photo starts FF D8 FF and ends FF D9.
+
+### Header and footer
+
+<Term id="file-carving">Carving</Term> in its simplest form is what Garfinkel (§5.1.1) calls
+header/footer carving: find every place a known start appears, find the matching end after it, and
+cut out everything from one to the other. `carve` works this way over the
+<Term id="unallocated-space">unallocated space</Term>. An object with a start and no end is marked
+partial: something was written over the rest, and what survives can still be read with `strings`.
+
+### What carving can't do
+
+- **No names, no times.** Those were in the file record. A carved file is described by the image,
+  its offset in the free space, and its contents.
+- **No signature, no carving.** Plain text has no magic bytes, so a deleted text file can't be
+  carved this way. Its content is still in the free space; nothing marks where it begins.
+- **Pieces.** A file stored in several separate runs of clusters has been through
+  <Term id="fragmentation">fragmentation</Term>. A start-to-end carver joins a start to whatever
+  follows it, which may belong to another file. Garfinkel (§3.2) found 6% of the files recovered
+  from the second-hand drives in his study were fragmented. That's why a carved file has to be read
+  and checked before it's relied on.
+
+## See it
+
+The practice laptop's free space holds what three deleted files left behind: a letter draft, a note
+since written over, and a PDF handout. Carve it and see what comes out.
+
+<MiniTerminal
+  scenario="ir-ws-disk"
+  commands={[
+    "carve train-lt-01",
+    "carve train-lt-01 --out carved",
+    "strings carved/carve-74.pdf",
+    "lsfs train-lt-01 -d -r",
+  ]}
+  task="Type `carve train-lt-01` to search the practice laptop's free space for known file types."
+  expect="carve"
+  success="One PDF, 243 bytes, starting 74 bytes into the free space and ending with %%EOF. Three files were deleted and one was found: the letter draft is plain text, with no signature to find, and the note's bytes were written over."
+/>
+
+Write it out with `carve train-lt-01 --out carved` and read it with `strings`. Then list the
+deleted records: record 20 is the same handout, with a name and four times. The carved copy has
+neither. The 74 bytes before it are the letter draft (41 bytes) and what overwrote the note (33).
+
+## In practice
+
+In Case 2, still being written, one of Quillfen Freight's deleted invoices was partly written over
+by a zip file. `recover` refuses it, `carve` finds its first part as a partial PDF, and `strings`
+reads what's left. The drive is the bookkeeper's laptop, imaged the way you learn in
+[Case 1, The Clean Copy](/cases/case-01).
+
+## Common misconceptions
+
+- **"Carving recovers deleted files."** It recovers bytes that look like files. Whether they're the
+  file you're after, whole or joined to a stranger's, is something you check.
+- **"The file extension tells you the type."** Names can lie and carved files have none. The first
+  bytes are what carving goes on.
+- **"A carved file's contents give its date."** A date written inside a document is a claim the
+  document makes. The drive's own times were in the record.
+- **"Carving only finds deleted files."** It searches whatever bytes you give it, so it finds
+  copies nobody knew were there.
