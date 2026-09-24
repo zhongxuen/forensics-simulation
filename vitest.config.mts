@@ -76,12 +76,20 @@ export default defineConfig({
       // each gate a little under where it stands, so a drop fails CI. The engine is pure and
       // deterministic, so nearly all of it is reachable, and settings are the only thing that
       // touches storage. The mission and mentor gates were left out with those features
-      // (VENDORED.md); file 03 adds the case evaluator and run reducer here. Reset for this repo in
-      // prompt 01.2: the src/sim gate sits lower than the sibling's because the tests of the dropped
-      // tools went with them, leaving src/sim/net/discovery.ts and src/sim/tools/target.ts mostly
-      // unexercised. Raise it again when file 02 removes or tests them.
+      // (VENDORED.md). The src/sim gate is back at the sibling's levels since the "Case 1 only"
+      // release (docs/plan/15 §Quality checklist), with the evidence model and the forensics tools
+      // inside it; src/sim/net/discovery.ts and src/sim/tools/target.ts, left mostly unexercised
+      // when the dropped tools' tests went, are what keeps it from going higher. The case run
+      // reducer, its objective evaluator and the report grader are what decide a player's ticks
+      // and verdicts, so they have their own gate.
       thresholds: {
-        "src/sim/**": { statements: 87, branches: 78, functions: 92, lines: 91 },
+        "src/sim/**": { statements: 90, branches: 80, functions: 95, lines: 93 },
+        "src/features/cases/run/{case-run,evaluate,report}.ts": {
+          statements: 92,
+          branches: 85,
+          functions: 92,
+          lines: 95,
+        },
         "src/lib/settings/**": { statements: 98, branches: 90, functions: 98, lines: 98 },
       },
     },

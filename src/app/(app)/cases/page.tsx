@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
-import { CASE_LISTINGS, CHAPTER, CaseList } from "@/features/cases";
+import { CHAPTER, CaseList, RELEASED_CASE_LISTINGS } from "@/features/cases";
 import { getAppSection } from "@/lib/app-sections";
 
 export const metadata: Metadata = { title: getAppSection("cases").label };
 
-/** The case list: the chapter in its own order, then the practice case. */
+/**
+ * The case list: the chapter's released cases in its own order, then the practice case. Cases not
+ * released yet (`released` in src/content/cases/chapter.ts) keep their pages but aren't listed.
+ */
 export default function CasesPage() {
   return (
     <div className="space-y-8">
@@ -23,7 +26,7 @@ export default function CasesPage() {
           this browser only.
         </p>
       </div>
-      <CaseList listings={CASE_LISTINGS} />
+      <CaseList listings={RELEASED_CASE_LISTINGS} />
     </div>
   );
 }

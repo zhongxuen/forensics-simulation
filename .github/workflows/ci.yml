@@ -94,7 +94,7 @@ jobs:
       - run: pnpm test:integration --passWithNoTests
 
   coverage:
-    name: Coverage (src/sim and settings gated)
+    name: Coverage (src/sim, case runner and settings gated)
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:

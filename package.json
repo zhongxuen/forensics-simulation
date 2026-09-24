@@ -26,7 +26,8 @@
     "case:validate": "tsx scripts/case-validate.ts",
     "case:play": "tsx scripts/case-play.ts",
     "bundle:check": "tsx scripts/bundle-size.ts",
-    "security:bundle": "tsx scripts/check-client-bundle.ts"
+    "security:bundle": "tsx scripts/check-client-bundle.ts",
+    "perf:vitals": "tsx scripts/measure-vitals.ts"
   },
   "dependencies": {
     "@mdx-js/mdx": "^3.1.1",

@@ -10,7 +10,7 @@ import { run } from "./helpers";
  * with output, the search palette. Vendored from Hacker Simulation's a11y spec and adapted to
  * these routes (VENDORED.md). Lessons are read from their folder, so a new one is checked without
  * anyone remembering to add it; file 03 does the same for cases once they live in
- * src/content/cases. File 15 adds the case workspace states.
+ * src/content/cases. The case workspace states are in case-01.spec.ts.
  *
  * axe finds what a machine can: missing names, contrast, roles, structure. It can't say whether a
  * page makes sense with a screen reader; a person checks that (file 15).
@@ -20,7 +20,7 @@ const LESSONS = readdirSync(join(process.cwd(), "src", "content", "lessons"))
   .filter((name) => name.endsWith(".mdx"))
   .map((name) => `/learn/${name.replace(/\.mdx$/, "")}`);
 
-// The placeholder cases (src/app/(app)/cases/planned-cases.ts). File 03 reads them from the YAML.
+// Every chapter case has a page, released or not (src/content/cases/chapter.ts).
 const CASES = ["/cases/case-01", "/cases/case-02", "/cases/case-03"];
 
 const ROUTES = [

@@ -12,6 +12,7 @@ Writing a case:
 Checks on a production build, run after `pnpm build`:
 
 - `bundle-size.ts` — `pnpm bundle:check`: the initial JavaScript each pre-rendered page downloads, gzipped, against the 200 KB budget and the committed baseline (`bundle-baseline.json`, reset for these routes in prompt 01.2, on 2026-09-22; a page may grow by at most 2 KB without `--update`). It also fails if a page loads the terminal, the simulation engine or the full Zod build up front.
+- `measure-vitals.ts` — `pnpm perf:vitals [--base <url>] [--runs 3] [--no-throttle]`: LCP, INP and CLS on `/`, `/cases` and `/cases/case-01` against a running production server, throttled like a mid-range phone by default (vendored from Hacker Simulation). Not in CI: run it before a release (`docs/runbook.md`).
 - `check-client-bundle.ts` — `pnpm security:bundle`: every file a browser can download is scanned for secrets and server-only code (the API key's name or value, `sk-ant-` keys, the Anthropic API or SDK).
 
 Scripts run as CommonJS under tsx, so they don't import the MDX lesson compiler, which only loads as an ES module.
