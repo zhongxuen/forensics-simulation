@@ -1,0 +1,131 @@
+# The scripted run `pnpm case:play case-02` and CI use to check case-02 still finishes.
+#
+# It takes the case's wrong turn on purpose (docs/plan/11-case-2-the-deleted-invoice.md): the
+# owner's "around 20:40" and the door log's "18:31" are British Summer Time, and the first pass
+# puts them next to the UTC logs without converting. The owner's time finds nothing in the logs,
+# the report's deletion time comes back not yet, and the door log looks as if the bookkeeper stayed
+# an hour after signing out. Converting both puts every clock in one zone, and the report closes.
+# It also picks the owner's side on the choice beat first, to show that Noor's explanation and the
+# choice again are what follow, not a fail screen.
+#
+# The hash below is the one on the handover form, which the generator takes from the image the
+# story leaves behind. Edit the story and it moves, and this file stops passing, which is exactly
+# what should happen.
+case: case-02
+description: "Copy, recover and carve, find the remote sign-in; compare clocks without converting first, then convert, and report what the evidence shows."
+steps:
+  # The paperwork first: the letter says what is in scope, and the owner's message and the door log
+  # are the two times the case turns on.
+  - run: ls
+  - run: cat letter.txt
+  - run: cat message-from-owner.txt
+  - run: cat door-log.txt
+  - run: cat handover.txt
+
+  # --- The copy, as in Case 1. ---
+  - run: blocker
+  - run: acquire /dev/evidence/qf-lt-07 --out images/qf-lt-07.img
+  - run: hashsum --verify 8d234352c4ab62a205dcddf93140115bf6947c1c15881cc50461d46ce9e8e351 images/qf-lt-07.img
+    ticks: [copy-and-verify]
+
+  # --- What was deleted, and how much of it comes back. ---
+  - run: lsfs images/qf-lt-07.img -r -d
+  - run: inode images/qf-lt-07.img 48
+  - run: pin -m "an invoice, deleted on Saturday evening"
+    ticks: [find-the-deleted]
+  - run: recover images/qf-lt-07.img 48 --out export/inv-0407.pdf
+  - run: recover images/qf-lt-07.img 52 --out export/inv-0409.pdf
+  # The statement will not come back: the zip has one of its clusters.
+  - run: inode images/qf-lt-07.img 54
+  - run: recover images/qf-lt-07.img 54 --out export/inv-0410.pdf
+  - run: carve images/qf-lt-07.img
+  - run: strings disk:qf-lt-07:carve/906
+  - run: pin -m "the start of the Brackensett statement, carved; the rest is under the zip"
+    ticks: [recover-and-carve]
+
+  # --- Who was signed in. ---
+  - run: logq --id 4624 --count-by LogonType
+  - run: logq --id 4624 --where LogonType=10
+  - run: pin -m "remote desktop sign-in as jory, from 10.60.0.21 (QF-LT-03)"
+    ticks: [find-the-remote-logon]
+
+  # --- The wrong turn: two clocks compared without converting. ---
+  # The owner's "20:40", read as if it were UTC: nothing in the security log at all.
+  - run: logq --source security --from 2026-04-11T20:30Z --to 2026-04-11T20:50Z
+  - report: when-deleted
+    answer: "2026-04-11T20:40:00Z"
+    cite: ["disk:qf-lt-07:mft/*Invoices*inv-04*"]
+    verdict: not-yet
+  # The door log's "18:31" set beside the sign-out at 17:31 UTC: an hour apart, it seems.
+  - run: logq --source security --id 4634 --where TargetUserName=jory
+  - report: bookkeeper-present
+    answer: "Yes. The door log has them leaving at 18:31, an hour after the laptop signed them out, so they stayed on"
+    verdict: not-yet
+
+  # --- The fix: one zone. The owner's 20:40 and the door log's 18:31 are both UTC+1. ---
+  - run: timeline --from 2026-04-11T20:30+01:00 --to 2026-04-11T20:50+01:00
+    ticks: [order-the-evening]
+  - run: logq --source security --from 2026-04-11T17:25Z --to 2026-04-11T17:35Z
+  - run: 'pin -m "the bookkeeper''s own sign-out, 17:31 UTC, is the door log''s 18:31 on the other clock"'
+    ticks: [two-clocks]
+
+  # --- Where it went, and the thing at 19:45 that isn't part of it. ---
+  - run: logq --source firewall --count-by dst
+  - run: logq --source firewall --where dst=203.0.113.80
+  - run: pin -m "upload from the office laptop, a minute after the zip reached it"
+    ticks: [find-where-it-went]
+  - run: logq --source sysmon-lite --id 1 | grep yard-backup
+  - run: 'pin -m "the nightly backup, by SYSTEM, same time every night, and not part of this"'
+    ticks: [backup-is-routine]
+
+  # --- The report. Every answer cites something on the board. ---
+  - report: which-account
+    answer: jory
+    cite: ["log:security/where eventId=4624 and LogonType=10"]
+    verdict: supported
+  - report: which-machine
+    answer: QF-LT-03
+    cite: ["log:security/where eventId=4624 and LogonType=10"]
+    verdict: supported
+  - report: logon-type
+    answer: "Logon type 10: remote desktop, from another machine"
+    cite: ["log:security/where eventId=4624 and LogonType=10"]
+    verdict: supported
+  - report: when-deleted
+    answer: "2026-04-11T19:42:03Z"
+    cite: ["disk:qf-lt-07:mft/*Invoices*inv-04*"]
+    verdict: supported
+  - report: bookkeeper-present
+    answer: "No. The door log's 18:31 is 17:31 UTC, the minute their own session ended, more than two hours before the deletions"
+    cite: ["log:security/where eventId=4634 and LogonType=2"]
+    verdict: supported
+  - report: where-it-went
+    answer: 203.0.113.80
+    cite: ["log:firewall/where dst=203.0.113.80"]
+    verdict: supported
+  - report: two-fixes
+    answer: "Keep passwords out of shared folders, and lock screens that are left unattended"
+    cite: ["log:security/where eventId=4624 and LogonType=10"]
+    verdict: supported
+
+  # The choice beat: the owner's side first, then the evidence's.
+  - report: owner-request
+    answer: "That it was the bookkeeper, as the owner asked"
+    cite: ["log:security/where eventId=4624 and LogonType=10"]
+    verdict: not-yet
+  - report: owner-request
+    answer: "What the evidence shows, whoever it points at"
+    cite: ["log:security/where eventId=4624 and LogonType=10"]
+    verdict: supported
+expect:
+  complete: true
+  objectives:
+    - copy-and-verify
+    - find-the-deleted
+    - recover-and-carve
+    - find-the-remote-logon
+    - order-the-evening
+    - find-where-it-went
+    - backup-is-routine
+    - two-clocks
+  supported: true

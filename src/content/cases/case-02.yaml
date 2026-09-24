@@ -1,0 +1,975 @@
+# case-02, "The deleted invoice" (docs/plan/11-case-2-the-deleted-invoice.md).
+#
+# The same Saturday as Case 1, from the bookkeeper's laptop. Invoices went missing, a customer has a
+# price list they should not have, and the owner has already decided who did it. The case teaches
+# MACB times, deleted against overwritten, recovery and carving, logon types and time zones, and it
+# ends with the evidence clearing the person everyone suspected (docs/plan/99-reference.md, rule 4).
+# Copy calls that person "the bookkeeper"; the account name `jory` is the only identifier, and it
+# names a sign-in, not a person.
+#
+# Four places this file leaves the plan, each because of what a file system or the engine allows:
+#
+# - 11 §Story has the zip made at 19:41 and the invoices deleted at 19:42, with the zip partly
+#   overwriting one of them. A file can only be written into clusters that are already free, so
+#   here the price lists are read at 19:41 and the zip is written at 19:42:31, straight after the
+#   deletions, into the clusters the long statement gave up. Every other time is the plan's.
+# - The partial overwrite is `overwrite-clusters` with `keep: 1`: the statement's first cluster
+#   survives (its header and the first runs), the rest belongs to the zip. `recover` refuses it,
+#   and `carve` finds a PDF with a start and no end. `keep` was added to the action for this case.
+# - The door log and the owner's message are `documents`: paperwork in the case folder, like the
+#   letter, which no report answer can cite. The door log is not a log source (11 §Story).
+# - The choice beat is the report's last question. The owner asks for a report that names the
+#   bookkeeper, and the report is where the player answers. A pick that bends to the owner gets
+#   Noor's explanation on the debrief (`feedback`), and Change your report offers the choice again.
+#
+# The time-zone twist: the owner's "around 20:40" and the door log's "18:31" are both British
+# Summer Time, an hour ahead of UTC. Put beside the security log unconverted, the door log and the
+# laptop's own sign-out look an hour apart, as if the bookkeeper stayed on after signing out, and
+# the owner's time lands an hour after anything happened. Converted, the door log and the sign-out
+# are the same minute, 17:31 UTC, more than two hours before the remote sign-in at 19:40 UTC.
+id: case-02
+version: 1
+title: The deleted invoice
+client:
+  org: Quillfen Freight
+  signedBy: Delia Quillfen, owner, Quillfen Freight, and Theo Ashgrove, team lead, Candlewright Security
+  letter: |
+    Three invoices have gone from the bookkeeper's laptop, and one of our customers, Brackensett
+    Joinery, rang this morning quoting the rates we give our other customers. Those rates are in
+    price lists on the same laptop.
+
+    Please examine the bookkeeper's laptop, qf-lt-07, and the yard's logs, and tell us what
+    happened to the invoices and the price lists. Gus Thimblegate took a fingerprint of the drive
+    before it went into the bag. My message about Saturday, and the door log, are with it.
+
+    You examined the yard office laptop last week, and it is not part of this. Nothing that
+    belongs to a member of staff personally is to be looked at, and please do not contact
+    Brackensett Joinery or look at their computers.
+estimatedMinutes: 30
+seed: 20260414
+hook: Three invoices vanished and everyone suspects the bookkeeper. Follow the evidence, not the suspicion.
+learningGoals:
+  - The difference between a deleted file, which can come back, and an overwritten one, which can only be carved in part
+  - How a sign-in record says which account signed in, from where, and in which way
+  - Why a time means nothing until you know its zone, and how to put two clocks side by side
+  - Why a report says what the evidence shows, whoever it points at
+concepts:
+  - foundations-what-forensics-is
+  - foundations-chain-of-custody
+  - foundations-hashing-for-evidence
+briefing:
+  scenario: >-
+    The same weekend as the yard office laptop, a different machine. Three invoices have gone from
+    the bookkeeper's laptop, a customer has a price list they should not have, and the door log
+    shows the bookkeeper was the only one in on Saturday. The owner has already decided what
+    happened. The laptop is on your desk in a sealed bag, with a letter, a message from the owner
+    and a printout of the door log.
+  role: >-
+    You are on Candlewright Security's blue team, at the examining workstation ir-ws-01, signed in
+    as examiner. The case folder is open in the terminal.
+  authorization: >-
+    Delia Quillfen, who owns Quillfen Freight, and Theo Ashgrove, Candlewright's team lead, both
+    signed on 13 April 2026. The letter covers the bookkeeper's laptop, qf-lt-07, and the yard's
+    security, process, firewall and name lookup logs. It does not cover the yard office laptop
+    (examined last week), anything that belongs to a member of staff personally, or Brackensett
+    Joinery and its computers.
+
+documents:
+  - file: message-from-owner.txt
+    content: |
+      From:    Delia Quillfen, owner, Quillfen Freight
+      To:      Theo Ashgrove, Candlewright Security
+      Sent:    Monday 13 April 2026, 08:52
+
+      Theo,
+
+      The invoices were deleted around 20:40 on Saturday. Our accounts program watches the
+      invoices folder, and it sent me an email at 20:42 that night saying the folder had gone
+      empty. I did not see it until this morning.
+
+      The door log shows the bookkeeper was the only person in the yard on Saturday. I would
+      like your report to confirm it was the bookkeeper, so that I can deal with it this week.
+
+      Delia
+  - file: door-log.txt
+    content: |
+      Quillfen Freight, yard door controller
+      Printed Monday 13 April 2026 by Gus Thimblegate
+      Times as shown on the controller's display
+
+      Date        Time   Door        Badge   Held by             Event
+      2026-04-11  07:04  Yard gate   03      Yard foreman        In
+      2026-04-11  12:36  Yard gate   03      Yard foreman        Out
+      2026-04-11  13:02  Office      14      Bookkeeper          In
+      2026-04-11  18:31  Office      14      Bookkeeper          Out
+      2026-04-13  07:12  Yard gate   03      Yard foreman        In
+      2026-04-13  07:40  Office      01      Owner               In
+      2026-04-13  07:55  Office      14      Bookkeeper          In
+
+      The office door records a badge only when one is used to open it. The door does not
+      always latch, and a door that is already open records nothing.
+
+machines:
+  - id: qf-lt-07
+    kind: windows-laptop
+    baseline: office-laptop-v1
+    zone: Europe/London
+    ip: 10.60.0.27
+    accounts: [jory]
+  - id: qf-lt-03
+    kind: windows-laptop
+    baseline: office-laptop-v1
+    zone: Europe/London
+    ip: 10.60.0.21
+    accounts: [mara]
+  - id: ir-ws-01
+    kind: linux-workstation
+    baseline: analyst-workstation-v1
+    zone: Europe/London
+
+# The ground truth, in UTC. The yard's clocks showed British Summer Time, an hour ahead.
+story:
+  # --- Before the weekend: what the evening turns on. ---
+
+  # Monday morning, the start of an ordinary week. The bookkeeper's desktop starting is also what
+  # puts explorer.exe on the drive's timeline here, rather than on Saturday evening.
+  - at: "2026-04-06T07:55:00Z"
+    actor: user:jory
+    on: qf-lt-07
+    do: logon
+    with: { account: jory, type: interactive }
+
+  - at: "2026-04-06T07:55:20Z"
+    actor: user:jory
+    on: qf-lt-07
+    do: run-process
+    with:
+      name: explorer.exe
+      path: 'C:\Windows\explorer.exe'
+      parent: userinit.exe
+      cmdline: 'C:\Windows\explorer.exe'
+      user: jory
+
+  - at: "2026-04-06T09:20:00Z"
+    actor: user:jory
+    on: qf-lt-07
+    do: create-file
+    path: 'C:\Users\jory\Documents\Price lists\rates-2026-contract.txt'
+    content: |
+      Quillfen Freight: contract customer rates, from April 2026 (confidential)
+
+      Customer                 Per pallet   Full load   Notes
+      Cobbenhale Builders    GBP 31.50    GBP 520     weekly, north gate
+      Sedgewhistle Packaging           GBP 29.00    GBP 495     two runs a week
+      Brackensett Joinery       GBP 38.00    GBP 610     as needed
+
+  - at: "2026-04-06T09:24:00Z"
+    actor: user:jory
+    on: qf-lt-07
+    do: create-file
+    path: 'C:\Users\jory\Documents\Price lists\rates-2026-general.txt'
+    content: |
+      Quillfen Freight: general rates, from April 2026
+
+      Per pallet          GBP 40.00
+      Full load           GBP 640.00
+      Same-day surcharge  GBP 75.00
+
+  # Everybody's logins, written down in the one folder every account on the office laptop can
+  # open. Nobody thought of it as a door.
+  - at: "2026-04-06T08:15:00Z"
+    actor: user:mara
+    on: qf-lt-03
+    do: create-file
+    path: 'C:\Users\Public\Documents\office-logins.txt'
+    owner: mara
+    content: |
+      Office logins (keep this safe)
+
+      Yard office laptop       mara     Gatehouse-26
+      Bookkeeper's laptop      jory     Ledger-April-26
+      Dispatch server          ask Gus
+
+  - at: "2026-04-07T14:05:00Z"
+    actor: user:jory
+    on: qf-lt-07
+    do: create-file
+    path: 'C:\Users\jory\Documents\Invoices\inv-0407.pdf'
+    content: |
+      %PDF-1.4
+      1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+      2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj
+      3 0 obj << /Type /Page /Parent 2 0 R /Contents 4 0 R >> endobj
+      4 0 obj << /Length 212 >>
+      stream
+      BT /F1 12 Tf 56 780 Td (Quillfen Freight - Invoice QF-INV-0407) Tj T*
+      (Bill to: Cobbenhale Builders) Tj T*
+      (2026-04-06  12 pallets, north gate  GBP 378.00) Tj T*
+      (Total due  GBP 378.00) Tj ET
+      endstream endobj
+      trailer << /Root 1 0 R >>
+      %%EOF
+
+  - at: "2026-04-09T15:40:00Z"
+    actor: user:jory
+    on: qf-lt-07
+    do: create-file
+    path: 'C:\Users\jory\Documents\Invoices\inv-0409.pdf'
+    content: |
+      %PDF-1.4
+      1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+      2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj
+      3 0 obj << /Type /Page /Parent 2 0 R /Contents 4 0 R >> endobj
+      4 0 obj << /Length 198 >>
+      stream
+      BT /F1 12 Tf 56 780 Td (Quillfen Freight - Invoice QF-INV-0409) Tj T*
+      (Bill to: Sedgewhistle Packaging) Tj T*
+      (2026-04-08  full load, south gate  GBP 495.00) Tj T*
+      (Total due  GBP 495.00) Tj ET
+      endstream endobj
+      trailer << /Root 1 0 R >>
+      %%EOF
+
+  # The month's statement for Brackensett Joinery: a long table of runs, so it spans two clusters.
+  # That is what lets the zip take one of them and leave the other.
+  - at: "2026-04-10T11:30:00Z"
+    actor: user:jory
+    on: qf-lt-07
+    do: create-file
+    path: 'C:\Users\jory\Documents\Invoices\inv-0410.pdf'
+    content: |
+      %PDF-1.4
+      1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+      2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj
+      3 0 obj << /Type /Page /Parent 2 0 R /Contents 4 0 R >> endobj
+      4 0 obj << /Length 5102 >>
+      stream
+      BT /F1 12 Tf 56 780 Td (Quillfen Freight - Statement QF-INV-0410) Tj T*
+      (Bill to: Brackensett Joinery, runs from 2026-03-02 to 2026-04-10) Tj T*
+      (Date        Run      Route                                   Pallets   Amount) Tj T*
+      (2026-03-02  BJ-001   Brackensett Joinery to Cobbenhale site         11        GBP 418.00) Tj T*
+      (2026-03-02  BJ-002   Quillfen yard to Brackensett Joinery, showroom   9        GBP 342.00) Tj T*
+      (2026-03-03  BJ-003   Quillfen yard to Brackensett Joinery, mill site   7        GBP 266.00) Tj T*
+      (2026-03-04  BJ-004   Brackensett Joinery to Cobbenhale site          5        GBP 190.00) Tj T*
+      (2026-03-05  BJ-005   Quillfen yard to Brackensett Joinery, showroom  12        GBP 456.00) Tj T*
+      (2026-03-05  BJ-006   Quillfen yard to Brackensett Joinery, mill site  10        GBP 380.00) Tj T*
+      (2026-03-06  BJ-007   Brackensett Joinery to Cobbenhale site          8        GBP 304.00) Tj T*
+      (2026-03-09  BJ-008   Quillfen yard to Brackensett Joinery, showroom   6        GBP 228.00) Tj T*
+      (2026-03-09  BJ-009   Quillfen yard to Brackensett Joinery, mill site   4        GBP 152.00) Tj T*
+      (2026-03-10  BJ-010   Brackensett Joinery to Cobbenhale site         11        GBP 418.00) Tj T*
+      (2026-03-11  BJ-011   Quillfen yard to Brackensett Joinery, showroom   9        GBP 342.00) Tj T*
+      (2026-03-12  BJ-012   Quillfen yard to Brackensett Joinery, mill site   7        GBP 266.00) Tj T*
+      (2026-03-12  BJ-013   Brackensett Joinery to Cobbenhale site          5        GBP 190.00) Tj T*
+      (2026-03-13  BJ-014   Quillfen yard to Brackensett Joinery, showroom  12        GBP 456.00) Tj T*
+      (2026-03-16  BJ-015   Quillfen yard to Brackensett Joinery, mill site  10        GBP 380.00) Tj T*
+      (2026-03-16  BJ-016   Brackensett Joinery to Cobbenhale site          8        GBP 304.00) Tj T*
+      (2026-03-17  BJ-017   Quillfen yard to Brackensett Joinery, showroom   6        GBP 228.00) Tj T*
+      (2026-03-18  BJ-018   Quillfen yard to Brackensett Joinery, mill site   4        GBP 152.00) Tj T*
+      (2026-03-19  BJ-019   Brackensett Joinery to Cobbenhale site         11        GBP 418.00) Tj T*
+      (2026-03-19  BJ-020   Quillfen yard to Brackensett Joinery, showroom   9        GBP 342.00) Tj T*
+      (2026-03-20  BJ-021   Quillfen yard to Brackensett Joinery, mill site   7        GBP 266.00) Tj T*
+      (2026-03-23  BJ-022   Brackensett Joinery to Cobbenhale site          5        GBP 190.00) Tj T*
+      (2026-03-23  BJ-023   Quillfen yard to Brackensett Joinery, showroom  12        GBP 456.00) Tj T*
+      (2026-03-24  BJ-024   Quillfen yard to Brackensett Joinery, mill site  10        GBP 380.00) Tj T*
+      (2026-03-25  BJ-025   Brackensett Joinery to Cobbenhale site          8        GBP 304.00) Tj T*
+      (2026-03-26  BJ-026   Quillfen yard to Brackensett Joinery, showroom   6        GBP 228.00) Tj T*
+      (2026-03-26  BJ-027   Quillfen yard to Brackensett Joinery, mill site   4        GBP 152.00) Tj T*
+      (2026-03-27  BJ-028   Brackensett Joinery to Cobbenhale site         11        GBP 418.00) Tj T*
+      (2026-03-30  BJ-029   Quillfen yard to Brackensett Joinery, showroom   9        GBP 342.00) Tj T*
+      (2026-03-30  BJ-030   Quillfen yard to Brackensett Joinery, mill site   7        GBP 266.00) Tj T*
+      (2026-03-31  BJ-031   Brackensett Joinery to Cobbenhale site          5        GBP 190.00) Tj T*
+      (2026-04-01  BJ-032   Quillfen yard to Brackensett Joinery, showroom  12        GBP 456.00) Tj T*
+      (2026-04-02  BJ-033   Quillfen yard to Brackensett Joinery, mill site  10        GBP 380.00) Tj T*
+      (2026-04-02  BJ-034   Brackensett Joinery to Cobbenhale site          8        GBP 304.00) Tj T*
+      (2026-04-03  BJ-035   Quillfen yard to Brackensett Joinery, showroom   6        GBP 228.00) Tj T*
+      (2026-04-06  BJ-036   Quillfen yard to Brackensett Joinery, mill site   4        GBP 152.00) Tj T*
+      (2026-04-06  BJ-037   Brackensett Joinery to Cobbenhale site         11        GBP 418.00) Tj T*
+      (2026-04-07  BJ-038   Quillfen yard to Brackensett Joinery, showroom   9        GBP 342.00) Tj T*
+      (2026-04-08  BJ-039   Quillfen yard to Brackensett Joinery, mill site   7        GBP 266.00) Tj T*
+      (2026-04-09  BJ-040   Brackensett Joinery to Cobbenhale site          5        GBP 190.00) Tj T*
+      (2026-04-09  BJ-041   Quillfen yard to Brackensett Joinery, showroom  12        GBP 456.00) Tj T*
+      (2026-04-10  BJ-042   Quillfen yard to Brackensett Joinery, mill site  10        GBP 380.00) Tj T*
+      (Total due  GBP 12,996.00) Tj ET
+      endstream endobj
+      trailer << /Root 1 0 R >>
+      %%EOF
+
+  # The nightly backup, at 20:45 on the laptop's clock, every night of the week. Its runs from
+  # Thursday on are further down, beside what happened on those days.
+  - at: "2026-04-06T19:45:00Z"
+    actor: system
+    on: qf-lt-07
+    do: run-process
+    with: &backup
+      name: yard-backup.exe
+      path: 'C:\Program Files\YardBackup\yard-backup.exe'
+      parent: svchost.exe
+      cmdline: '"C:\Program Files\YardBackup\yard-backup.exe" --job nightly-2045 --to \\qf-srv-01\backups\qf-lt-07'
+      user: SYSTEM
+  - at: "2026-04-06T19:45:03Z"
+    actor: system
+    on: qf-lt-07
+    do: firewall-allow
+    with: { dst: 10.60.1.10, dpt: "445", bytes: "47455310", rule: office-to-servers }
+  - at: "2026-04-07T19:45:00Z"
+    actor: system
+    on: qf-lt-07
+    do: run-process
+    with: *backup
+  - at: "2026-04-07T19:45:05Z"
+    actor: system
+    on: qf-lt-07
+    do: firewall-allow
+    with: { dst: 10.60.1.10, dpt: "445", bytes: "47520977", rule: office-to-servers }
+  - at: "2026-04-08T19:45:00Z"
+    actor: system
+    on: qf-lt-07
+    do: run-process
+    with: *backup
+  - at: "2026-04-08T19:45:04Z"
+    actor: system
+    on: qf-lt-07
+    do: firewall-allow
+    with: { dst: 10.60.1.10, dpt: "445", bytes: "47689142", rule: office-to-servers }
+
+  # Ordinary traffic through the yard's firewall: updates, the accounts program's online side, and
+  # the nightly backup to the dispatch server.
+  - at: "2026-04-08T08:12:40Z"
+    actor: system
+    on: qf-lt-07
+    do: firewall-allow
+    with: { dst: 198.51.100.40, dpt: "443", bytes: "182340", rule: office-outbound }
+  - at: "2026-04-08T09:05:12Z"
+    actor: system
+    on: qf-lt-03
+    do: firewall-allow
+    with: { dst: 198.51.100.40, dpt: "443", bytes: "176902", rule: office-outbound }
+  - at: "2026-04-09T13:47:31Z"
+    actor: system
+    on: qf-lt-07
+    do: firewall-allow
+    with: { dst: 198.51.100.77, dpt: "443", bytes: "20417", rule: office-outbound }
+  - at: "2026-04-09T19:45:00Z"
+    actor: system
+    on: qf-lt-07
+    do: run-process
+    with:
+      name: yard-backup.exe
+      path: 'C:\Program Files\YardBackup\yard-backup.exe'
+      parent: svchost.exe
+      cmdline: '"C:\Program Files\YardBackup\yard-backup.exe" --job nightly-2045 --to \\qf-srv-01\backups\qf-lt-07'
+      user: SYSTEM
+  - at: "2026-04-09T19:45:04Z"
+    actor: system
+    on: qf-lt-07
+    do: firewall-allow
+    with: { dst: 10.60.1.10, dpt: "445", bytes: "47802211", rule: office-to-servers }
+  - at: "2026-04-10T10:22:09Z"
+    actor: system
+    on: qf-lt-03
+    do: firewall-allow
+    with: { dst: 198.51.100.77, dpt: "443", bytes: "18833", rule: office-outbound }
+  - at: "2026-04-10T15:02:45Z"
+    actor: system
+    on: qf-lt-07
+    do: firewall-allow
+    with: { dst: 198.51.100.77, dpt: "443", bytes: "25106", rule: office-outbound }
+  - at: "2026-04-11T15:31:18Z"
+    actor: system
+    on: qf-lt-07
+    do: firewall-allow
+    with: { dst: 198.51.100.77, dpt: "443", bytes: "22950", rule: office-outbound }
+
+  # --- Friday: an ordinary day, and the nightly backup. ---
+  - at: "2026-04-10T07:55:00Z"
+    actor: user:jory
+    on: qf-lt-07
+    do: logon
+    with: { account: jory, type: interactive }
+
+  - at: "2026-04-10T16:40:00Z"
+    actor: user:jory
+    on: qf-lt-07
+    do: logoff
+    with: { account: jory }
+
+  # The backup runs at 20:45 on the laptop's clock every night, and copies the laptop's documents
+  # to the dispatch server. The same thing on Saturday looks like data leaving at the worst moment.
+  - at: "2026-04-10T19:45:00Z"
+    actor: system
+    on: qf-lt-07
+    do: run-process
+    with:
+      name: yard-backup.exe
+      path: 'C:\Program Files\YardBackup\yard-backup.exe'
+      parent: svchost.exe
+      cmdline: '"C:\Program Files\YardBackup\yard-backup.exe" --job nightly-2045 --to \\qf-srv-01\backups\qf-lt-07'
+      user: SYSTEM
+
+  - at: "2026-04-10T19:45:06Z"
+    actor: system
+    on: qf-lt-07
+    do: firewall-allow
+    with: { dst: 10.60.1.10, dpt: "445", bytes: "48213904", rule: office-to-servers }
+
+  # --- Saturday: the bookkeeper comes in after the yard shuts, and goes home. ---
+  - at: "2026-04-11T12:05:00Z"
+    actor: user:jory
+    on: qf-lt-07
+    do: logon
+    with: { account: jory, type: interactive }
+
+  - at: "2026-04-11T14:18:40Z"
+    actor: user:jory
+    on: qf-lt-07
+    do: run-process
+    with:
+      name: notepad.exe
+      path: 'C:\Windows\System32\notepad.exe'
+      parent: explorer.exe
+      cmdline: "notepad.exe"
+      user: jory
+
+  - at: "2026-04-11T14:20:00Z"
+    actor: user:jory
+    on: qf-lt-07
+    do: create-file
+    path: 'C:\Users\jory\Documents\march-reconciliation.txt'
+    content: |
+      March reconciliation
+
+      Invoices raised      41
+      Paid by 31 March     36
+      Still to chase        5 (the Brackensett statement goes out on Monday)
+
+  - id: bookkeeper-signed-out
+    at: "2026-04-11T17:31:00Z"
+    actor: user:jory
+    on: qf-lt-07
+    do: logoff
+    with: { account: jory }
+
+  # --- Saturday evening: somebody at the unlocked yard office laptop. ---
+  - at: "2026-04-11T19:38:10Z"
+    actor: attacker
+    on: qf-lt-03
+    do: read-file
+    path: 'C:\Users\Public\Documents\office-logins.txt'
+
+  # The office laptop's own remote desktop program, pointed at the bookkeeper's laptop.
+  - at: "2026-04-11T19:39:55Z"
+    actor: attacker
+    on: qf-lt-03
+    do: run-process
+    with:
+      name: mstsc.exe
+      path: 'C:\Windows\System32\mstsc.exe'
+      parent: explorer.exe
+      cmdline: "mstsc.exe /v:qf-lt-07"
+      user: mara
+
+  - id: remote-logon
+    at: "2026-04-11T19:40:12Z"
+    actor: attacker
+    on: qf-lt-07
+    do: logon
+    with: { account: jory, type: remote, from: 10.60.0.21, workstation: QF-LT-03 }
+
+  # A remote session gets a desktop of its own, and everything done in it is done through that.
+  - at: "2026-04-11T19:40:20Z"
+    actor: attacker
+    on: qf-lt-07
+    do: run-process
+    with:
+      name: explorer.exe
+      path: 'C:\Windows\explorer.exe'
+      parent: userinit.exe
+      cmdline: 'C:\Windows\explorer.exe'
+      user: jory
+
+  - at: "2026-04-11T19:41:05Z"
+    actor: attacker
+    on: qf-lt-07
+    do: read-file
+    path: 'C:\Users\jory\Documents\Price lists\rates-2026-contract.txt'
+
+  - at: "2026-04-11T19:41:09Z"
+    actor: attacker
+    on: qf-lt-07
+    do: read-file
+    path: 'C:\Users\jory\Documents\Price lists\rates-2026-general.txt'
+
+  - id: invoices-deleted
+    at: "2026-04-11T19:42:03Z"
+    actor: attacker
+    on: qf-lt-07
+    do: delete-file
+    path: 'C:\Users\jory\Documents\Invoices\inv-0407.pdf'
+
+  - at: "2026-04-11T19:42:05Z"
+    actor: attacker
+    on: qf-lt-07
+    do: delete-file
+    path: 'C:\Users\jory\Documents\Invoices\inv-0409.pdf'
+
+  - at: "2026-04-11T19:42:07Z"
+    actor: attacker
+    on: qf-lt-07
+    do: delete-file
+    path: 'C:\Users\jory\Documents\Invoices\inv-0410.pdf'
+
+  # The zip is written into clusters the statement had given up seconds before. Its first cluster
+  # is left alone, so the statement's start can still be carved; the rest is the zip's now.
+  - at: "2026-04-11T19:42:31Z"
+    actor: attacker
+    on: qf-lt-07
+    do: overwrite-clusters
+    path: 'C:\Users\jory\Documents\Invoices\inv-0410.pdf'
+    by: 'C:\Users\jory\Documents\price-lists.zip'
+    keep: 1
+    content: &zip "PK\x03\x04\x14\x00\x00\x00\x08\x00rates-2026-contract.txt........PK\x03\x04\x14\x00\x00\x00\x08\x00rates-2026-general.txt........PK\x01\x02\x14\x00rates-2026-contract.txtPK\x01\x02\x14\x00rates-2026-general.txtPK\x05\x06\x00\x00\x00\x00\x02\x00\x02\x00\x6e\x00\x00\x00\x9c\x00\x00\x00\x00\x00"
+
+  # Opening the laptop's shared folder from the office laptop is a second sign-in, a network one.
+  - at: "2026-04-11T19:42:50Z"
+    actor: attacker
+    on: qf-lt-07
+    do: logon
+    with: { account: jory, type: network, from: 10.60.0.21, workstation: QF-LT-03 }
+
+  - at: "2026-04-11T19:42:46Z"
+    actor: attacker
+    on: qf-lt-03
+    do: run-process
+    with:
+      name: explorer.exe
+      path: 'C:\Windows\explorer.exe'
+      parent: explorer.exe
+      cmdline: 'explorer.exe \\qf-lt-07\Users\jory\Documents'
+      user: mara
+
+  - at: "2026-04-11T19:42:52Z"
+    actor: attacker
+    on: qf-lt-03
+    do: create-file
+    path: 'C:\Users\mara\Downloads\price-lists.zip'
+    owner: mara
+    content: *zip
+
+  - at: "2026-04-11T19:43:10Z"
+    actor: attacker
+    on: qf-lt-03
+    do: dns-query
+    with: { query: parcel-drop.example, answer: 203.0.113.80 }
+
+  - id: upload
+    at: "2026-04-11T19:43:14Z"
+    actor: attacker
+    on: qf-lt-03
+    do: firewall-allow
+    with: { dst: 203.0.113.80, dpt: "443", bytes: "3190", rule: office-outbound }
+
+  - at: "2026-04-11T19:43:40Z"
+    actor: attacker
+    on: qf-lt-07
+    do: logoff
+    with: { account: jory }
+
+  # The note from Case 1, on the machine the evening was run from.
+  - at: "2026-04-11T19:44:37Z"
+    actor: attacker
+    on: qf-lt-03
+    do: create-file
+    path: 'C:\Users\mara\Desktop\the-door-was-open.txt'
+    owner: mara
+    content: |
+      The door was open.
+
+      — HL
+
+  # The harmless one: the same nightly backup as Friday, a minute after everything else.
+  - id: backup
+    at: "2026-04-11T19:45:00Z"
+    actor: system
+    on: qf-lt-07
+    do: run-process
+    with:
+      name: yard-backup.exe
+      path: 'C:\Program Files\YardBackup\yard-backup.exe'
+      parent: svchost.exe
+      cmdline: '"C:\Program Files\YardBackup\yard-backup.exe" --job nightly-2045 --to \\qf-srv-01\backups\qf-lt-07'
+      user: SYSTEM
+
+  - at: "2026-04-11T19:45:05Z"
+    actor: system
+    on: qf-lt-07
+    do: firewall-allow
+    with: { dst: 10.60.1.10, dpt: "445", bytes: "47986120", rule: office-to-servers }
+
+  # Sunday: the yard is shut, and the only thing on the laptop is the backup, on time again.
+  - at: "2026-04-12T19:45:00Z"
+    actor: system
+    on: qf-lt-07
+    do: run-process
+    with: *backup
+  - at: "2026-04-12T19:45:04Z"
+    actor: system
+    on: qf-lt-07
+    do: firewall-allow
+    with: { dst: 10.60.1.10, dpt: "445", bytes: "47990388", rule: office-to-servers }
+
+  - at: "2026-04-13T10:05:00Z"
+    actor: analyst
+    on: ir-ws-01
+    do: hand-over
+    with:
+      item: qf-lt-07
+      by: Gus Thimblegate, IT contractor to Quillfen Freight
+      hashes: true
+
+# The yard is shut at weekends, and the door log says who came in. Background activity keeps to
+# weekdays, so the only weekend activity is the story's own.
+noise: { profile: office-day, density: medium, weekends: false }
+
+evidence:
+  disks: [qf-lt-07]
+  logs: [security, sysmon-lite, firewall, dns]
+  memory: []
+  # Both laptops showed British Summer Time. `--zone local` shows the security log and the drive
+  # the way the laptops did; everything else prints in UTC.
+  zones: { disk: Europe/London, security: Europe/London }
+
+# The cold open: two lines, then the first objective (docs/plan/99-reference.md, "Cold opens").
+beats:
+  - on: start
+    speaker: teammate-theo
+    text: >-
+      Theo Ashgrove, team lead. The owner wants a name, and I have told her what she gets instead:
+      we examine the company's laptop and the company's logs, not a person, and the report says what
+      they show, whoever it points at.
+  - on: start
+    speaker: teammate-idris
+    text: >-
+      Idris Fenwick, investigations. Three invoices gone from the bookkeeper's laptop, the same
+      Saturday as the note on the office laptop. Copy the drive first, then let's see what it
+      remembers.
+  - on: { objective: copy-and-verify }
+    speaker: mentor-noor
+    text: >-
+      Noor Halvorsen, your mentor. Same routine as last week, and it matters more this time: this
+      report may be read by the person the owner suspects. Every sentence in it has to come out of
+      a copy nobody can argue with.
+  - on: { objective: recover-and-carve }
+    speaker: teammate-kit
+    text: >-
+      Kit Nakashima-Reyes here, and that is the eeriest thing I have seen all week. Half a statement
+      with no end, and a zip sitting where the rest of it used to be. Deleted means "can come back".
+      Overwritten means "some of it, if you are lucky".
+  - on: { objective: find-the-remote-logon }
+    speaker: teammate-idris
+    text: >-
+      Look at the logon type before the name. Every sign-in this account made at its own keyboard
+      is a 2. This one is a 10, from 10.60.0.21, and that address is the yard office laptop. The
+      account was the bookkeeper's. The keyboard was not.
+  - on: { objective: order-the-evening }
+    speaker: mentor-noor
+    text: >-
+      Now hold the owner's message and the door log up against that. Both were written in British
+      Summer Time, an hour ahead of UTC. Before you compare any two times, put them in the same
+      zone, and say which one in the report.
+  - on: complete
+    speaker: teammate-theo
+    text: >-
+      The owner asked us to confirm a name. What we can confirm is that the bookkeeper went home at
+      17:31 UTC, and that their account was used from the office laptop two hours later. That is a
+      harder report to hand over, and it is the right one. Write it up.
+
+objectives:
+  - id: copy-and-verify
+    description: Image the bookkeeper's laptop, and check your copy against the handover form.
+    why: Everything in this report comes out of that copy, and the owner has already made up her mind. The copy has to be beyond argument.
+    success: MATCH. Your copy is the drive the yard handed over, byte for byte, and the original is back in the bag.
+    check:
+      kind: all
+      of:
+        - { kind: commandRun, pattern: "^\\s*acquire\\b" }
+        # The copy, not the original: this is Case 1's lesson, and the playthrough keeps it.
+        - { kind: commandRun, pattern: "^\\s*hashsum\\b(?=.*--verify)(?!.*/dev/evidence/)" }
+
+  - id: find-the-deleted
+    description: List the deleted files on your copy, and pin the missing invoices' records to the board.
+    why: A file's record keeps its name and its times after the file is deleted. That is a better witness than anybody's memory of Saturday.
+    success: The invoices' records are on the board. Deleted, all three, within five seconds of each other.
+    check:
+      kind: all
+      of:
+        - { kind: commandRun, pattern: "^\\s*lsfs\\b" }
+        - { kind: pinned, evidence: "disk:qf-lt-07:mft/*Invoices*inv-04*" }
+
+  - id: recover-and-carve
+    description: Recover the invoices that can be recovered. Carve what is left of the one that can't, and pin the carved part.
+    why: Deleted is not the same as gone, and gone is not always all gone. Which one each invoice is decides what the report can say about it.
+    success: Two invoices back whole, and the start of the third carved out of unallocated space. A header, the first runs, and no end.
+    check:
+      kind: all
+      of:
+        - { kind: commandRun, pattern: "^\\s*recover\\b" }
+        - { kind: commandRun, pattern: "^\\s*carve\\b" }
+        - { kind: pinned, evidence: "disk:qf-lt-07:carve/*QF-INV-0410*" }
+
+  - id: find-the-remote-logon
+    description: Find the sign-in to this laptop that was open while the invoices were deleted, and pin it.
+    why: An account name says whose sign-in was used. How it signed in, and from where, says who could have been at the keys.
+    success: A remote sign-in, logon type 10, from 10.60.0.21. Somebody used this account from another machine.
+    check: { kind: pinned, evidence: "log:security/where eventId=4624 and LogonType=10" }
+
+  - id: order-the-evening
+    description: Put Saturday evening in order on the timeline, with every time in the same zone.
+    why: The logs, the owner's email and the door log keep three different clocks. Until every time is in one zone, you can't say what came first.
+    success: One evening, one zone. The bookkeeper signs out at 17:31, and the remote sign-in comes more than two hours later.
+    check: { kind: commandRun, pattern: "^\\s*timeline\\b(?=.*--(around|from)\\b)" }
+
+  - id: find-where-it-went
+    description: Find where the price lists went after they left the laptop, and pin the record that shows it.
+    why: The customer has a price list. Finding the way out is what turns that into something the yard can fix.
+    success: An upload from the yard office laptop to 203.0.113.80, a minute after the zip was made. You found it in the logs, and you left the address alone.
+    check: { kind: pinned, evidence: "log:firewall/where dst=203.0.113.80" }
+
+  # The harmless noise (11 §Bonus): the nightly backup at 19:45, which moves 48 MB off the laptop
+  # three minutes after the deletions. Pinning its process start is the moment a player sees what
+  # it is: a scheduled job by SYSTEM, the same one every night.
+  - id: backup-is-routine
+    name: Not Every Shadow
+    description: Look into the large transfer off the laptop at 19:45, and pin what it turned out to be.
+    why: The worst moment for something ordinary to happen is right after something that isn't. Checking it is how you keep it out of the report.
+    success: The nightly backup, started by the system at the same time every night, to the yard's own server. Noticed, checked, and left out of the story.
+    optional: true
+    check: { kind: pinned, evidence: "log:sysmon-lite/where eventId=1 and Image=*yard-backup*" }
+
+  # 11 §Secret, "Two clocks": the door log's 18:31 converted to 17:31 UTC before it is used, and the
+  # bookkeeper's own sign-out found at that minute. Converting it yourself or giving the tool the
+  # offset both count; comparing the raw 18:31 with the log does not.
+  - id: two-clocks
+    name: Two Clocks
+    description: Convert the door log's time to UTC, and find the sign-out it matches.
+    why: A time written by a person is a time on somebody's clock. Converting it before you use it is the difference between a finding and a mix-up.
+    success: Two clocks, one minute. The door log's 18:31 is 17:31 UTC, the same minute the bookkeeper's own session ended.
+    hidden: true
+    check:
+      kind: all
+      of:
+        - kind: commandRun
+          pattern: "^\\s*(logq|timeline)\\b.*(2026-04-11T17:[23]\\d|2026-04-11T18:[23]\\d(:\\d\\d)?\\+01:00)"
+        - { kind: pinned, evidence: "log:security/where eventId=4634 and LogonType=2" }
+
+hints:
+  copy-and-verify:
+    - The same first step as last week. Before you ask the drive anything, make a copy of it and show the copy is the drive that was handed over.
+    - Imaging makes the copy and prints its hashes. The handover form carries the hash taken at the yard. One option compares the two.
+    - "Run `acquire /dev/evidence/qf-lt-07 --out images/qf-lt-07.img`, then `hashsum --verify <the SHA-256 from handover.txt> images/qf-lt-07.img`."
+  find-the-deleted:
+    - The owner says the invoices folder went empty. Ask your copy what was in that folder, including what isn't there any more.
+    - Deleting a file leaves its record behind, marked deleted. One option lists only those records, across the whole drive.
+    - "Run `lsfs images/qf-lt-07.img -r -d`, then `inode images/qf-lt-07.img <record>` on an invoice and `pin` it."
+  recover-and-carve:
+    - Try to get each invoice back. One of them will not come back whole, and the tool will tell you why.
+    - A deleted file comes back only while nothing has written over it. When something has, a carver can still find what is left by its first bytes, in the space no file owns.
+    - "Run `recover images/qf-lt-07.img <record> --out export/<name>.pdf` for each, then `carve images/qf-lt-07.img`, read the partial one with `strings`, and `pin` it."
+  find-the-remote-logon:
+    - The invoices went at a known minute. Somebody was signed in to this laptop then. Find out which account, and how it signed in.
+    - Every sign-in is a 4624 record in the security log, and its LogonType says how. 2 is at the keyboard, 3 is a shared folder, 10 is a remote desktop.
+    - "Run `logq --id 4624 --count-by LogonType`, then `logq --id 4624 --where LogonType=10`, and `pin` it."
+  order-the-evening:
+    - Line up everything that happened that evening in one list. Then line up the owner's time and the door log's time against it.
+    - A timeline merges every source into one list, in UTC unless you ask for local time. The owner and the door log both used British Summer Time, an hour ahead.
+    - "Run `timeline --around <the ref of the remote sign-in>`, or `timeline --from 2026-04-11T17:00Z --to 2026-04-11T20:00Z`."
+  find-where-it-went:
+    - The price lists reached a customer. Something carried them out of the yard, and the yard's firewall writes down everything it lets out.
+    - The firewall log has one line per connection it allowed. Counting them by where they went makes the unusual one stand out.
+    - "Run `logq --source firewall --count-by dst`, then `logq --source firewall --where dst=<the address that stands out>`, and `pin` it."
+  backup-is-routine:
+    - Something big left the laptop at 19:45, minutes after the deletions. Before it goes in the report, find out what it was.
+    - A process start record says which program ran, who started it and with what command line. Check whether the same thing happened on other nights too.
+    - "Run `logq --source sysmon-lite --id 1 | grep yard-backup`, compare the nights, and `pin` one."
+
+report:
+  questions:
+    - id: which-account
+      ask: Which account signed in to the bookkeeper's laptop while the invoices were deleted?
+      type: account
+      answer: jory
+      acceptedEvidence:
+        - "log:security/where eventId=4624 and LogonType=10"
+      explain: >-
+        The account is the bookkeeper's, and that is all an account name can tell you: which
+        sign-in was used. It says nothing about whose hands were on the keyboard. The next two
+        questions are where that gets answered.
+
+    - id: which-machine
+      ask: Which machine did that sign-in come from? Write its name the way the sign-in record gives it.
+      type: host
+      answer: qf-lt-03
+      acceptedEvidence:
+        - "log:security/where eventId=4624 and LogonType=10"
+      explain: >-
+        The record names the workstation and its address, 10.60.0.21, and both are the yard office
+        laptop: the one that was left signed in over the weekend, examined last week. The
+        bookkeeper's laptop was signed in to from across the office, not from its own keyboard.
+
+    - id: logon-type
+      ask: How did that sign-in happen?
+      type: choice
+      answer: "Logon type 10: remote desktop, from another machine"
+      choices:
+        - "Logon type 2: at the laptop's own keyboard"
+        - "Logon type 10: remote desktop, from another machine"
+        - "Logon type 5: a service the laptop runs by itself"
+      acceptedEvidence:
+        - "log:security/where eventId=4624 and LogonType=10"
+      explain: >-
+        Type 10 is a remote desktop sign-in: someone at another computer, seeing this one's screen.
+        Every sign-in the bookkeeper made at this laptop is a type 2. A type 3 follows a minute
+        later from the same address, which is a shared folder being opened: the way the zip left.
+
+    - id: when-deleted
+      ask: When were the invoices deleted? Give the time in UTC.
+      type: timestamp
+      answer: "2026-04-11T19:42:03Z"
+      toleranceSeconds: 60
+      answerFrom: invoices-deleted
+      acceptedEvidence:
+        - "disk:qf-lt-07:mft/*Invoices*inv-04*"
+        - "log:sysmon-lite/where eventId=23 and TargetFilename=*inv-04*"
+      explain: >-
+        The records' changed times and the monitor's deletion lines agree, within five seconds of
+        each other. The owner's email said "around 20:40", and that was right too, on the clock she
+        reads: British Summer Time, an hour ahead of UTC.
+
+    - id: bookkeeper-present
+      ask: Was the bookkeeper at the yard when the invoices were deleted?
+      type: choice
+      answer: "No. The door log's 18:31 is 17:31 UTC, the minute their own session ended, more than two hours before the deletions"
+      choices:
+        - "Yes. The door log has them leaving at 18:31, an hour after the laptop signed them out, so they stayed on"
+        - "No. The door log's 18:31 is 17:31 UTC, the minute their own session ended, more than two hours before the deletions"
+        - "Yes. Their account was signed in when the invoices were deleted"
+      acceptedEvidence:
+        - "log:security/where eventId=4634 and LogonType=2"
+        - "log:security/where eventId=4624 and LogonType=10"
+      feedback:
+        - choice: "Yes. The door log has them leaving at 18:31, an hour after the laptop signed them out, so they stayed on"
+          speaker: teammate-idris
+          text: >-
+            Those two are the same moment on two clocks. The door controller shows British Summer
+            Time, and the security log is in UTC, an hour behind. Put 18:31 into UTC before you put
+            it next to the log, and see where it lands.
+        - choice: "Yes. Their account was signed in when the invoices were deleted"
+          speaker: mentor-noor
+          text: >-
+            Their account was, and that is a different claim. An account is a name and a password,
+            and anyone holding both can use it. Look at how that sign-in happened, and where it
+            came from, before you let it stand for a person.
+      explain: >-
+        The door log and the security log agree once they share a zone: the bookkeeper's session
+        ended at 17:31 UTC and they left the building that minute. Nothing in the evidence puts
+        them at a keyboard after that.
+
+    - id: where-it-went
+      ask: Where did the price lists go after they left the yard? Give the address.
+      type: host
+      answer: 203.0.113.80
+      acceptedEvidence:
+        - "log:firewall/where dst=203.0.113.80"
+        - "log:dns/where answer=203.0.113.80"
+      explain: >-
+        The firewall let a small upload out from the office laptop a minute after the zip reached
+        it, to an address the yard had never talked to before. That is as far as the evidence goes,
+        and as far as the report goes: nobody connects to that address, or asks it anything.
+
+    - id: two-fixes
+      ask: Which two changes would have closed the doors used that evening?
+      type: choice
+      answer: "Keep passwords out of shared folders, and lock screens that are left unattended"
+      choices:
+        - "Keep passwords out of shared folders, and lock screens that are left unattended"
+        - "Take the bookkeeper's account away, and check their bag at the gate"
+        - "Find out who is behind 203.0.113.80, and ask for the files back"
+      acceptedEvidence:
+        - "log:security/where eventId=4624 and LogonType=10"
+      feedback:
+        - choice: "Take the bookkeeper's account away, and check their bag at the gate"
+          speaker: teammate-theo
+          text: >-
+            That fixes a person, and the person is not what broke. Anyone who found that password
+            in that folder, at that unlocked laptop, could have done the same. Look at what let the
+            sign-in happen, and fix that.
+        - choice: "Find out who is behind 203.0.113.80, and ask for the files back"
+          speaker: mentor-noor
+          text: >-
+            We never connect to an attacker's address, not to look and not to ask. It can warn
+            them, it can break the law, and it can hit someone who had nothing to do with it. That
+            address goes in the report, and anything beyond that is for the police.
+      explain: >-
+        The evening needed two open doors: a password written in a folder anyone could read, and an
+        office laptop left signed in with nobody at it. Close either one and the sign-in never
+        happens. Separate accounts for each person, and a firewall that only lets out what the yard
+        expects, would each have made it harder again.
+
+    # The choice beat (11 §Choice beat). The owner's message asks for a report that names the
+    # bookkeeper; this is where the player answers her.
+    - id: owner-request
+      ask: The owner's message asks your report to confirm it was the bookkeeper. What does your report say?
+      type: choice
+      answer: "What the evidence shows, whoever it points at"
+      choices:
+        - "That it was the bookkeeper, as the owner asked"
+        - "What the evidence shows, whoever it points at"
+        - "Nothing about who, so that nobody is upset"
+      acceptedEvidence:
+        - "log:security/where eventId=4624 and LogonType=10"
+        - "log:security/where eventId=4634 and LogonType=2"
+      feedback:
+        - choice: "That it was the bookkeeper, as the owner asked"
+          speaker: mentor-noor
+          text: >-
+            A report that says what the client wants is worth nothing the moment anyone checks it,
+            and in court someone will. It is also unfair to a person who went home at 17:31. The
+            owner is paying for what happened, not for agreement. Pick again.
+        - choice: "Nothing about who, so that nobody is upset"
+          speaker: mentor-noor
+          text: >-
+            Leaving it out still leaves the bookkeeper under suspicion, and the evidence you found
+            is what lifts it. Say what the records show, plainly, and let them do the work. Pick
+            again.
+      explain: >-
+        The evidence decides, and here it clears the person everyone suspected. Your report says
+        whose account was used, from which machine, and when the bookkeeper left, and it says that
+        whoever reads it.
+
+debrief:
+  summary: >-
+    You copied the bookkeeper's laptop without changing it, brought back two invoices and the start
+    of a third, and found the sign-in that deleted them: a remote one, from the yard office laptop,
+    more than two hours after the bookkeeper went home. You put the owner's time and the door log
+    in the same zone as the logs, followed the price lists out through the firewall, and wrote a
+    report that says what the evidence shows.
+  whatYouLearned:
+    - A deleted file can come back until something writes over it. After that, a carver can find only what is left, with no name and no times.
+    - A sign-in record gives the account, the machine it came from and how it signed in, and the account on its own is not a person.
+    - A time means nothing until you know its zone. You put the owner's time and the door log's into UTC before comparing them with the logs.
+    - A report says what the evidence shows, whoever that points at, even when the client asked for something else.
+  ethicsNote: >-
+    The owner suspected the bookkeeper, and a report written to agree with her would have cost a
+    person their job for something they did not do. The investigation was of the company's laptop
+    and logs, which the company asked for in writing, and it went where the evidence went. It also
+    stopped where the letter did: the office laptop, anybody's own phone, and Brackensett Joinery's
+    computers were left alone, and nobody connected to 203.0.113.80. The bookkeeper is owed an
+    apology, and the report should say so.
+  defensiveTakeaway: >-
+    Four changes the yard can make this week. Take the passwords out of the shared folder and
+    change every one that was in it. Set every laptop to lock its screen after a few idle minutes.
+    Give each person an account of their own, so a sign-in points at one person's password and no
+    one else's. And have the firewall allow out only what the yard uses, so an upload to an address
+    it has never seen stands out, or never leaves.
+  nextTease: The dispatch server has been running all weekend too, and something on it is still running.
+  furtherReading:
+    - foundations-chain-of-custody

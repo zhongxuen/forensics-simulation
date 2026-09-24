@@ -115,6 +115,7 @@ export function planNoise(
     for (let at = floorHour(window.from); at < until; at += HOUR) {
       const local = zonedParts(at, machine.zone);
       if (!profile.busyHours.includes(local.hour)) continue;
+      if (noise.weekends === false && isWeekend(local)) continue;
       for (let i = 0; i < perHour; i++) {
         const minute = rng.int(0, 59);
         const second = rng.int(0, 59);
@@ -134,6 +135,12 @@ export function planNoise(
     );
   }
   return actions.sort((a, b) => a.at - b.at);
+}
+
+/** Saturday or Sunday, on the wall clock `local` was read from. */
+function isWeekend(local: { readonly year: number; readonly month: number; readonly day: number }) {
+  const weekday = new Date(Date.UTC(local.year, local.month - 1, local.day)).getUTCDay();
+  return weekday === 0 || weekday === 6;
 }
 
 /** The accounts noise may act as: the people on the machine, never its built-in ones. */

@@ -8,6 +8,12 @@ import { createRecord, diskOf, ownerFor, recordsAt, toBytes, type ActionContext 
  *
  * The copy in unallocated space is written over too, so carving finds nothing either. Without this
  * action a deleted file in a case stays recoverable, which is usually what a case wants.
+ *
+ * With `keep`, only the clusters after the first `keep` are taken: the file is **partly**
+ * overwritten. Recovering it still stops, because some of its clusters belong to another file now,
+ * but its start survives in unallocated space, so a carver finds its header and no end: a partial
+ * file. What was written over reads as zeros there rather than the new file's bytes, because those
+ * clusters are in use again and so are no longer unallocated space for anything to be carved from.
  */
 export function applyOverwriteClusters(
   ctx: ActionContext,
@@ -20,6 +26,12 @@ export function applyOverwriteClusters(
       `nothing deleted is at ${action.path} on ${ctx.machine.id}, so there are no clusters to reuse. Delete it earlier in the story.`,
     );
   }
+  const keep = action.keep ?? 0;
+  if (keep >= deleted.clusters.length) {
+    ctx.fail(
+      `${action.path} has ${deleted.clusters.length} cluster${deleted.clusters.length === 1 ? "" : "s"}, so keep: ${keep} leaves nothing to write over. Keep fewer, or make the file bigger.`,
+    );
+  }
 
   const path = action.by ?? `${ctx.machine.baseline.programFolder}\\temp-${deleted.record}.tmp`;
   const filler = action.content ?? "\u0000".repeat(Math.max(1, deleted.content.length));
@@ -30,11 +42,14 @@ export function applyOverwriteClusters(
     content: filler,
   });
   // The new file sits exactly where the old one did, which is the whole point of the action.
-  taken.clusters = [...deleted.clusters];
+  taken.clusters = deleted.clusters.slice(keep);
 
   const chunk = deleted.unallocatedChunk;
   const was = chunk === undefined ? undefined : disk.unallocated[chunk];
-  if (chunk !== undefined && was) {
+  if (chunk !== undefined && was && keep > 0) {
+    const kept = keep * disk.clusterSize;
+    disk.unallocated[chunk] = Uint8Array.from(was, (byte, i) => (i < kept ? byte : 0));
+  } else if (chunk !== undefined && was) {
     const over = toBytes(filler);
     disk.unallocated[chunk] = new Uint8Array(
       Array.from({ length: was.length }, (_, i) =>

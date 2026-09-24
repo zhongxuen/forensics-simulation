@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { isReleased } from "@/content/cases/chapter";
 import {
+  CASE_LISTINGS,
   caseRunReducer,
   createCaseRun,
   custodyLog,
@@ -23,20 +24,26 @@ import { builtCases, committedEvidence } from "./support";
 /**
  * A case that `pnpm case:play` can finish has to be finishable **in the browser** too. Headless
  * play (loader/play.ts) and the browser's case runner (run/case-run.ts with run/evaluate.ts) are
- * two implementations of the same rules, so this plays each released case's playthrough through
+ * two implementations of the same rules, so this plays the playthrough of each case with a
+ * playable page (released or not yet: a case is proved playable before it is offered) through
  * the browser's side — `toRunnableCase`, the evidence JSON the browser loads, the terminal session
  * and `caseRunReducer` — and holds it to what headless play says: the same objectives ticked, and
  * every report answer supported.
  */
-const released = builtCases.filter((built) => isReleased(built.case.id));
+const playablePages = new Set(
+  CASE_LISTINGS.filter((listing) => listing.status === "playable").map((listing) => listing.slug),
+);
+const playable = builtCases.filter(
+  (built) => isReleased(built.case.id) || playablePages.has(built.case.id),
+);
 
-describe("released cases", () => {
+describe("playable cases", () => {
   it("include the chapter's first case", () => {
-    expect(released.map((built) => built.case.id)).toContain("case-01");
+    expect(playable.map((built) => built.case.id)).toContain("case-01");
   });
 });
 
-describe.each(released.map((built) => [built.case.id, built] as const))("%s", (id, built) => {
+describe.each(playable.map((built) => [built.case.id, built] as const))("%s", (id, built) => {
   const caseDef = toRunnableCase(built);
   const evidence = committedEvidence(id);
   const playthrough = loadPlaythrough(id, built.case.playthrough);
@@ -140,7 +147,7 @@ describe.each(released.map((built) => [built.case.id, built] as const))("%s", (i
 });
 
 describe("case-01's chain of custody", () => {
-  const built = released.find((item) => item.case.id === "case-01");
+  const built = playable.find((item) => item.case.id === "case-01");
   const evidence = committedEvidence("case-01");
   const playthrough = built && loadPlaythrough("case-01", built.case.playthrough);
 
@@ -197,6 +204,8 @@ function oracle(event: SimEvent): CustodyEntry["kind"][] {
       return ["hashed"];
     case "evidence.recovered":
       return ["recovered"];
+    case "evidence.carved":
+      return ["carved"];
     case "board.pinned":
       return ["pinned"];
     case "evidence.readOriginal":

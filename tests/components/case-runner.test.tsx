@@ -153,6 +153,49 @@ describe("CaseRunner", () => {
     expect(screen.getByText("All in order.")).toBeTruthy();
   });
 
+  it("answers a choice beat's other choice with the character's line, then offers it again", async () => {
+    const RIGHT = "What the evidence shows, whoever it points at";
+    const WRONG = "What the client asked for";
+    const NOOR = "A report that bends to the client is worth nothing once somebody checks it.";
+    const caseDef = {
+      ...PRACTICE_CASE,
+      report: {
+        questions: [
+          {
+            id: "owner-request",
+            ask: "What does your report say?",
+            type: "choice" as const,
+            choices: [WRONG, RIGHT],
+            answer: RIGHT,
+            acceptedRefs: ["log:security/1"],
+            explain: "The evidence decides.",
+            feedback: [{ choice: WRONG, speaker: "mentor-noor", text: NOOR }],
+          },
+        ],
+      },
+    };
+    const user = userEvent.setup();
+    render(<CaseRunner caseDef={caseDef} storage={storageOver(new Map())} />);
+    await user.click(screen.getByRole("button", { name: "Start case" }));
+    await screen.findByRole("tab", { name: "Terminal" }, CHUNK);
+    await run(user, "cat cases/practice/letter.txt");
+    await run(user, "grep Sealed cases/practice/handover.txt");
+    await user.click(tab("Objectives"));
+    await user.click(await screen.findByRole("button", { name: "Write your report" }, CHUNK));
+
+    await user.click(screen.getByRole("radio", { name: WRONG }));
+    await user.click(screen.getByRole("button", { name: "Submit report" }));
+    expect(await screen.findByText(NOOR)).toBeTruthy();
+    expect(screen.getByText("Noor Halvorsen")).toBeTruthy();
+
+    // No fail screen: the choice is offered again, and the other answer has no such line.
+    await user.click(screen.getByRole("button", { name: "Change your report" }));
+    await user.click(await screen.findByRole("radio", { name: RIGHT }));
+    await user.click(screen.getByRole("button", { name: "Submit report" }));
+    await screen.findByRole("button", { name: "Change your report" });
+    expect(screen.queryByText(NOOR)).toBeNull();
+  });
+
   it("forgets the save when the case is started again", async () => {
     const shelf: Shelf = new Map();
     const user = await startCase(storageOver(shelf));

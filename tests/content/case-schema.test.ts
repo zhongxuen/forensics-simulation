@@ -193,6 +193,60 @@ describe("the messages an author sees", () => {
     );
   });
 
+  it("keeps a document from replacing the letter, or another document", () => {
+    says(
+      broken((draft) => {
+        draft.documents = [{ file: "letter.txt", content: "Something else" }];
+      }),
+      /already has letter\.txt and handover\.txt/,
+    );
+    says(
+      broken((draft) => {
+        draft.documents = [
+          { file: "door-log.txt", content: "One" },
+          { file: "door-log.txt", content: "Two" },
+        ];
+      }),
+      /Two documents are called "door-log\.txt"/,
+    );
+  });
+
+  it("gives feedback only to a choice question's other choices", () => {
+    const choice = {
+      id: "whose-report",
+      ask: "What does the report say?",
+      type: "choice",
+      answer: "What the evidence shows",
+      choices: ["What the evidence shows", "What the client wants"],
+      acceptedEvidence: ["disk:qf-lt-03:mft/*docket-4471*"],
+      explain: "The evidence decides.",
+    };
+    const withFeedback = (feedback: unknown) =>
+      broken((draft) => {
+        const report = draft.report as { questions: Record<string, unknown>[] };
+        report.questions.push({ ...choice, feedback });
+      });
+    says(
+      withFeedback([{ choice: "What the evidence shows", speaker: "mentor-noor", text: "Yes." }]),
+      /That is the answer/,
+    );
+    says(
+      withFeedback([{ choice: "Something nobody offered", speaker: "mentor-noor", text: "No." }]),
+      /isn't one of the choices/,
+    );
+    says(
+      withFeedback([{ choice: "What the client wants", speaker: "the-owner", text: "No." }]),
+      /isn't in the cast/,
+    );
+
+    const fine = structuredClone(fixture);
+    (fine.report as { questions: Record<string, unknown>[] }).questions.push({
+      ...choice,
+      feedback: [{ choice: "What the client wants", speaker: "mentor-noor", text: "Pick again." }],
+    });
+    expect(parseCase(fine).success).toBe(true);
+  });
+
   it("checks a timestamp answer is a time", () => {
     says(
       broken((draft) => {

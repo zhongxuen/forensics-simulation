@@ -44,8 +44,9 @@ const LISTINGS: readonly CaseListing[] = [
   {
     slug: "case-02",
     title: "The deleted invoice",
-    summary: "An invoice vanished from a company laptop. Follow the evidence, not the suspicion.",
-    status: "planned",
+    summary:
+      "Three invoices vanished and everyone suspects the bookkeeper. Follow the evidence, not the suspicion.",
+    status: "playable",
   },
   {
     slug: "case-03",

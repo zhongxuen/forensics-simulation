@@ -8,8 +8,8 @@ import type { EvidenceSet, FsEntrySpec, Instant, ScenarioSpec } from "@/sim/type
  *
  * Every case runs on the same machine — `ir-ws-01`, the vendored sandbox workstation
  * (`src/content/sandbox/workstation.ts`) — with one folder added for the case: the signed letter,
- * the handover form the evidence arrived with, and the two empty folders the disk tools write
- * into. The evidence itself is never a file here: `attachEvidence` puts each drive under
+ * the handover form the evidence arrived with, any other paperwork in the case file's `documents`,
+ * and the two empty folders the disk tools write into. The evidence itself is never a file here: `attachEvidence` puts each drive under
  * `/dev/evidence` as a device behind a write-blocker (`src/sim/evidence/session.ts`).
  *
  * The clock starts when the evidence was handed over, so the in-world times on the workstation sit
@@ -39,6 +39,10 @@ export function caseScenario(entry: Case, evidence: EvidenceSet): CaseScenario {
   const files: FsEntrySpec[] = [
     { path: `${dir}/letter.txt`, content: letterText(entry) },
     { path: `${dir}/handover.txt`, content: handoverText(entry, evidence) },
+    ...entry.documents.map((document) => ({
+      path: `${dir}/${document.file}`,
+      content: `${document.content.trim()}\n`,
+    })),
     { path: `${dir}/images`, type: "dir" },
     { path: `${dir}/export`, type: "dir" },
   ];

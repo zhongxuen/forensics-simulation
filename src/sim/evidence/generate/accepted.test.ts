@@ -89,6 +89,53 @@ describe("resolveAcceptedEvidence", () => {
     expect(matches("disk:qf-lt-07:carve/0")).toEqual(["disk:qf-lt-07:carve/0"]);
   });
 
+  it("names what the carver finds by its type, whether it is whole, and what it says", () => {
+    // Two PDFs deleted; the second partly written over, so the carver finds its start and no end.
+    const whole = "C:\\Users\\dana\\Documents\\inv-0407.pdf";
+    const long = "C:\\Users\\dana\\Documents\\inv-0410.pdf";
+    const rows = Array.from({ length: 320 }, (_, i) => `run ${String(i).padStart(3, "0")} 38.00`);
+    const write = (path: string, content: string, offset: number): StoryAction => ({
+      at: START + offset,
+      actor: { kind: "attacker" },
+      on: "qf-lt-07",
+      do: "create-file",
+      path,
+      content,
+    });
+    const remove = (path: string, offset: number): StoryAction => ({
+      at: START + offset,
+      actor: { kind: "attacker" },
+      on: "qf-lt-07",
+      do: "delete-file",
+      path,
+    });
+    const carved = play([
+      write(whole, "%PDF-1.4\nInvoice 0407\n%%EOF\n", 0),
+      write(long, `%PDF-1.4\nStatement 0410\n${rows.join("\n")}\n%%EOF\n`, 1000),
+      remove(whole, 2000),
+      remove(long, 3000),
+      {
+        at: START + 4000,
+        actor: { kind: "attacker" },
+        on: "qf-lt-07",
+        do: "overwrite-clusters",
+        path: long,
+        by: "C:\\Users\\dana\\Documents\\price-lists.zip",
+        keep: 1,
+      },
+    ]).evidence;
+    const find = (pattern: string) => resolveAcceptedEvidence(carved, pattern);
+
+    expect(find("disk:qf-lt-07:carve/pdf")).toHaveLength(2);
+    const [complete] = find("disk:qf-lt-07:carve/complete pdf");
+    const [partial] = find("disk:qf-lt-07:carve/partial pdf");
+    expect(complete).toBe("disk:qf-lt-07:carve/0");
+    expect(partial).toMatch(/^disk:qf-lt-07:carve\/[1-9]\d*$/);
+    expect(find("disk:qf-lt-07:carve/*Statement 0410*")).toEqual([partial]);
+    expect(find("disk:qf-lt-07:carve/*Invoice 0999*")).toEqual([]);
+    expect(find("disk:qf-lt-07:carve/zip")).toEqual([]);
+  });
+
   it("picks log records out by their fields", () => {
     const [ref] = matches("log:security/where eventId=4624 and IpAddress=10.60.0.21");
     const found = resolveRef(evidence, ref ?? "");
