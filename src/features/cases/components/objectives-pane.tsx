@@ -95,7 +95,7 @@ export default function ObjectivesPane({ caseDef, run, dispatch }: WorkspacePane
                           ))}
                         </ol>
                       )}
-                      {shown < HINT_TIERS && (
+                      {shown < Math.min(HINT_TIERS, objective.hints.length) && (
                         <Button
                           variant="ghost"
                           size="sm"

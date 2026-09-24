@@ -1,16 +1,18 @@
 import type { EvidenceSet } from "@/sim/types";
+import { loadEvidence } from "../loader/evidence";
 
 /**
  * Each case's evidence, loaded with a dynamic `import()` so it's never in a page's first download
- * (00 §4 row 12). File 03 adds `loadEvidence(caseId)` over the generated JSON in
- * `src/content/evidence/<case>/`; until then only the practice case has evidence, from the
- * builder. Add a case here with one line.
+ * (00 §4 row 12): a case file's through `loadEvidence(caseId)` over the generated JSON in
+ * `src/content/evidence/<case>/`, and the practice case's from the builder. Add a case here with
+ * one line.
  *
  * Nothing here imports the engine, so the case page can warm the evidence up during the briefing
  * without the engine joining its first download.
  */
 const LOADERS: Readonly<Record<string, () => Promise<EvidenceSet>>> = {
   practice: () => import("./practice-evidence").then((module) => module.PRACTICE_EVIDENCE),
+  "case-01": () => loadEvidence("case-01"),
 };
 
 /** The case's evidence, or undefined for a case that has none yet. */

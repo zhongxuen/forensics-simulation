@@ -25,6 +25,12 @@ export interface Chapter {
   readonly closing: string;
   /** Case ids, in the order they are meant to be played. */
   readonly cases: readonly string[];
+  /**
+   * Whether each case is offered to players yet: one flag per case in `cases`. An unreleased case
+   * keeps its file, its evidence and its page (nothing is deleted); `/cases` leaves it off the
+   * list and the landing page says it's still being written. Releasing one is flipping its flag.
+   */
+  readonly released: Readonly<Record<string, boolean>>;
 }
 
 export const CHAPTER_ONE: Chapter = {
@@ -36,10 +42,18 @@ export const CHAPTER_ONE: Chapter = {
   closing:
     "Three cases, one yard, and a report at the end of each that points at evidence rather than at a person. That is the job: find out what happened, write down how you know, and say what would stop it happening again.",
   cases: ["case-01", "case-02", "case-03"],
+  // The "Case 1 only" release (docs/plan/15-quality-and-launch.md, part A). Cases 2 and 3 are
+  // released by prompt 15B.1, once files 11 and 12 have written them.
+  released: { "case-01": true, "case-02": false, "case-03": false },
 };
 
 /** The chapter's first case: where a visitor with no account starts. */
 export const FIRST_CASE_ID: string = CHAPTER_ONE.cases[0] as string;
+
+/** Whether a chapter case is offered to players yet. A case the chapter doesn't list is not. */
+export function isReleased(id: string): boolean {
+  return Object.hasOwn(CHAPTER_ONE.released, id) && CHAPTER_ONE.released[id] === true;
+}
 
 /** Every chapter, in order. There is one in v1. */
 export const CHAPTERS: readonly Chapter[] = [CHAPTER_ONE];

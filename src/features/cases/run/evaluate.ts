@@ -1,27 +1,57 @@
 import type { SimEvent } from "@/sim/types";
 import type { CaseObjective, ObjectiveCheck, RunnableCase } from "./case-definition";
+import { gradeQuestion } from "./report";
 
 /**
- * The stub objective evaluator (docs/plan/05-workspace-ui.md §Case runner): enough to tick the
- * practice case's objectives from engine events, until file 03's evaluator takes over. It matches
- * Hacker Simulation's `evaluateObjectives` for the two kinds it knows (`event` and `commandRun`),
- * so swapping it is a change of import, not of behaviour.
+ * The objective evaluator (docs/plan/05-workspace-ui.md §Case runner). It matches Hacker
+ * Simulation's `evaluateObjectives` for the mission kinds (`event` and `commandRun`), and headless
+ * play's `holds` (loader/play.ts) for the forensics ones: a ref pinned to the board, a report answer
+ * that's supported, and `all` / `any` groups. The two are held to agree by
+ * `tests/content/case-browser-play.test.ts`, which plays each case's playthrough through this.
  *
- * Pure: the case and every event since the run started in, the objectives that hold out.
+ * Pure: the case, every event since the run started, and the board and report as they stand in;
+ * the objectives that hold out.
  */
 export type ObjectiveEvaluator = (
-  caseDef: Pick<RunnableCase, "objectives">,
+  caseDef: Pick<RunnableCase, "objectives" | "report">,
   events: readonly SimEvent[],
+  board?: RunBoard,
 ) => string[];
 
+/** What the player has put down: pins on the board and the report draft. */
+export interface RunBoard {
+  readonly pins: readonly string[];
+  readonly reportDraft: Readonly<Record<string, string>>;
+}
+
+const EMPTY_BOARD: RunBoard = { pins: [], reportDraft: {} };
+
 /** Ids of the objectives whose checks hold, in the case's objective order. */
-export const evaluateObjectives: ObjectiveEvaluator = (caseDef, events) =>
+export const evaluateObjectives: ObjectiveEvaluator = (caseDef, events, board = EMPTY_BOARD) =>
   caseDef.objectives
-    .filter((objective) => holds(objective.check, events))
+    .filter((objective) => holds(objective.check, caseDef, events, board))
     .map((objective) => objective.id);
 
-function holds(check: ObjectiveCheck, events: readonly SimEvent[]): boolean {
+function holds(
+  check: ObjectiveCheck,
+  caseDef: Pick<RunnableCase, "report">,
+  events: readonly SimEvent[],
+  board: RunBoard,
+): boolean {
   switch (check.kind) {
+    case "all":
+      return check.of.every((inner) => holds(inner, caseDef, events, board));
+    case "any":
+      return check.of.some((inner) => holds(inner, caseDef, events, board));
+    case "pinned":
+      return check.refs.some((ref) => board.pins.includes(ref));
+    case "reported": {
+      const question = caseDef.report?.questions.find((item) => item.id === check.question);
+      return (
+        question !== undefined &&
+        gradeQuestion(question, board.reportDraft[question.id], board.pins).verdict === "supported"
+      );
+    }
     case "event":
       return events.some((event) => event.type === check.event && eventMatches(event, check.match));
     case "commandRun": {

@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { CHAPTERS, CHAPTER_ONE, FIRST_CASE_ID, caseOrder } from "@/content/cases/chapter";
+import {
+  CHAPTERS,
+  CHAPTER_ONE,
+  FIRST_CASE_ID,
+  caseOrder,
+  isReleased,
+} from "@/content/cases/chapter";
 import { findBannedWords } from "@/content/voice";
-import { CASE_LISTINGS } from "@/features/cases";
+import { CASE_LISTINGS, RELEASED_CASE_LISTINGS } from "@/features/cases";
 import { FIRST_STEP } from "@/lib/next-step";
 import { catalog } from "./support";
 
@@ -76,11 +82,37 @@ describe("the chapter", () => {
           `${listing.slug} is playable, so it isn't "written"`,
         ).toBeUndefined();
       } else {
+        // Playable is either a case in the runner's own shape, or a case file the page builds.
         expect(
-          listing.caseDef,
+          listing.caseDef !== undefined || written,
           `${listing.slug} is listed as playable with nothing to play`,
-        ).toBeDefined();
+        ).toBe(true);
       }
+    }
+  });
+
+  // Releasing a case is a flag, never a deletion: an unreleased case keeps its page (a link or a
+  // save may point at it) and is only left off the list.
+  it("has a released flag for every case, and releases the first", () => {
+    expect(Object.keys(CHAPTER_ONE.released).sort()).toEqual([...CHAPTER_ONE.cases].sort());
+    expect(isReleased(FIRST_CASE_ID)).toBe(true);
+    expect(isReleased("not-a-case")).toBe(false);
+  });
+
+  it("lists only released cases, and keeps a page for every case", () => {
+    const listed = RELEASED_CASE_LISTINGS.map((listing) => listing.slug);
+    for (const id of CHAPTER_ONE.cases) {
+      expect(listed.includes(id), id).toBe(isReleased(id));
+      expect(
+        CASE_LISTINGS.some((listing) => listing.slug === id),
+        id,
+      ).toBe(true);
+    }
+  });
+
+  it("only releases a case that can be played", () => {
+    for (const id of CHAPTER_ONE.cases.filter(isReleased)) {
+      expect(CASE_LISTINGS.find((listing) => listing.slug === id)?.status, id).toBe("playable");
     }
   });
 });

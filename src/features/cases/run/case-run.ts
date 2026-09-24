@@ -60,7 +60,10 @@ export interface CaseRunState {
   readonly pins: readonly string[];
   /** The player's own notes on the case. */
   readonly notes: string;
-  /** The report draft, by question id. File 10 writes the report; the placeholder uses `summary`. */
+  /**
+   * The report draft, by question id, plus `summary` for the free text the report ends with (and
+   * is, for a case with no questions).
+   */
   readonly reportDraft: Readonly<Record<string, string>>;
 }
 
@@ -127,7 +130,7 @@ export function createCaseRun(attempt = 0): CaseRunState {
 }
 
 export interface CaseRunReducerOptions {
-  /** Which objectives hold. The stub until file 03's evaluator merges. */
+  /** Which objectives hold. The browser's evaluator unless a test passes its own. */
   readonly evaluate?: ObjectiveEvaluator;
 }
 
@@ -198,7 +201,7 @@ export function caseRunReducer(
     }
     case "pin":
       if (!playing || run.pins.includes(action.ref) || run.pins.length >= MAX_PINS) return run;
-      return { ...run, pins: [...run.pins, action.ref] };
+      return advance(caseDef, { ...run, pins: [...run.pins, action.ref] }, evaluate);
     case "unpin":
       return run.pins.includes(action.ref)
         ? { ...run, pins: run.pins.filter((ref) => ref !== action.ref) }
@@ -211,7 +214,8 @@ export function caseRunReducer(
       const text = action.text.slice(0, MAX_DRAFT_LENGTH);
       if (text.trim() === "") delete reportDraft[action.questionId];
       else reportDraft[action.questionId] = text;
-      return { ...run, reportDraft };
+      // A supported answer can tick a `reported` objective.
+      return advance(caseDef, { ...run, reportDraft }, evaluate);
     }
     case "report":
       return run.phase === "workspace" && isCaseComplete(caseDef, run.completed)
@@ -273,7 +277,7 @@ function advance(
   run: CaseRunState,
   evaluate: ObjectiveEvaluator,
 ): CaseRunState {
-  const holding = evaluate(caseDef, run.events);
+  const holding = evaluate(caseDef, run.events, run);
   const newlyTicked = holding.filter((id) => !run.completed.includes(id));
   if (newlyTicked.length === 0) return run;
   const wasComplete = isCaseComplete(caseDef, run.completed);

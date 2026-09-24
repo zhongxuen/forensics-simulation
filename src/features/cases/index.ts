@@ -6,11 +6,22 @@ export type {
   CaseBeat,
   CaseBriefing,
   CaseClient,
+  CaseDebriefSpec,
   CaseLine,
   CaseObjective,
+  CaseReportQuestion,
+  CaseReportSpec,
   ObjectiveCheck,
   RunnableCase,
 } from "./run/case-definition";
+export {
+  gradeQuestion,
+  gradeReport,
+  parseAnswerTime,
+  supportedCount,
+  type QuestionGrade,
+  type ReportVerdict,
+} from "./run/report";
 export {
   caseRunReducer,
   createCaseRun,
@@ -30,10 +41,12 @@ export {
   isCaseComplete,
   mainObjectives,
   type ObjectiveEvaluator,
+  type RunBoard,
 } from "./run/evaluate";
 export {
   CASE_LISTINGS,
   CHAPTER,
+  RELEASED_CASE_LISTINGS,
   findCaseListing,
   type CaseListing,
   type CaseStatus,

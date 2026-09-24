@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SectionPlaceholder } from "@/components/shell/section-placeholder";
 import { CASE_LISTINGS, CaseRunner, findCaseListing } from "@/features/cases";
+import { getRunnableCase } from "@/features/cases/server";
 
 // Every case page is built ahead of time. Any other slug is a 404.
 export const dynamicParams = false;
@@ -19,14 +20,17 @@ export async function generateMetadata({ params }: PageProps<"/cases/[slug]">): 
 /**
  * One case: briefing, workspace, report and debrief, all in the case runner. The briefing is
  * rendered here on the server; the workstation and everything after Start case load on demand.
- * A case still being written gets a placeholder.
+ * A playable case file is turned into the runner's shape here, at build time. A case still being
+ * written gets a placeholder.
  */
 export default async function CasePage({ params }: PageProps<"/cases/[slug]">) {
   const { slug } = await params;
   const listing = findCaseListing(slug);
   if (!listing) notFound();
 
-  if (!listing.caseDef) {
+  const caseDef =
+    listing.caseDef ?? (listing.status === "playable" ? getRunnableCase(slug) : undefined);
+  if (!caseDef) {
     return (
       <SectionPlaceholder
         headline={listing.title}
@@ -46,5 +50,5 @@ export default async function CasePage({ params }: PageProps<"/cases/[slug]">) {
     );
   }
 
-  return <CaseRunner caseDef={listing.caseDef} />;
+  return <CaseRunner caseDef={caseDef} />;
 }

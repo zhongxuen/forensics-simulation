@@ -5,11 +5,12 @@ import type { ScenarioSpec, SimEventType } from "@/sim/types";
  * What the case runner needs from a case: the briefing, the objectives with their hints, the story
  * lines, and the analyst workstation the terminal runs on.
  *
- * This is the runner's own view of a case, deliberately smaller than the case YAML schema file 03
- * writes (`src/content/cases/schema.ts`): until that merges, the practice case below is written in
- * this shape directly, and afterwards the loader maps a parsed case onto it. The field names are
- * the mission schema's (`../hacker-simulation/src/content/schemas/mission.ts`), so the mapping is
- * mostly one to one. Everything here is plain data, so a server page can hand it to the runner.
+ * This is the runner's own view of a case, deliberately smaller than the case YAML schema
+ * (`src/content/cases/schema.ts`): the practice case is written in this shape directly, and
+ * `toRunnableCase` (loader/runnable.ts, server-only) maps a case file onto it, with every
+ * evidence pattern already resolved into the refs it matches. The field names are the mission
+ * schema's (`../hacker-simulation/src/content/schemas/mission.ts`), so the mapping is mostly one to
+ * one. Everything here is plain data, so a server page can hand it to the runner.
  */
 export interface RunnableCase {
   /** Stable id: the save's key in storage, and the evidence set's `caseId`. */
@@ -32,6 +33,46 @@ export interface RunnableCase {
   /** The analyst workstation for this case: the engine scenario the terminal runs. */
   readonly scenario: ScenarioSpec;
   readonly seed: number;
+  /** The report's questions with their answer key. Without one, the report is a free summary. */
+  readonly report?: CaseReportSpec;
+  /** What the debrief says beyond the ticks. The practice case has none. */
+  readonly debrief?: CaseDebriefSpec;
+}
+
+/**
+ * The report a case asks for, answer key included. The key ships with the case on purpose, as it
+ * does in the case file: nothing is recorded anywhere, so reading it only spoils your own case.
+ * What keeps the exercise honest is that an answer has to point at evidence on the board.
+ */
+export interface CaseReportSpec {
+  readonly questions: readonly CaseReportQuestion[];
+}
+
+export type CaseReportAnswerType = "choice" | "timestamp" | "evidence-pick" | "account" | "host";
+
+export interface CaseReportQuestion {
+  readonly id: string;
+  readonly ask: string;
+  readonly type: CaseReportAnswerType;
+  /** For a choice question, the choices, in the order the case file gives them. */
+  readonly choices?: readonly string[];
+  readonly answer: string;
+  /** For a timestamp question: the instant the answer means, and how far off still counts. */
+  readonly answerAt?: number;
+  readonly toleranceSeconds?: number;
+  /** Every ref an answer may point at, resolved when the evidence was built. */
+  readonly acceptedRefs: readonly string[];
+  /** What the answer means, shown once it is given. */
+  readonly explain: string;
+}
+
+export interface CaseDebriefSpec {
+  /** What the player worked out, in a sentence or two. */
+  readonly summary: string;
+  readonly whatYouLearned: readonly string[];
+  readonly ethicsNote: string;
+  /** A one-line hook for the next case. */
+  readonly nextTease?: string;
 }
 
 export interface CaseClient {
@@ -75,17 +116,35 @@ export interface CaseObjective {
   readonly optional?: boolean;
   /** A secret: off the list until found. */
   readonly hidden?: boolean;
-  /** Three tiers. Tier 1 doesn't name the command (99 §Authoring checklist). */
-  readonly hints: readonly [string, string, string];
+  /**
+   * Three tiers. Tier 1 doesn't name the command (99 §Authoring checklist). A secret may have
+   * none: it is off the list until it's found, so nobody can ask for one.
+   */
+  readonly hints: readonly [string, string, string] | readonly [];
   readonly check: ObjectiveCheck;
 }
 
 /**
- * How an objective is checked. The two kinds the stub evaluator knows (run/evaluate.ts), with the
- * mission schema's names; file 03's schema adds the forensics ones (a pin of a ref, a report
- * answer) and its evaluator replaces the stub.
+ * How an objective is checked (run/evaluate.ts): the mission schema's `event` and `commandRun`,
+ * and the case schema's forensics kinds — a pin on the board, a report answer that's supported,
+ * and groups of checks. A case file's `pinned` pattern arrives already resolved into refs, so the
+ * browser never needs the evidence to check it.
  */
 export type ObjectiveCheck =
+  | {
+      readonly kind: "all" | "any";
+      readonly of: readonly ObjectiveCheck[];
+    }
+  | {
+      readonly kind: "pinned";
+      /** Any one of these on the board holds. */
+      readonly refs: readonly string[];
+    }
+  | {
+      readonly kind: "reported";
+      /** The report question whose answer has to be supported. */
+      readonly question: string;
+    }
   | {
       readonly kind: "event";
       readonly event: SimEventType;
