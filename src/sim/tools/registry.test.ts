@@ -42,6 +42,7 @@ const REAL_TOOL_NAMES = [
 const SECURITY_TOOL_TABLE = [
   "logview",
   ...["acquire", "blocker", "hashsum", "inode", "lsfs", "pin", "recover"],
+  "timeline",
 ];
 
 /** The v1 command table from md-files/05-terminal-module.md, plus echo for redirection. */
