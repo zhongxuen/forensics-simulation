@@ -19,11 +19,11 @@ The project already exists. **Don't recreate it.** These are its settings as rea
 | Production branch        | `main`. Every push to `main` builds and deploys production through the Git integration. **Nothing in CI deploys**                                                                              |
 | Build / install commands | The preset's defaults: `pnpm install` (pnpm is pinned by `packageManager` in `package.json`) and `pnpm build`                                                                                    |
 | Domains                  | `forensics-simulation.vercel.app` (production), `forensics-simulation-goh-zhong-xuen-s-projects.vercel.app`, `forensics-simulation-git-main-goh-zhong-xuen-s-projects.vercel.app`                 |
-| Deployment Protection    | **Vercel Authentication on, "all deployments except custom domains"**. With no custom domain, that covers the production `.vercel.app` address too, so **visitors can't reach the site yet** (§6) |
+| Deployment Protection    | Vercel Authentication, **Standard Protection**. The API still reports it as `all_except_custom_domains`, but the production `.vercel.app` address is public (checked with a logged-out `curl`, 2026-09-24). Previews stay behind Vercel's login |
 | Password protection      | Off (it needs Pro)                                                                                                                                                                             |
 | Firewall                 | No custom rules. None are needed until the mentor ships (§3)                                                                                                                                   |
 
-**Environments.** Production = every merge to `main` → https://forensics-simulation.vercel.app, public once protection is off for production. Preview = every other push and every PR, behind Vercel Authentication. Local = `pnpm dev`.
+**Environments.** Production = every merge to `main` → https://forensics-simulation.vercel.app, public. Preview = every other push and every PR, behind Vercel Authentication. Local = `pnpm dev`.
 
 ## 2. Environment variables
 
@@ -94,10 +94,10 @@ These need a dashboard or a person. Tick them here as they're done.
 
 - [x] Create the Vercel project from the GitHub repo (`forensics-simulation`, 2026-09-22)
 - [x] Production branch is `main`
-- [ ] **Make production public**: Settings → Deployment Protection → Vercel Authentication → change it to protect **preview deployments only** (Standard Protection), or add a custom domain. Today it covers `forensics-simulation.vercel.app` too
-- [ ] Require the **"CI passed"** check on `main` (GitHub → Settings → Branches → branch protection or a ruleset)
-- [ ] Turn on Web Analytics and Speed Insights (Vercel → project). Page views and vitals work on Hobby. Custom events need Pro
-- [ ] Rehearse a rollback once (§5) and write the date in §8
+- [x] **Make production public**: Vercel Authentication set to Standard Protection, which leaves the production `.vercel.app` address public (2026-09-24)
+- [x] Require the **"CI passed"** check on `main`: a GitHub ruleset that also blocks force pushes and deletion (2026-09-24)
+- [x] Turn on Web Analytics and Speed Insights (Vercel → project). Page views and vitals work on Hobby. Custom events need Pro (2026-09-24)
+- [x] Rehearse a rollback once (§5) and write the date in §8 (2026-09-24)
 - [ ] Screen reader pass (§7) and the playtests (§7)
 - [ ] Add the firewall rule (§3), **only if the mentor ships**
 
@@ -141,7 +141,9 @@ NVDA (Windows) or VoiceOver (macOS), about an hour, through Case 1's first five 
 | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 2026-09-22 | Vercel project created from the repo, production branch `main`                                                                                                                                                                                                                                                                                                                            |
 | 2026-09-24 | "Case 1 only" release prepared (15A.1). Machine-checked: lint, types, format, 122 Vitest files, `evidence:check`, `case:validate --strict`, coverage (`src/sim` 91.2 / 81.1 / 95.4 / 94.3, at Hacker Simulation's gates), `bundle:check` (largest page 182.7 KB), `security:bundle`, Playwright (axe, Case 1 keyboard-only on desktop and 360 px, reduced motion, headers). `perf:vitals` on a throttled phone profile: `/` LCP 1472 ms, INP 48 ms, CLS 0.015; `/cases` 1400 ms, 160 ms, 0; `/cases/case-01` 1576 ms, **192 ms** (Start case, close to the 200 ms budget: watch it), 0 |
-| —          | Rollback rehearsed                                                                                                                                                                                                                                                                                                                                                                        |
+| 2026-09-24 | Released. `main` pushed, CI green, production public. Smoke test against production: every route 200 (`/styleguide` 404), CSP without `unsafe-eval`, HSTS, `X-Frame-Options`, no `set-cookie`, and all 43 Playwright tests passed with `E2E_BASE_URL` set to production. "CI passed" required on `main`, Web Analytics and Speed Insights on |
+| 2026-09-24 | Rollback rehearsed: Instant Rollback from 15A.1 (`dpl_Hv58…`) to 02.2 (`dpl_3PNw…`), then Promote back to 15A.1. "Open Case 1" back on `/` afterwards |
+| —          | Automatic promotion confirmed on (the next merge to `main` goes live without a Promote)                                                                                                                                                                                                                                                                                                                                                                        |
 | —          | Screen reader pass                                                                                                                                                                                                                                                                                                                                                                        |
 | —          | Playtests (P1–P3)                                                                                                                                                                                                                                                                                                                                                                         |
 
