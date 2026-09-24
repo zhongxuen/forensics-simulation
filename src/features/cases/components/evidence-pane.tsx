@@ -52,6 +52,7 @@ export default function EvidencePane({
         onPin={(ref) => dispatch({ type: "pin", ref })}
         onUnpin={(ref) => dispatch({ type: "unpin", ref })}
         showInTerminal={workstation.showInTerminal}
+        {...(workstation.explain && { explainRow: workstation.explain })}
         {...(reveal && { reveal })}
       />
 

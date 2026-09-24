@@ -44,6 +44,11 @@ export interface TimelineViewProps {
   showInTerminal?: (line: string) => void;
   /** Opens a file's record in the Evidence Browser. */
   showInEvidence?: (ref: string) => void;
+  /**
+   * "Explain this" on the chosen moment (docs/plan/14-mentor.md §Spec). What is sent is the
+   * entry's own sentence, the same one screen readers hear. Absent when the mentor isn't wired in.
+   */
+  explainEntry?: (entry: TimelineEntry) => void;
   /** A request from another pane to bring a ref into view. A new request has a new id. */
   reveal?: { readonly ref: string; readonly id: number };
   /** Said when `reveal` names nothing on the timeline (a drive whose times aren't added yet). */
@@ -64,6 +69,7 @@ export function TimelineView({
   onUnpin,
   showInTerminal,
   showInEvidence,
+  explainEntry,
   reveal,
   missing,
 }: TimelineViewProps) {
@@ -298,6 +304,7 @@ export function TimelineView({
             parseRef(selected.ref)?.kind === "file" && {
               onShowInEvidence: () => showInEvidence(selected.ref),
             })}
+          {...(explainEntry && { onExplain: () => explainEntry(selected) })}
         />
       ) : (
         shown.length > 0 && (
@@ -527,6 +534,7 @@ function EntryDetail({
   onTogglePin,
   onShowInTerminal,
   onShowInEvidence,
+  onExplain,
 }: {
   set: EvidenceSet;
   entry: TimelineEntry;
@@ -537,6 +545,7 @@ function EntryDetail({
   onTogglePin: () => void;
   onShowInTerminal?: () => void;
   onShowInEvidence?: () => void;
+  onExplain?: () => void;
 }) {
   const id = useId();
   const utc = entryTime(set, entry, false);
@@ -590,6 +599,11 @@ function EntryDetail({
         {onShowInEvidence && (
           <Button size="sm" variant="secondary" onClick={onShowInEvidence}>
             Show in Evidence Browser
+          </Button>
+        )}
+        {onExplain && (
+          <Button size="sm" variant="ghost" onClick={onExplain}>
+            Explain this
           </Button>
         )}
       </div>

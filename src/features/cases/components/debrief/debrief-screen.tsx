@@ -7,9 +7,17 @@ import { CharacterMessage } from "@/components/ui/character-message";
 import { Dialog } from "@/components/ui/dialog";
 import { CheckIcon, DownloadIcon } from "@/components/ui/icons";
 import { getCastMember } from "@/content/cast";
-import { formatInstant } from "@/sim";
+import {
+  MentorReviewCard,
+  type MentorSession,
+  type MentorTranscript,
+  type ReviewCustodyFacts,
+  type ReviewFacts,
+  type ReviewObjectiveFact,
+} from "@/features/mentor";
+import { formatInstant, listTools } from "@/sim";
 import type { EvidenceSet } from "@/sim/types";
-import { custodyLog, custodyText } from "../../custody";
+import { custodyLog, custodyText, isAnalysis, type CustodyEntry } from "../../custody";
 import {
   gradeReport,
   reportAnswers,
@@ -30,6 +38,18 @@ interface DebriefScreenProps {
   dispatch: (action: CaseRunAction) => void;
   /** The case's evidence, for the handover lines on the custody record. */
   evidence: EvidenceSet | null;
+  /**
+   * Noor, for "Looking back with Noor" (docs/plan/14-mentor.md §Spec). The mentor is an
+   * enhancement, never a dependency: without one the debrief is exactly as it was.
+   */
+  mentor?: MentorSession;
+  /** Every line the player typed this attempt, for the review's run facts. */
+  commandLines?: readonly string[];
+  /**
+   * The attempt's terminal activity, capped with the review's limits. It is the only player text
+   * that ever leaves the browser, and only when they ask Noor to look back.
+   */
+  transcript?: MentorTranscript;
 }
 
 /**
@@ -39,7 +59,15 @@ interface DebriefScreenProps {
  * ready to download. Never a score (99 §Banned engagement mechanics). The report can be changed
  * and submitted again from here as often as the player likes.
  */
-export function DebriefScreen({ caseDef, run, dispatch, evidence }: DebriefScreenProps) {
+export function DebriefScreen({
+  caseDef,
+  run,
+  dispatch,
+  evidence,
+  mentor,
+  commandLines = [],
+  transcript = [],
+}: DebriefScreenProps) {
   const [confirmRestart, setConfirmRestart] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
   useEffect(() => headingRef.current?.focus(), []);
@@ -141,6 +169,18 @@ export function DebriefScreen({ caseDef, run, dispatch, evidence }: DebriefScree
         </section>
       )}
 
+      {mentor && (
+        <div className="mt-8">
+          <LookingBack
+            caseDef={caseDef}
+            run={run}
+            mentor={mentor}
+            commandLines={commandLines}
+            transcript={transcript}
+          />
+        </div>
+      )}
+
       <Custody caseDef={caseDef} run={run} evidence={evidence} />
 
       <div className="mt-8 flex flex-wrap gap-3">
@@ -179,6 +219,102 @@ export function DebriefScreen({ caseDef, run, dispatch, evidence }: DebriefScree
         }
       />
     </article>
+  );
+}
+
+/** Every command the workstation has, so a typo never lists as a command the player used. */
+const KNOWN_COMMANDS: readonly string[] = listTools().map((tool) => tool.name);
+
+/**
+ * The chain of custody as the mentor may see it (docs/plan/14-mentor.md §Spec): each entry's
+ * **kind**, in order, plus whether a hash came before anything opened the evidence and whether an
+ * original was ever read around its write-blocker. No digest, path, record number or ref goes with
+ * it — those are evidence, and the mentor holds no evidence.
+ */
+export function custodyFacts(log: readonly CustodyEntry[]): ReviewCustodyFacts {
+  return {
+    order: log.map((entry) => entry.kind),
+    hashedFirst: log.some(
+      (entry, index) =>
+        entry.kind === "hashed" &&
+        entry.verified !== false &&
+        !log.slice(0, index).some(isAnalysis),
+    ),
+    readAroundBlocker: log.some((entry) => entry.kind === "original-read" && !entry.blocker),
+  };
+}
+
+/** Reset machine presses this attempt: the run's log records each one, so a replay counts them. */
+function resetCount(log: CaseRunState["log"]): number {
+  return log.filter((entry) => "reset" in entry).length;
+}
+
+/**
+ * "Looking back with Noor" (docs/plan/14-mentor.md §Spec). The player asks for it — their commands
+ * only ever leave the browser when they ask the mentor for something — and the review is held with
+ * the attempt, so coming back to the debrief never asks the model again.
+ *
+ * What travels is ids, counts, the capped transcript and the **shape** of the chain of custody.
+ * Not the report's answers, and not which evidence supports them: the player can go straight back
+ * and change their report from this screen, so an answer given here would still be an answer given.
+ */
+function LookingBack({
+  caseDef,
+  run,
+  mentor,
+  commandLines,
+  transcript,
+}: {
+  caseDef: RunnableCase;
+  run: CaseRunState;
+  mentor: MentorSession;
+  commandLines: readonly string[];
+  transcript: MentorTranscript;
+}) {
+  const facts = useMemo((): ReviewFacts => {
+    const log = custodyLog(run.events, run.marks);
+    const questions = caseDef.report?.questions ?? [];
+    const findings =
+      questions.length === 0
+        ? null
+        : {
+            supported: supportedCount(
+              gradeReport({ questions }, reportAnswers(run.reportDraft, run.citations), run.pins),
+            ),
+            total: questions.length,
+          };
+    return {
+      caseTitle: caseDef.title,
+      objectives: caseDef.objectives.map((objective): ReviewObjectiveFact => ({
+        id: objective.id,
+        description: objective.description,
+        ...(objective.name !== undefined && { name: objective.name }),
+        kind: objective.hidden ? "secret" : objective.optional ? "bonus" : "main",
+        done: run.completed.includes(objective.id),
+        hintsOpened: run.hintsShown[objective.id] ?? 0,
+      })),
+      // The run's own clock isn't kept, so the time is left unknown rather than guessed at.
+      minutes: null,
+      commandLines,
+      knownCommands: KNOWN_COMMANDS,
+      pinCount: run.pins.length,
+      custody: custodyFacts(log),
+      findings,
+      resets: resetCount(run.log),
+      lessonIds: (caseDef.lessons ?? []).map((lesson) => lesson.id),
+    };
+  }, [caseDef, run, commandLines]);
+
+  const lessonTitle = (id: string) =>
+    (caseDef.lessons ?? []).find((lesson) => lesson.id === id)?.title;
+
+  return (
+    <MentorReviewCard
+      state={mentor.state.review}
+      facts={facts}
+      lessonTitle={lessonTitle}
+      onRequest={() => mentor.requestReview(facts, transcript)}
+    />
   );
 }
 

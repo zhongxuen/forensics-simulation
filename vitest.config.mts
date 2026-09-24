@@ -9,7 +9,8 @@ import { defineConfig } from "vitest/config";
  *   other piece of pure logic. Plain Node with no DOM, because the engine must run headless.
  * - content (Node): every mission, lesson, glossary word, campaign and theme validates, and no
  *   cross-reference is dead. Selected by file name below, so they share tests/unit's fixtures.
- * - integration (Node): the mentor route handlers end to end, with the Anthropic SDK mocked.
+ * - integration (Node): the mentor route handlers end to end, with the Anthropic SDK mocked
+ *   (docs/plan/14-mentor.md). Nothing here touches the network, and no API key is needed.
  * - components (jsdom): interactive components, rendered in a simulated browser and clicked.
  */
 const CONTENT_TESTS = [
@@ -75,13 +76,14 @@ export default defineConfig({
       // What matters most is covered hardest (md-files/11, "high coverage, meaningful assertions"),
       // each gate a little under where it stands, so a drop fails CI. The engine is pure and
       // deterministic, so nearly all of it is reachable, and settings are the only thing that
-      // touches storage. The mission and mentor gates were left out with those features
+      // touches storage. The mission gate was left out with that feature
       // (VENDORED.md). The src/sim gate is back at the sibling's levels since the "Case 1 only"
       // release (docs/plan/15 §Quality checklist), with the evidence model and the forensics tools
       // inside it; src/sim/net/discovery.ts and src/sim/tools/target.ts, left mostly unexercised
       // when the dropped tools' tests went, are what keeps it from going higher. The case run
       // reducer, its objective evaluator and the report grader are what decide a player's ticks
-      // and verdicts, so they have their own gate.
+      // and verdicts, so they have their own gate. File 14 brought the mentor gate back with the
+      // mentor: its request handling is the only code in this app that runs on a server.
       thresholds: {
         "src/sim/**": { statements: 90, branches: 80, functions: 95, lines: 93 },
         "src/features/cases/run/{case-run,evaluate,report}.ts": {
@@ -91,6 +93,13 @@ export default defineConfig({
           lines: 95,
         },
         "src/lib/settings/**": { statements: 98, branches: 90, functions: 98, lines: 98 },
+        "src/features/mentor/{handler,explain-handler,review-handler,respond,schema,case-view}.ts":
+          {
+            statements: 88,
+            branches: 80,
+            functions: 80,
+            lines: 94,
+          },
       },
     },
   },

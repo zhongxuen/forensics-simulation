@@ -17,14 +17,26 @@ import {
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { FOCUS_RING } from "@/components/ui/focus-ring";
+import { LightbulbIcon } from "@/components/ui/icons";
 import { SimulatedBadge } from "@/components/ui/simulated-badge";
 import { Spinner } from "@/components/ui/spinner";
+import { ToastViewport } from "@/components/ui/toast";
 import type { SaveStatus } from "@/lib/case-storage";
 import { cx } from "@/lib/cx";
+import {
+  buildMentorTranscript,
+  MENTOR_FIRST_NAME,
+  MentorPanel,
+  NudgeChip,
+  useNudge,
+  type MentorSession,
+} from "@/features/mentor";
 import { Terminal, type TerminalSession } from "@/features/terminal";
+import { useSettings } from "@/lib/settings";
 import type { BrowsedImage, EvidenceSet } from "@/sim/types";
 import type { RunnableCase } from "../run/case-definition";
 import type { CaseRunAction, CaseRunState } from "../run/case-run";
+import { currentObjective } from "../run/case-run";
 import { caseProgress } from "../run/evaluate";
 import {
   PANE_LABELS,
@@ -56,6 +68,18 @@ const isDesktop = () => window.matchMedia(DESKTOP_QUERY).matches;
 
 type ViewId = "terminal" | PaneId;
 
+/**
+ * Which of the mentor's three row-bearing views a pane is (docs/plan/14-mentor.md §Spec). Only a
+ * visible pane can have a row pointed at, so the selected tab is the one that asked. The Objectives
+ * pane has no rows to explain; it never calls `explain`, and its entry only keeps the map total.
+ */
+const PANE_VIEW: Readonly<Record<PaneId, "evidence" | "timeline" | "board">> = {
+  evidence: "evidence",
+  timeline: "timeline",
+  board: "board",
+  objectives: "evidence",
+};
+
 interface CaseWorkspaceProps {
   caseDef: RunnableCase;
   run: CaseRunState;
@@ -66,6 +90,12 @@ interface CaseWorkspaceProps {
   evidence: EvidenceSet | null;
   headingRef: RefObject<HTMLHeadingElement | null>;
   saveStatus: SaveStatus;
+  /**
+   * Noor, for this attempt (docs/plan/14-mentor.md). The mentor is an enhancement, never a
+   * dependency: leave it out and the workspace loses the Ask Noor button, the Explain buttons and
+   * the nudge chip, and everything else works exactly as it did.
+   */
+  mentor?: MentorSession;
 }
 
 /**
@@ -86,6 +116,7 @@ export function CaseWorkspace({
   evidence,
   headingRef,
   saveStatus,
+  mentor,
 }: CaseWorkspaceProps) {
   const desktop = useSyncExternalStore(subscribeDesktop, isDesktop, () => false);
   const [pane, setPane] = useState<PaneId>("objectives");
@@ -95,6 +126,8 @@ export function CaseWorkspace({
   const baseId = useId();
   const tabRefs = useRef(new Map<ViewId, HTMLButtonElement>());
   const { done, total } = caseProgress(caseDef, run.completed);
+  // The step the player is on, so a hint or an explanation has the right context.
+  const objectiveId = currentObjective(caseDef, run)?.id;
 
   const tabs: readonly ViewId[] = desktop ? PANE_ORDER : ["terminal", ...PANE_ORDER];
   const selected: ViewId = desktop || view !== "terminal" ? pane : "terminal";
@@ -120,6 +153,44 @@ export function CaseWorkspace({
     tabRefs.current.get(next)?.focus();
   };
 
+  // Noor's drawer (docs/plan/14-mentor.md). It only ever opens because the player asked: Ask
+  // Noor, Show me a hint, Explain this, or the nudge chip. Nothing opens it by itself.
+  const settings = useSettings();
+  const [mentorOpen, setMentorOpen] = useState(false);
+  const [hintObjective, setHintObjective] = useState<string>();
+  const openMentor = useCallback((objectiveId?: string) => {
+    if (objectiveId !== undefined) setHintObjective(objectiveId);
+    setMentorOpen(true);
+  }, []);
+
+  // The only player text that ever leaves the browser, and only when they ask the mentor for
+  // something: their recent commands and what the workstation showed, already capped.
+  const transcript = useMemo(
+    () => (mentor ? buildMentorTranscript(session.blocks) : []),
+    [mentor, session.blocks],
+  );
+
+  const askHint = useCallback(
+    (id: string) => {
+      mentor?.askHint(id, transcript);
+    },
+    [mentor, transcript],
+  );
+
+  // "Want a nudge?" (docs/plan/14-mentor.md): the chip offers a hint when the player seems stuck —
+  // a few commands that didn't work since their last tick, or a few minutes without one. It never
+  // opens anything by itself, it can be dismissed until the next tick, and `nudgeChip` on
+  // /settings turns it off for good.
+  const failures = useMemo(
+    () => run.events.filter((event) => event.type === "command.run" && event.exitCode !== 0).length,
+    [run.events],
+  );
+  const nudge = useNudge({
+    progress: run.completed.length,
+    failures,
+    enabled: mentor !== undefined && settings.nudgeChip && !mentorOpen,
+  });
+
   // "Show in terminal": the command goes to the prompt, unrun, and the terminal comes into view.
   const [fillRequest, setFillRequest] = useState<{ id: number; line: string }>();
   // "Show in Evidence Browser" and the like: the pane's tab opens, and only that pane is asked to
@@ -139,8 +210,27 @@ export function CaseWorkspace({
         }
         select(target);
       },
+      // "Explain this" on a row of whichever pane asked (docs/plan/14-mentor.md §Spec). The pane
+      // hands over the row as it drew it and its own plain-language fallback; the evidence set
+      // never travels. Undefined without a mentor, and then no pane shows an Explain button.
+      ...(mentor && {
+        explain: (row) => {
+          mentor.explain({
+            question: {
+              kind: "row",
+              view: PANE_VIEW[pane],
+              text: row.text,
+              ...(row.title !== undefined && { title: row.title }),
+            },
+            transcript,
+            fallback: row.fallback,
+            ...(objectiveId !== undefined && { objectiveId }),
+          });
+          openMentor();
+        },
+      }),
     }),
-    [session.sim, browse, select],
+    [session.sim, browse, select, mentor, pane, transcript, objectiveId, openMentor],
   );
   const paneProps: WorkspacePaneProps = { caseDef, run, dispatch, evidence, workstation };
   const propsFor = (id: PaneId): WorkspacePaneProps =>
@@ -172,6 +262,17 @@ export function CaseWorkspace({
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <SimulatedBadge side="bottom" align="end" />
+          {mentor && (
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<LightbulbIcon />}
+              aria-expanded={mentorOpen}
+              onClick={() => (mentorOpen ? setMentorOpen(false) : openMentor(objectiveId))}
+            >
+              Ask {MENTOR_FIRST_NAME}
+            </Button>
+          )}
           <Button variant="danger" size="sm" onClick={() => setConfirmRestart(true)}>
             Start the case again
           </Button>
@@ -214,6 +315,26 @@ export function CaseWorkspace({
             session={session}
             outputClassName="h-[24rem] lg:h-[32rem]"
             {...(fillRequest && { fillRequest })}
+            {...(mentor && {
+              // "Explain this" on any terminal line, error or whole result. The terminal builds the
+              // request, its own explainer included, so the answer never depends on the mentor
+              // being available (docs/plan/14-mentor.md §Spec).
+              onExplain: (request) => {
+                mentor.explain({
+                  question: {
+                    kind: "output",
+                    command: request.command,
+                    text: request.text,
+                    scope: request.scope,
+                    error: request.error,
+                  },
+                  transcript,
+                  fallback: request.fallback,
+                  ...(objectiveId !== undefined && { objectiveId }),
+                });
+                openMentor();
+              },
+            })}
           />
         </div>
 
@@ -261,6 +382,32 @@ export function CaseWorkspace({
           })}
         </div>
       </div>
+
+      {mentor && (
+        <>
+          <MentorPanel
+            open={mentorOpen}
+            onClose={() => setMentorOpen(false)}
+            caseDef={caseDef}
+            completed={run.completed}
+            objectiveId={hintObjective ?? objectiveId}
+            onSelectObjective={setHintObjective}
+            state={mentor.state}
+            onAskHint={askHint}
+          />
+          {nudge.show && (
+            <ToastViewport>
+              <NudgeChip
+                onAccept={() => {
+                  nudge.dismiss();
+                  openMentor(objectiveId);
+                }}
+                onDismiss={nudge.dismiss}
+              />
+            </ToastViewport>
+          )}
+        </>
+      )}
 
       <Dialog
         open={confirmRestart}

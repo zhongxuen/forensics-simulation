@@ -19,6 +19,8 @@ interface RecordDetailProps {
   /** The command that shows this record in the terminal. */
   terminalCommand: string;
   onShowInTerminal: () => void;
+  /** "Explain this" on the record's row (docs/plan/14-mentor.md). Absent without the mentor. */
+  onExplain?: () => void;
   zone: string;
   headingRef: RefObject<HTMLHeadingElement | null>;
 }
@@ -44,6 +46,7 @@ export function RecordDetail({
   onTogglePin,
   terminalCommand,
   onShowInTerminal,
+  onExplain,
   zone,
   headingRef,
 }: RecordDetailProps) {
@@ -76,6 +79,11 @@ export function RecordDetail({
           <Button size="sm" variant="secondary" onClick={onShowInTerminal}>
             Show in terminal
           </Button>
+          {onExplain && (
+            <Button size="sm" variant="ghost" onClick={onExplain}>
+              Explain this
+            </Button>
+          )}
         </div>
       </div>
       <p className="text-sm text-secondary">

@@ -93,6 +93,18 @@ export function SettingsForm({ children }: SettingsFormProps) {
           />
         </SettingCard>
 
+        <SettingCard
+          title="Your mentor"
+          description="Noor gives free hints and explains what's on your screen during a case, whenever you ask."
+        >
+          <Switch
+            checked={settings.nudgeChip}
+            onChange={(checked) => change({ nudgeChip: checked })}
+            label="Offer me a nudge when I seem stuck"
+            detail="A small “Want a nudge?” button appears after a few tries that didn't work, or a few minutes without a new tick. It never opens anything by itself. Turn it off and you can still ask for hints any time."
+          />
+        </SettingCard>
+
         {children}
 
         <SettingCard

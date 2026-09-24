@@ -207,7 +207,7 @@ describe("the Timeline pane in the workspace", () => {
     const user = userEvent.setup();
     render(<CaseRunner caseDef={PRACTICE_CASE} storage={storage()} />);
     await user.click(await screen.findByRole("button", { name: "Start case" }));
-    await user.click(await screen.findByRole("tab", { name: "Timeline" }));
+    await user.click(await screen.findByRole("tab", { name: "Timeline" }, CHUNK));
 
     // Before the drive is read, only the logs are there, and the card says how it will be read.
     const add = await screen.findByRole("button", { name: "Add qf-lt-03's file times" }, CHUNK);

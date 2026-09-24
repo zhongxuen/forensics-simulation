@@ -122,6 +122,18 @@ export function CaseBoardPane({ run, dispatch, evidence, workstation }: Workspac
           onShowInEvidence: () => workstation.show("evidence", card.ref),
         })}
         {...(hasTimeline && { onShowInTimeline: () => workstation.show("timeline", card.ref) })}
+        {...(workstation.explain && {
+          // The card as it is drawn, and nothing else: the mentor never receives the evidence set
+          // (docs/plan/14-mentor.md §Spec). The fallback is the card's own words.
+          onExplain: () =>
+            workstation.explain?.({
+              text: card.line,
+              title: card.title,
+              fallback: `This card is ${card.title}, pinned from ${card.groupLabel}${
+                card.utc ? `, ${card.timeLabel?.toLowerCase() ?? "recorded"} ${card.utc}` : ""
+              }. The line under it is what the evidence showed when you pinned it: ${card.line}`,
+            }),
+        })}
       />
     </li>
   );
@@ -205,6 +217,8 @@ interface CardProps {
   onShowInTerminal: (line: string) => void;
   onShowInEvidence?: () => void;
   onShowInTimeline?: () => void;
+  /** "Explain this" on the card (docs/plan/14-mentor.md). Absent when the mentor isn't wired in. */
+  onExplain?: () => void;
 }
 
 /** One pin: where it came from, when, the line it was pinned from, its ref and the note. */
@@ -216,6 +230,7 @@ function Card({
   onShowInTerminal,
   onShowInEvidence,
   onShowInTimeline,
+  onExplain,
 }: CardProps) {
   const id = useId();
   const badge = SOURCE_BADGE[card.source];
@@ -282,6 +297,11 @@ function Card({
         {onShowInTimeline && (
           <Button variant="ghost" size="sm" onClick={onShowInTimeline}>
             Show in timeline
+          </Button>
+        )}
+        {onExplain && (
+          <Button variant="ghost" size="sm" onClick={onExplain}>
+            Explain this
           </Button>
         )}
         <Button variant="danger" size="sm" onClick={onRemove}>

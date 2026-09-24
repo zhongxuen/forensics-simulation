@@ -185,8 +185,9 @@ describe("CaseRunner", () => {
 
     await user.click(screen.getByRole("radio", { name: WRONG }));
     await user.click(screen.getByRole("button", { name: "Submit report" }));
-    expect(await screen.findByText(NOOR)).toBeTruthy();
-    expect(screen.getByText("Noor Halvorsen")).toBeTruthy();
+    const line = await screen.findByText(NOOR);
+    // The debrief's mentor card names Noor too, so look inside the line's own figure.
+    expect(within(line.closest("figure") as HTMLElement).getByText("Noor Halvorsen")).toBeTruthy();
 
     // No fail screen: the choice is offered again, and the other answer has no such line.
     await user.click(screen.getByRole("button", { name: "Change your report" }));
