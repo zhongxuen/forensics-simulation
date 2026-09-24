@@ -14,6 +14,7 @@ import { inode } from "./inode";
 import { lsfs } from "./lsfs";
 import { pin } from "./pin";
 import { recover } from "./recover";
+import { timeline } from "./timeline";
 import type { Tool } from "../types";
 
 export const FORENSICS_TOOLS: readonly Tool[] = [
@@ -24,6 +25,7 @@ export const FORENSICS_TOOLS: readonly Tool[] = [
   lsfs,
   pin,
   recover,
+  timeline,
 ];
 
-export { acquire, blocker, hashsum, inode, lsfs, pin, recover };
+export { acquire, blocker, hashsum, inode, lsfs, pin, recover, timeline };
