@@ -113,3 +113,14 @@ export {
   MemoryImageSchema,
   PartitionSchema,
 } from "./schema";
+export {
+  buildTimeline,
+  compareEntries,
+  CONNECTION,
+  isMacbKind,
+  macbKind,
+  PROCESS_START,
+  TIMELINE_SOURCES,
+  type TimelineEntry,
+  type TimelineSource,
+} from "./timeline";

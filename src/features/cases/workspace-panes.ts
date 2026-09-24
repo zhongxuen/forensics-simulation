@@ -70,6 +70,11 @@ export const WORKSPACE_PANES: readonly WorkspacePane[] = [
   { id: "evidence", label: "Evidence", load: () => import("./components/evidence-pane") },
   { id: "objectives", label: "Objectives", load: () => import("./components/objectives-pane") },
   {
+    id: "timeline",
+    label: "Timeline",
+    load: () => import("@/features/timeline").then((m) => ({ default: m.TimelinePane })),
+  },
+  {
     id: "board",
     label: "Board",
     load: () => import("@/features/case-board").then((m) => ({ default: m.CaseBoardPane })),

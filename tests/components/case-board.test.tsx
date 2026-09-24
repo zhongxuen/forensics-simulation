@@ -168,8 +168,9 @@ describe("the Case Board", () => {
     // A log record has no tool to show it yet, and the Evidence Browser shows drives.
     expect(within(log).queryByRole("button", { name: "Show in terminal" })).toBeNull();
     expect(within(log).queryByRole("button", { name: "Show in Evidence Browser" })).toBeNull();
-    // No Timeline pane is registered yet, so no card offers it.
-    expect(within(card).queryByRole("button", { name: "Show in timeline" })).toBeNull();
+    // The Timeline pane is registered, so every card offers it.
+    expect(within(card).getByRole("button", { name: "Show in timeline" })).toBeTruthy();
+    expect(within(log).getByRole("button", { name: "Show in timeline" })).toBeTruthy();
 
     await user.click(within(card).getByRole("button", { name: "Show in terminal" }));
     const prompt = screen.getByRole("textbox", { name: /^Command, in/ }) as HTMLInputElement;

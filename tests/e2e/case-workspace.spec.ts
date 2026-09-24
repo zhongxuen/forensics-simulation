@@ -2,10 +2,11 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
 /**
- * The case workspace's Evidence Browser (docs/plan/05-workspace-ui.md §Evidence Browser), on the
+ * The case workspace's Evidence Browser (docs/plan/05-workspace-ui.md §Evidence Browser) on the
  * fixture case (the practice case, whose drive has one deleted file): open the drive from the
  * keyboard, find the deleted file, pin it with `p`, reload, and find the pin still there. axe runs
- * on the browser with a drive open, and the browser's code only arrives once its tab opens.
+ * on the browser with a drive open, and the browser's code only arrives once its tab opens. The
+ * Timeline's tests are at the end.
  */
 
 const CASE = "/cases/practice";
@@ -111,4 +112,58 @@ test("Show in terminal puts the inode command at the prompt without running it",
   await expect(prompt).toHaveValue(/^inode \/dev\/evidence\/qf-lt-03 \d+$/);
   await page.keyboard.press("Enter");
   await expect(page.getByRole("log", { name: "Terminal output" })).toContainText("Deleted     yes");
+});
+
+/**
+ * The Timeline pane (docs/plan/09-timeline.md §The view): read the drive's times through its
+ * write-blocker, step along the tracks from the keyboard, choose a moment, pin it with `p`, and
+ * find it on the board. axe runs on the tracks with a moment chosen, and on the table view.
+ */
+async function openTimeline(page: Page) {
+  await page.getByRole("tab", { name: "Timeline" }).click();
+  await page.getByRole("button", { name: "Add qf-lt-03's file times" }).click({ timeout: 20_000 });
+  const tracks = page.getByRole("application", { name: "Timeline tracks" });
+  await expect(tracks).toBeVisible();
+  return tracks;
+}
+
+test("the timeline: steps with the keyboard, pins a moment, and the board has it", async ({
+  page,
+}) => {
+  await startCase(page);
+  const tracks = await openTimeline(page);
+
+  await tracks.focus();
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("+");
+  await expect(page.getByText("Hours", { exact: true })).toBeVisible();
+  await page.keyboard.press("Enter");
+
+  const details = page.getByRole("region", { name: "The chosen moment" });
+  await expect(details).toBeVisible();
+  const ref = (await details.getByText(/^(disk|log|mem):/).textContent())!.trim();
+
+  await page.keyboard.press("p");
+  await expect(details.getByRole("button", { name: "Unpin from the case board" })).toBeVisible();
+
+  await page.getByRole("tab", { name: "Board" }).click();
+  await expect(page.getByRole("article").filter({ hasText: ref })).toBeVisible({
+    timeout: 20_000,
+  });
+});
+
+test("axe: the timeline's tracks with a moment chosen, and its table", async ({ page }) => {
+  await startCase(page);
+  const tracks = await openTimeline(page);
+  await tracks.focus();
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("region", { name: "The chosen moment" })).toBeVisible();
+  expect(await seriousViolations(page)).toEqual([]);
+
+  await page.getByRole("button", { name: "Table" }).click();
+  await expect(page.getByRole("table")).toBeVisible();
+  expect(await seriousViolations(page)).toEqual([]);
 });

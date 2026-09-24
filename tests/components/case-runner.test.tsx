@@ -166,12 +166,12 @@ describe("CaseRunner", () => {
     expect(JSON.parse(shelf.get(CASES_STORAGE_KEY) ?? "{}").runs.practice).toBeUndefined();
   });
 
-  it("shows the Timeline and an empty Board as empty states that say what will be there", async () => {
+  it("opens the Timeline on demand, and shows an empty Board as an empty state", async () => {
     const user = await startCase(storageOver(new Map()));
     await user.click(tab("Timeline"));
-    expect(screen.getByRole("heading", { name: "Your timeline will be here" })).toBeTruthy();
-    await user.click(screen.getByRole("button", { name: "Show your objectives" }));
-    expect(tab("Objectives").getAttribute("aria-selected")).toBe("true");
+    expect(await screen.findByRole("heading", { name: "Timeline" }, CHUNK)).toBeTruthy();
+    // The logs are there from the start; the drive's times wait until it is read.
+    expect(screen.getByRole("button", { name: "Add qf-lt-03's file times" })).toBeTruthy();
 
     await user.click(tab("Board"));
     expect(

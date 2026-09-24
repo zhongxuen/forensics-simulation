@@ -96,6 +96,7 @@ export type { AttachedItem, EvidenceSession, RecalledLine } from "./evidence/ses
 export type { BrowsableImage, BrowsedImage } from "./tools/forensics/browse";
 export type { DiskView } from "./evidence/disk";
 export type { ClusterReuse } from "./tools/forensics/shared";
+export type { TimelineEntry, TimelineSource } from "./evidence/timeline";
 export type {
   ArtefactRef,
   DiskImage,

@@ -53,6 +53,8 @@ export {
   type BrowsedImage,
 } from "./tools/forensics/browse";
 export { clusterReuse, clusterRanges, type ClusterReuse } from "./tools/forensics/shared";
+// The Timeline view (docs/plan/09-timeline.md §The view) shows times the way the tool prints them.
+export { sourceZone, timelineTime } from "./tools/forensics/timeline";
 export { LINUX_COMMANDS } from "./tools/commands";
 export { commandGroups } from "./tools/commands/help";
 export { listTools } from "./tools/catalog";
@@ -192,4 +194,14 @@ export {
   type ZoneEntry,
   type ZonedParts,
   type ZonePeriod,
+} from "./evidence";
+// The super-timeline (docs/plan/09-timeline.md): the `timeline` tool and the Timeline view.
+export {
+  buildTimeline,
+  compareEntries,
+  CONNECTION,
+  isMacbKind,
+  macbKind,
+  PROCESS_START,
+  TIMELINE_SOURCES,
 } from "./evidence";
