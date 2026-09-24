@@ -21,27 +21,27 @@ The project already exists. **Don't recreate it.** These are its settings as rea
 | Domains                  | `forensics-simulation.vercel.app` (production), `forensics-simulation-goh-zhong-xuen-s-projects.vercel.app`, `forensics-simulation-git-main-goh-zhong-xuen-s-projects.vercel.app`                 |
 | Deployment Protection    | Vercel Authentication, **Standard Protection**. The API still reports it as `all_except_custom_domains`, but the production `.vercel.app` address is public (checked with a logged-out `curl`, 2026-09-24). Previews stay behind Vercel's login |
 | Password protection      | Off (it needs Pro)                                                                                                                                                                             |
-| Firewall                 | No custom rules. None are needed until the mentor ships (§3)                                                                                                                                   |
+| Firewall                 | No custom rules yet. The mentor shipped with plan file 14, so the rate-limit rule in §3 is now an owner step                                                                                   |
 
 **Environments.** Production = every merge to `main` → https://forensics-simulation.vercel.app, public. Preview = every other push and every PR, behind Vercel Authentication. Local = `pnpm dev`.
 
 ## 2. Environment variables
 
-**None are needed.** The game is static pages plus evidence chunks. No database, no accounts, no cookies, and no server code.
+**None are needed, and the game is complete without them.** It is static pages plus evidence chunks, with no database, no accounts and no cookies. The only server code is the three optional mentor routes (plan file 14): with no key set they answer at once with the authored text, and nothing errors.
 
 | Variable            | When                             | What it does                                                                                                                          |
 | ------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `ANTHROPIC_API_KEY` | **Only if the mentor ships** (file 14) | The mentor's model key. Absent means every hint is the written one, and nothing errors. Server-only: never prefix it `NEXT_PUBLIC_` |
-| `MENTOR_DISABLED`   | With the mentor                  | Kill switch: `1` stops every model call at once and serves the written text                                                           |
-| `MENTOR_MODEL`      | With the mentor                  | Overrides the model id. Default `claude-haiku-4-5` (00 §7)                                                                            |
+| `ANTHROPIC_API_KEY` | Optional                         | The mentor's model key. Absent means every hint is the written one, and nothing errors. Server-only: never prefix it `NEXT_PUBLIC_`   |
+| `MENTOR_DISABLED`   | Optional                         | Kill switch: `1` stops every model call at once and serves the written text. No redeploy of the app is needed, just the variable       |
+| `MENTOR_MODEL`      | Optional                         | Overrides the model id. Default `claude-haiku-4-5` (00 §7)                                                                            |
 
 `pnpm security:bundle` fails the build if a secret, a server-only variable name or the Anthropic SDK reaches a file a browser can download. Never add `DATABASE_URL`, `POSTGRES_*`, `SUPABASE_*`, `MONGODB_URI` or `REDIS_URL`: `tests/unit/no-database.test.ts` fails if a `.env` file has one.
 
-When the mentor ships, follow Hacker Simulation's key steps: separate production and preview Anthropic workspaces and keys, each with a monthly spend limit and alerts at 50% and 80%. Add the production key scoped to **Production**, the preview key scoped to **Preview**, both marked **Sensitive**, then redeploy.
+**Owner step, now that the mentor has shipped.** Follow Hacker Simulation's key steps: separate production and preview Anthropic workspaces and keys, each with a monthly spend limit and alerts at 50% and 80%. Add the production key scoped to **Production**, the preview key scoped to **Preview**, both marked **Sensitive**, then redeploy.
 
 ## 3. The firewall rate-limit rule for `/api/mentor/*`
 
-**Only when the mentor ships.** This release has no `/api` routes, so there is nothing to limit. The rule is copied from Hacker Simulation's runbook.
+**Owner step, now due.** The three mentor routes are live, so there is something to limit. The rule is copied from Hacker Simulation's runbook.
 
 Per-IP limiting is a Vercel WAF rate-limit rule (there are no accounts, so the IP is the only key). Hobby includes one rule per project, which is all this needs. A throttled request gets a 429, and the browser treats any non-OK status as "use the written text", so a player over the limit still gets the hint, never an error. Never go straight to blocking:
 
@@ -84,7 +84,7 @@ Nothing is stored on the server. Players' case runs live in their own browsers (
 - **Fastest:** Vercel → Deployments → the last good one ("Rollback candidate") → ⋯ → **Instant Rollback**. It takes seconds, with no rebuild. `vercel rollback` does the same.
 - Afterwards Vercel **stops auto-promoting** pushes to `main`, so a fix doesn't go live by surprise. **Promote** the fix when it looks right, which turns auto-promotion back on.
 - Then fix forward with `git revert` on a branch. Never force-push `main`.
-- _Only the mentor misbehaving_ (once it ships)? Don't roll back: set `MENTOR_DISABLED=1` in Production.
+- _Only the mentor misbehaving_? Don't roll back: set `MENTOR_DISABLED=1` in Production. Every hint goes back to the authored text at once, and the rest of the game is untouched.
 
 **The rehearsal, once, on a quiet day:** note the current deployment id → Instant Rollback to the previous candidate → load the site and confirm it changed → Promote the newer one back → confirm automatic promotion is on again. Write the date in §8.
 
@@ -99,7 +99,7 @@ These need a dashboard or a person. Tick them here as they're done.
 - [x] Turn on Web Analytics and Speed Insights (Vercel → project). Page views and vitals work on Hobby. Custom events need Pro (2026-09-24)
 - [x] Rehearse a rollback once (§5) and write the date in §8 (2026-09-24)
 - [ ] Screen reader pass (§7) and the playtests (§7)
-- [ ] Add the firewall rule (§3), **only if the mentor ships**
+- [ ] Add the firewall rule (§3) — **due**: the mentor shipped with plan file 14
 
 ## 7. What a machine can't check
 

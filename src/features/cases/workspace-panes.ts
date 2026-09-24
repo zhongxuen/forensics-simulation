@@ -9,6 +9,10 @@ import type { CaseRunAction, CaseRunState } from "./run/case-run";
  * pane's code arrives only when its tab first opens. Files 09 (timeline) and 10 (case board) each
  * add one line and nothing else; until then their tabs show an "arrives in a later update" state.
  *
+ * File 14 (the mentor) adds one optional method to `PaneWorkstation`, `explain`, which is how a
+ * pane offers "Explain this" on one of its rows. It is optional because the mentor is an
+ * enhancement, never a dependency: a workspace built without it simply doesn't pass one.
+ *
  * The tabs always show in PANE_ORDER. A pane module's default export takes WorkspacePaneProps.
  */
 
@@ -58,6 +62,24 @@ export interface PaneWorkstation {
   showInTerminal(line: string): void;
   /** Opens another pane's tab, asking it to bring `ref` into view when one is given. */
   show(pane: PaneId, ref?: string): void;
+  /**
+   * "Explain this" on a row the player pointed at (docs/plan/14-mentor.md §Spec). `text` is the row
+   * exactly as this pane drew it and `title` its heading; `fallback` is the plain-language sentence
+   * to show if the mentor is unavailable, so the answer never depends on a key being set. The
+   * mentor is optional, so a workspace built without it leaves this undefined and a pane hides its
+   * Explain buttons.
+   */
+  explain?(row: PaneExplainRow): void;
+}
+
+/** One row of a pane, as "Explain this" sends it: rendered text, never the evidence set. */
+export interface PaneExplainRow {
+  /** The row as the pane draws it. */
+  readonly text: string;
+  /** The row's heading, when it has one ("security record 57"). */
+  readonly title?: string;
+  /** The explanation written ahead of time, shown verbatim if the mentor is unavailable. */
+  readonly fallback: string;
 }
 
 export interface WorkspacePane {

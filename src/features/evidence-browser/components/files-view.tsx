@@ -8,7 +8,12 @@ import type { EvidenceBrowserProps } from "../browser-tabs";
 import {
   DEFAULT_SORT,
   filtering,
+  formatSize,
+  MACB_KEYS,
+  MACB_NAMES,
   NO_FILTER,
+  recordName,
+  showTime,
   tableRows,
   wallTimeToInstant,
   type ColumnKey,
@@ -35,6 +40,28 @@ import { RecordDetail } from "./record-detail";
 import { RecordTable } from "./record-table";
 
 /**
+ * One record as a row of plain words: what the table shows, said as a sentence. It is both what
+ * "Explain this" sends to the mentor and the explanation shown when the mentor is unavailable, so
+ * the player always gets an answer whether or not a key is set (docs/plan/14-mentor.md).
+ */
+export function explainRowFor(record: FileRecord, zone: string) {
+  const name = recordName(record);
+  const times = MACB_KEYS.map(
+    (key) => `${MACB_NAMES[key].toLowerCase()} ${showTime(record.times[key], zone)}`,
+  ).join(", ");
+  const text = `${name} — ${record.path} — ${record.kind === "dir" ? "folder" : "file"}, ${
+    record.deleted ? "deleted" : "in use"
+  }, ${formatSize(record)}, owner ${record.owner}, record ${record.record}, ${times}`;
+  return {
+    text,
+    title: name,
+    fallback: `This row is the record for \`${record.path}\`. The drive keeps one record per file, and this one says the file is ${
+      record.deleted ? "deleted: its record is still there, which is why you can read it" : "in use"
+    }, that it is ${formatSize(record)}, that it belongs to ${record.owner}, and that its record number is ${record.record}. The four times on it are ${times}, shown in ${zone === UTC_ZONE ? "UTC" : `${zone}, the drive's own clock`}.`,
+  };
+}
+
+/**
  * The Files view: the tree on one side, the table of the selected folder's records, and the
  * details of the selected record (docs/plan/05-workspace-ui.md §Evidence Browser).
  *
@@ -51,6 +78,7 @@ export function FilesView({
   onPin,
   onUnpin,
   showInTerminal,
+  explainRow,
   reveal,
 }: EvidenceBrowserProps) {
   const [opened, setOpened] = useState<Readonly<Record<string, OpenedImage>>>({});
@@ -406,6 +434,11 @@ export function FilesView({
               onTogglePin={() => togglePin(record)}
               terminalCommand={`inode ${imagePathLabel} ${record.record}`}
               onShowInTerminal={() => showInTerminal(`inode ${imagePathLabel} ${record.record}`)}
+              {...(explainRow && {
+                // The row exactly as the table draws it, and the browser's own sentence as the
+                // fallback. The evidence set never travels (docs/plan/14-mentor.md §Spec).
+                onExplain: () => explainRow(explainRowFor(record, zone)),
+              })}
               zone={zone}
               headingRef={detailHeading}
             />

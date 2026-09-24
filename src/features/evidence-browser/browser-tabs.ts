@@ -20,6 +20,16 @@ export interface EvidenceBrowserProps {
   /** Puts a command at the terminal's prompt, unrun, and brings the terminal into view. */
   readonly showInTerminal: (line: string) => void;
   /**
+   * "Explain this" on the selected row (docs/plan/14-mentor.md §Spec). What is sent is the row as
+   * this view renders it, with a plain-language `fallback` to show if the mentor is unavailable —
+   * never the evidence set. Absent when the mentor isn't wired in, and then no button shows.
+   */
+  readonly explainRow?: (row: {
+    readonly text: string;
+    readonly title?: string;
+    readonly fallback: string;
+  }) => void;
+  /**
    * The latest request to show one artefact ("Show in Evidence Browser" on a case board card). A
    * new request has a new `id`. The browser selects it on a drive that's already open, and never
    * opens a drive by itself: opening an original with its blocker off would change it.

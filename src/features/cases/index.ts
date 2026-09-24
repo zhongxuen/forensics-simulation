@@ -4,6 +4,7 @@
  */
 export type {
   CaseBeat,
+  CaseLesson,
   CaseBriefing,
   CaseClient,
   CaseDebriefSpec,
@@ -79,6 +80,7 @@ export {
   PANE_LABELS,
   PANE_ORDER,
   WORKSPACE_PANES,
+  type PaneExplainRow,
   type PaneId,
   type PaneReveal,
   type PaneWorkstation,

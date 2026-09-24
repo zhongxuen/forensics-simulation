@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import type { WorkspacePaneProps } from "@/features/cases";
 import { browsableImages, buildTimeline, parseRef } from "@/sim";
 import type { BrowsableImage, DiskImage, EvidenceSet } from "@/sim/types";
+import { entrySentence, TRACK_LABELS } from "../model/view";
 import { TimelineView } from "./timeline-view";
 
 /** A drive whose times are on the timeline: the image as it was read, and where from. */
@@ -117,6 +118,16 @@ export function TimelinePane({ evidence, run, dispatch, workstation, reveal }: W
           onUnpin={(ref) => dispatch({ type: "unpin", ref })}
           showInTerminal={workstation.showInTerminal}
           showInEvidence={(ref) => workstation.show("evidence", ref)}
+          {...(workstation.explain && {
+            // The entry's own sentence — the same words a screen reader hears — and nothing else:
+            // the mentor never receives the evidence set (docs/plan/14-mentor.md §Spec).
+            explainEntry: (entry) =>
+              workstation.explain?.({
+                text: entrySentence(set, entry, false),
+                title: `${TRACK_LABELS[entry.source]} on ${entry.host}`,
+                fallback: `${entrySentence(set, entry, false)} That is one moment on the timeline: where it came from, when it happened, what kind of moment it was, and what it says.`,
+              }),
+          })}
           {...(reveal && { reveal })}
           missing={(ref) => {
             const parsed = parseRef(ref);

@@ -38,6 +38,19 @@ export interface RunnableCase {
   readonly report?: CaseReportSpec;
   /** What the debrief says beyond the ticks. The practice case has none. */
   readonly debrief?: CaseDebriefSpec;
+  /**
+   * The case's lessons — its `concepts`, then its `furtherReading`, without repeats — each with
+   * the title to show. Resolved on the server when the case is built, so the debrief can link
+   * them without a lesson loader in the browser. Added by file 14 for "Looking back with Noor",
+   * whose template review suggests these when the model is unavailable.
+   */
+  readonly lessons?: readonly CaseLesson[];
+}
+
+/** One lesson a case points at: the id the content uses, and its title. */
+export interface CaseLesson {
+  readonly id: string;
+  readonly title: string;
 }
 
 /**
