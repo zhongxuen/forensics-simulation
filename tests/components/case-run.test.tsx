@@ -180,11 +180,14 @@ describe("saving and restoring a run", () => {
     expect(Object.keys(save).sort()).toEqual(
       [
         "beatsPlayed",
+        "citations",
         "completed",
         "hintsShown",
         "log",
+        "marks",
         "notes",
         "phase",
+        "pinNotes",
         "pins",
         "reportDraft",
         "savedAt",
@@ -230,6 +233,9 @@ describe("saving and restoring a run", () => {
         completed: ["read-letter", "retired-objective"],
         hintsShown: { "retired-objective": 2, "find-seal": 1 },
         beatsPlayed: [0, 99],
+        citations: {},
+        pinNotes: {},
+        marks: [],
         savedAt: 0,
       },
     });

@@ -63,7 +63,9 @@ test("finds a deleted file, pins it from the keyboard, and keeps the pin across 
   await page.reload();
   await expect(page.getByRole("tab", { name: "Board" })).toBeVisible({ timeout: 20_000 });
   await page.getByRole("tab", { name: "Board" }).click();
-  await expect(page.getByText("You've pinned 1 finding so far.")).toBeVisible();
+  await expect(page.getByRole("article", { name: /invoice-viewer\.exe/ })).toBeVisible({
+    timeout: 20_000,
+  });
 
   await openDeletedRecords(page);
   await expect(deletedRow(page)).toContainText("pinned");

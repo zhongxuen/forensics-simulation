@@ -726,6 +726,25 @@ const AnswerCheckSchema = strict(
   "an answer check",
 );
 
+/**
+ * The rules a `custody` check can ask about. Each is a pure check on the order of the run's chain
+ * of custody (`src/features/cases/custody`), which is built from the engine's events: something a
+ * `commandRun` pattern can't see, because it's about what came *before* what.
+ *
+ * - `hashed-before-analysing`: a hash was taken (and, if checked, matched) before anything opened
+ *   the evidence — no original read, examination, recovery or pin came first.
+ */
+export const CUSTODY_RULES = ["hashed-before-analysing"] as const;
+export type CustodyRule = (typeof CUSTODY_RULES)[number];
+
+const CustodyCheckSchema = strict(
+  {
+    kind: z.literal("custody"),
+    rule: z.enum(CUSTODY_RULES, required(`the rule, one of: ${CUSTODY_RULES.join(", ")}`)),
+  },
+  "a custody check",
+);
+
 export interface CheckGroup {
   kind: "all" | "any";
   of: ObjectiveCheck[];
@@ -736,6 +755,7 @@ export type ObjectiveCheck =
   | z.output<typeof PinnedCheckSchema>
   | z.output<typeof ReportedCheckSchema>
   | z.output<typeof AnswerCheckSchema>
+  | z.output<typeof CustodyCheckSchema>
   | CheckGroup;
 
 export interface CheckGroupInput {
@@ -748,6 +768,7 @@ export type ObjectiveCheckInput =
   | z.input<typeof PinnedCheckSchema>
   | z.input<typeof ReportedCheckSchema>
   | z.input<typeof AnswerCheckSchema>
+  | z.input<typeof CustodyCheckSchema>
   | CheckGroupInput;
 
 export const OBJECTIVE_CHECK_KINDS = [
@@ -755,6 +776,7 @@ export const OBJECTIVE_CHECK_KINDS = [
   "pinned",
   "reported",
   "answer",
+  "custody",
   "all",
   "any",
 ] as const;
@@ -767,6 +789,7 @@ export const ObjectiveCheckSchema: z.ZodType<ObjectiveCheck, ObjectiveCheckInput
       PinnedCheckSchema,
       ReportedCheckSchema,
       AnswerCheckSchema,
+      CustodyCheckSchema,
       CheckGroupSchema,
     ],
     {

@@ -405,7 +405,7 @@ describe("in the practice case", () => {
     unmount();
     render(<CaseRunner caseDef={PRACTICE_CASE} storage={storage} />);
     await user.click(await screen.findByRole("tab", { name: "Board" }, CHUNK));
-    expect(screen.getByText(/You've pinned 1 finding so far/)).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: /invoice-viewer\.exe/ }, CHUNK)).toBeTruthy();
     await user.click(screen.getByRole("tab", { name: "Evidence" }));
     const again = await screen.findByRole("treeitem", { name: /qf-lt-03/ }, CHUNK);
     again.focus();

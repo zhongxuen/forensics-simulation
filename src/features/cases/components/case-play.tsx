@@ -8,8 +8,8 @@ import type { RunnableCase } from "../run/case-definition";
 import type { CaseRunAction, CaseRunState } from "../run/case-run";
 import { caseEvidence } from "../run/evidence";
 import { browseChange, evidenceSetup } from "../run/workstation";
-import { CaseDebrief } from "./case-debrief";
-import { CaseReport } from "./case-report";
+import { DebriefScreen } from "./debrief/debrief-screen";
+import { ReportScreen } from "./report/report-screen";
 import { CaseWorkspace } from "./case-workspace";
 
 export interface CasePlayProps {
@@ -119,9 +119,17 @@ export default function CasePlay({
     case "briefing":
       return null;
     case "report":
-      return <CaseReport caseDef={caseDef} run={run} dispatch={dispatch} headingRef={headingRef} />;
+      return (
+        <ReportScreen
+          caseDef={caseDef}
+          run={run}
+          dispatch={dispatch}
+          evidence={evidence}
+          headingRef={headingRef}
+        />
+      );
     case "debrief":
-      return <CaseDebrief caseDef={caseDef} run={run} dispatch={dispatch} />;
+      return <DebriefScreen caseDef={caseDef} run={run} dispatch={dispatch} evidence={evidence} />;
     case "workspace":
       return (
         <CaseWorkspace

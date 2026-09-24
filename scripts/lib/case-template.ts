@@ -206,9 +206,10 @@ debrief:
 export function playthroughTemplate(id: string): string {
   return `# The scripted run \`pnpm case:play ${id}\` and CI use to check ${id} still finishes.
 #
-# Steps: run: <command>, pin: <evidence pattern>, report: <question id> with answer: <text>,
-# answer: <text> with objective: <id>, or reset: true. Add ticks: [ids] to say what a step should
-# tick, and the run fails if it doesn't.
+# Steps: run: <command>, pin: <evidence pattern>, report: <question id> with answer: <text> and
+# cite: [<evidence patterns>] (the pinned evidence the answer points at), answer: <text> with
+# objective: <id>, or reset: true. Add ticks: [ids] to say what a step should tick, and the run
+# fails if it doesn't.
 case: ${id}
 description: "TODO: what this playthrough shows."
 steps:
@@ -220,6 +221,7 @@ steps:
     ticks: [find-the-file]
   - report: when-deleted
     answer: "${DELETED_AT}"
+    cite: ["disk:${MACHINE}:mft/*note-0514*"]
     verdict: supported
     ticks: [answer-the-report]
 expect:

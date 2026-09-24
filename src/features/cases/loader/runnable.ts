@@ -120,6 +120,8 @@ function toCheck(
       return { kind: "pinned", refs: resolved(evidence, check.evidence) };
     case "reported":
       return { kind: "reported", question: check.question };
+    case "custody":
+      return { kind: "custody", rule: check.rule };
     case "answer":
       throw cannot("an objective checked by a typed answer");
   }

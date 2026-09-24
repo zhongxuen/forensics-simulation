@@ -19,6 +19,12 @@ export interface EvidenceBrowserProps {
   readonly onUnpin: (ref: string) => void;
   /** Puts a command at the terminal's prompt, unrun, and brings the terminal into view. */
   readonly showInTerminal: (line: string) => void;
+  /**
+   * The latest request to show one artefact ("Show in Evidence Browser" on a case board card). A
+   * new request has a new `id`. The browser selects it on a drive that's already open, and never
+   * opens a drive by itself: opening an original with its blocker off would change it.
+   */
+  readonly reveal?: { readonly ref: string; readonly id: number };
 }
 
 export interface BrowserTab {

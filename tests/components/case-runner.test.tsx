@@ -166,14 +166,20 @@ describe("CaseRunner", () => {
     expect(JSON.parse(shelf.get(CASES_STORAGE_KEY) ?? "{}").runs.practice).toBeUndefined();
   });
 
-  it("shows Timeline and Board as empty states that say what will be there", async () => {
+  it("shows the Timeline and an empty Board as empty states that say what will be there", async () => {
     const user = await startCase(storageOver(new Map()));
     await user.click(tab("Timeline"));
     expect(screen.getByRole("heading", { name: "Your timeline will be here" })).toBeTruthy();
-    await user.click(tab("Board"));
-    expect(screen.getByRole("heading", { name: "Your case board will be here" })).toBeTruthy();
     await user.click(screen.getByRole("button", { name: "Show your objectives" }));
     expect(tab("Objectives").getAttribute("aria-selected")).toBe("true");
+
+    await user.click(tab("Board"));
+    expect(
+      await screen.findByRole("heading", { name: "Pinned evidence shows up here" }, CHUNK),
+    ).toBeTruthy();
+    expect(screen.getByText(/You haven't pinned anything yet/)).toBeTruthy();
+    await user.click(screen.getByRole("button", { name: "Open the Evidence tab" }));
+    expect(tab("Evidence").getAttribute("aria-selected")).toBe("true");
   });
 
   it("opens the Evidence Browser in the Evidence tab, loaded on demand", async () => {
@@ -209,6 +215,9 @@ describe("StoredDataControls (/privacy)", () => {
       completed: [],
       hintsShown: {},
       beatsPlayed: [],
+      citations: {},
+      pinNotes: {},
+      marks: [],
       savedAt: 0,
     });
     const createObjectURL = vi.fn(() => "blob:cases");

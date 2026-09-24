@@ -17,11 +17,29 @@ export type {
 export {
   gradeQuestion,
   gradeReport,
+  isCorrect,
   parseAnswerTime,
+  reportAnswers,
   supportedCount,
-  type QuestionGrade,
+  type Finding,
+  type FindingReason,
+  type CitedAnswer,
+  type GradableQuestion,
   type ReportVerdict,
-} from "./run/report";
+} from "./grading";
+export {
+  CUSTODY_LABELS,
+  custodyLog,
+  custodyRuleHolds,
+  custodyText,
+  describeCustody,
+  hashedBeforeAnalysing,
+  isAnalysis,
+  type CustodyEntry,
+  type CustodyKind,
+  type CustodyRecordHeader,
+  type CustodyRule,
+} from "./custody";
 export {
   caseRunReducer,
   createCaseRun,
@@ -62,6 +80,8 @@ export {
   PANE_ORDER,
   WORKSPACE_PANES,
   type PaneId,
+  type PaneReveal,
+  type PaneWorkstation,
   type WorkspacePane,
   type WorkspacePaneProps,
 } from "./workspace-panes";

@@ -26,6 +26,18 @@ export interface WorkspacePaneProps {
   readonly evidence: EvidenceSet | null;
   /** The analyst workstation the terminal runs on. */
   readonly workstation: PaneWorkstation;
+  /**
+   * The latest request, from another pane, to bring an artefact into view here ("Show in Evidence
+   * Browser" on a board card). A new request has a new `id`.
+   */
+  readonly reveal?: PaneReveal;
+}
+
+/** A request to show one artefact in a pane. */
+export interface PaneReveal {
+  readonly ref: string;
+  /** Goes up with every request, so asking twice for the same ref still counts. */
+  readonly id: number;
 }
 
 /**
@@ -44,6 +56,8 @@ export interface PaneWorkstation {
   browse(path: string): BrowsedImage | undefined;
   /** Puts a command at the terminal's prompt without running it, and shows the terminal. */
   showInTerminal(line: string): void;
+  /** Opens another pane's tab, asking it to bring `ref` into view when one is given. */
+  show(pane: PaneId, ref?: string): void;
 }
 
 export interface WorkspacePane {
@@ -55,6 +69,11 @@ export interface WorkspacePane {
 export const WORKSPACE_PANES: readonly WorkspacePane[] = [
   { id: "evidence", label: "Evidence", load: () => import("./components/evidence-pane") },
   { id: "objectives", label: "Objectives", load: () => import("./components/objectives-pane") },
+  {
+    id: "board",
+    label: "Board",
+    load: () => import("@/features/case-board").then((m) => ({ default: m.CaseBoardPane })),
+  },
 ];
 
 /** Tab labels for panes that aren't registered yet. */

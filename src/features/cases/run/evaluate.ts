@@ -1,12 +1,14 @@
+import type { RunMark } from "@/lib/case-storage";
 import type { SimEvent } from "@/sim/types";
+import { custodyLog, custodyRuleHolds } from "../custody";
+import { gradeQuestion } from "../grading";
 import type { CaseObjective, ObjectiveCheck, RunnableCase } from "./case-definition";
-import { gradeQuestion } from "./report";
 
 /**
  * The objective evaluator (docs/plan/05-workspace-ui.md §Case runner). It matches Hacker
  * Simulation's `evaluateObjectives` for the mission kinds (`event` and `commandRun`), and headless
  * play's `holds` (loader/play.ts) for the forensics ones: a ref pinned to the board, a report answer
- * that's supported, and `all` / `any` groups. The two are held to agree by
+ * that's supported, a rule about the order of the chain of custody, and `all` / `any` groups. The two are held to agree by
  * `tests/content/case-browser-play.test.ts`, which plays each case's playthrough through this.
  *
  * Pure: the case, every event since the run started, and the board and report as they stand in;
@@ -18,10 +20,15 @@ export type ObjectiveEvaluator = (
   board?: RunBoard,
 ) => string[];
 
-/** What the player has put down: pins on the board and the report draft. */
+/**
+ * What the player has put down: pins on the board, the report draft, the pins each answer cites,
+ * and the custody marks (view pins and submissions) that sit between the engine's events.
+ */
 export interface RunBoard {
   readonly pins: readonly string[];
   readonly reportDraft: Readonly<Record<string, string>>;
+  readonly citations?: Readonly<Record<string, readonly string[]>>;
+  readonly marks?: readonly RunMark[];
 }
 
 const EMPTY_BOARD: RunBoard = { pins: [], reportDraft: {} };
@@ -47,11 +54,15 @@ function holds(
       return check.refs.some((ref) => board.pins.includes(ref));
     case "reported": {
       const question = caseDef.report?.questions.find((item) => item.id === check.question);
-      return (
-        question !== undefined &&
-        gradeQuestion(question, board.reportDraft[question.id], board.pins).verdict === "supported"
-      );
+      if (question === undefined) return false;
+      const answer = {
+        value: board.reportDraft[question.id],
+        cited: board.citations?.[question.id] ?? [],
+      };
+      return gradeQuestion(question, answer, board.pins).verdict === "supported";
     }
+    case "custody":
+      return custodyRuleHolds(check.rule, custodyLog(events, board.marks));
     case "event":
       return events.some((event) => event.type === check.event && eventMatches(event, check.match));
     case "commandRun": {

@@ -3,6 +3,7 @@
 import {
   lazy,
   Suspense,
+  useCallback,
   useId,
   useMemo,
   useRef,
@@ -99,12 +100,12 @@ export function CaseWorkspace({
   const selected: ViewId = desktop || view !== "terminal" ? pane : "terminal";
   const label = (id: ViewId) => (id === "terminal" ? "Terminal" : PANE_LABELS[id]);
 
-  const select = (id: ViewId) => {
+  const select = useCallback((id: ViewId) => {
     setView(id);
     if (id === "terminal") return;
     setPane(id);
-    if (!opened.includes(id)) setOpened([...opened, id]);
-  };
+    setOpened((previous) => (previous.includes(id) ? previous : [...previous, id]));
+  }, []);
 
   const onTabKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const index = tabs.indexOf(selected);
@@ -121,6 +122,9 @@ export function CaseWorkspace({
 
   // "Show in terminal": the command goes to the prompt, unrun, and the terminal comes into view.
   const [fillRequest, setFillRequest] = useState<{ id: number; line: string }>();
+  // "Show in Evidence Browser" and the like: the pane's tab opens, and only that pane is asked to
+  // bring the artefact into view.
+  const [reveal, setReveal] = useState<{ pane: PaneId; ref: string; id: number }>();
   const workstation = useMemo<PaneWorkstation>(
     () => ({
       sim: session.sim,
@@ -129,10 +133,18 @@ export function CaseWorkspace({
         setFillRequest((previous) => ({ id: (previous?.id ?? 0) + 1, line }));
         setView("terminal");
       },
+      show: (target, ref) => {
+        if (ref !== undefined) {
+          setReveal((previous) => ({ pane: target, ref, id: (previous?.id ?? 0) + 1 }));
+        }
+        select(target);
+      },
     }),
-    [session.sim, browse],
+    [session.sim, browse, select],
   );
   const paneProps: WorkspacePaneProps = { caseDef, run, dispatch, evidence, workstation };
+  const propsFor = (id: PaneId): WorkspacePaneProps =>
+    reveal?.pane === id ? { ...paneProps, reveal: { ref: reveal.ref, id: reveal.id } } : paneProps;
   const tabId = (id: ViewId) => `${baseId}-tab-${id}`;
   const panelId = (id: ViewId) => `${baseId}-panel-${id}`;
   const terminalShown = desktop || selected === "terminal";
@@ -239,14 +251,10 @@ export function CaseWorkspace({
                       </p>
                     }
                   >
-                    <Pane {...paneProps} />
+                    <Pane {...propsFor(id)} />
                   </Suspense>
                 ) : (
-                  <LaterPane
-                    id={id}
-                    pins={run.pins.length}
-                    onShowObjectives={() => select("objectives")}
-                  />
+                  <LaterPane id={id} onShowObjectives={() => select("objectives")} />
                 )}
               </div>
             );

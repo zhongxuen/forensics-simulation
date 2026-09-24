@@ -7,11 +7,13 @@ import { prompt } from "./helpers";
  * clicks. Focus moves with Tab, `focus()` on the thing a keyboard user would Tab to, and keys. It
  * is the "Case 1 only" release's promise (docs/plan/15-quality-and-launch.md §Quality checklist):
  * a visitor with no account lands, opens Case 1, copies the drive, proves the copy, pins the note,
- * and writes a report whose every answer is supported.
+ * and writes a report whose every answer is supported. On the way it submits once with an answer
+ * that cites nothing, sees "Needs evidence", cites the pin and submits again
+ * (docs/plan/10-case-board-report-custody.md).
  *
  * It runs twice: on a desktop, and on a 360 px phone, where the workspace shows one view at a time.
  * axe checks every screen the case goes through on the way: briefing, the workspace with each pane
- * open, the report and the debrief.
+ * open (the Board and the chain of custody included), the report and the debrief.
  */
 
 async function seriousViolations(page: Page) {
@@ -62,6 +64,14 @@ async function showView(page: Page, name: string) {
   await expect(tab).toHaveAttribute("aria-selected", "true");
 }
 
+/** Ticks the pinned note's record in one answer's Supporting evidence, with the keyboard. */
+async function cite(page: Page, picker: Locator) {
+  const box = picker.getByRole("checkbox", { name: /the-door-was-open\.txt/ });
+  await box.focus();
+  await page.keyboard.press("Space");
+  await expect(box).toBeChecked();
+}
+
 async function playCaseOne(page: Page) {
   await page.goto("/");
   await expect(page.getByText("SIMULATED: every piece of evidence is made up.")).toBeVisible();
@@ -107,9 +117,20 @@ async function playCaseOne(page: Page) {
     timeout: 20_000,
   });
   expect(await seriousViolations(page)).toEqual([]);
+  await showView(page, "Board");
+  await expect(page.getByRole("article", { name: /the-door-was-open\.txt/ })).toBeVisible({
+    timeout: 20_000,
+  });
+  expect(await seriousViolations(page)).toEqual([]);
   await showView(page, "Objectives");
   await expect(page.getByText("5 of 5 objectives done")).toBeVisible();
   expect(await seriousViolations(page)).toEqual([]);
+  // The chain of custody so far: the copy was checked before anything read from it.
+  await activate(page.getByRole("tab", { name: "Chain of custody" }));
+  const custody = page.getByRole("region", { name: "Chain of custody" });
+  await expect(custody).toContainText("MATCH");
+  expect(await seriousViolations(page)).toEqual([]);
+  await activate(page.getByRole("tab", { name: "Checklist" }));
 
   // The report.
   await activate(page.getByRole("button", { name: "Write your report" }));
@@ -128,13 +149,36 @@ async function playCaseOne(page: Page) {
   const when = page.getByRole("textbox", { name: /When was the note on the desktop created/ });
   await when.focus();
   await page.keyboard.type("2026-04-11T19:44:37Z");
+  // Cite the pinned record for the first two answers, and leave the third citing nothing.
+  const pickers = page.getByRole("group", { name: "Supporting evidence" });
+  await expect(pickers).toHaveCount(3);
+  for (const index of [0, 1]) await cite(page, pickers.nth(index));
   expect(await seriousViolations(page)).toEqual([]);
 
+  await activate(page.getByRole("button", { name: "Submit report" }));
+  await expect(
+    page.getByRole("heading", { name: "Your report: 2 of 3 findings supported" }),
+  ).toBeVisible();
+  await expect(page.getByText("Needs evidence", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("That's right. Now show how you know: cite a pinned item that proves it."),
+  ).toBeVisible();
+  expect(await seriousViolations(page)).toEqual([]);
+
+  // Back to the report, cite the pin for the third answer, and submit again.
+  await activate(page.getByRole("button", { name: "Change your report" }));
+  await expect(
+    page.getByRole("heading", { level: 1, name: /Your report for Quillfen/ }),
+  ).toBeFocused();
+  await cite(page, page.getByRole("group", { name: "Supporting evidence" }).nth(2));
   await activate(page.getByRole("button", { name: "Submit report" }));
   await expect(
     page.getByRole("heading", { name: "Your report: 3 of 3 findings supported" }),
   ).toBeVisible();
   await expect(page.getByRole("heading", { level: 1, name: /Case closed/ })).toBeFocused();
+  // Hashed before anything opened the drive: the chain of custody's bonus.
+  await expect(page.getByText("Fingerprint First:", { exact: false })).toBeVisible();
+  await expect(page.getByText("Submitted the report: 3 of 3 findings supported.")).toBeVisible();
   expect(await seriousViolations(page)).toEqual([]);
 }
 

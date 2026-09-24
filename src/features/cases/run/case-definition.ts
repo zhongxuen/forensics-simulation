@@ -1,5 +1,6 @@
 import type { CastId } from "@/content/cast";
 import type { ScenarioSpec, SimEventType } from "@/sim/types";
+import type { CustodyRule } from "../custody";
 
 /**
  * What the case runner needs from a case: the briefing, the objectives with their hints, the story
@@ -126,8 +127,8 @@ export interface CaseObjective {
 
 /**
  * How an objective is checked (run/evaluate.ts): the mission schema's `event` and `commandRun`,
- * and the case schema's forensics kinds — a pin on the board, a report answer that's supported,
- * and groups of checks. A case file's `pinned` pattern arrives already resolved into refs, so the
+ * and the case schema's forensics kinds — a pin on the board, a report answer that's supported, a
+ * rule about the order of the chain of custody, and groups of checks. A case file's `pinned` pattern arrives already resolved into refs, so the
  * browser never needs the evidence to check it.
  */
 export type ObjectiveCheck =
@@ -139,6 +140,11 @@ export type ObjectiveCheck =
       readonly kind: "pinned";
       /** Any one of these on the board holds. */
       readonly refs: readonly string[];
+    }
+  | {
+      /** A rule about the order of the chain of custody (custody/custody-log.ts). */
+      readonly kind: "custody";
+      readonly rule: CustodyRule;
     }
   | {
       readonly kind: "reported";

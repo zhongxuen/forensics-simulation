@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { formatRef, UTC_ZONE } from "@/sim";
+import { formatRef, parentPath, parseRef, UTC_ZONE } from "@/sim";
 import type { FileRecord } from "@/sim/types";
 import type { EvidenceBrowserProps } from "../browser-tabs";
 import {
@@ -51,6 +51,7 @@ export function FilesView({
   onPin,
   onUnpin,
   showInTerminal,
+  reveal,
 }: EvidenceBrowserProps) {
   const [opened, setOpened] = useState<Readonly<Record<string, OpenedImage>>>({});
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(new Set());
@@ -80,6 +81,43 @@ export function FilesView({
 
   const announce = (text: string) =>
     setAnnouncement((previous) => (previous === text ? `${text} ` : text));
+
+  // A request from the case board to show a record: select it on a drive that's already open
+  // (adjusting state while rendering, once per request). A working copy is preferred to the
+  // original, and nothing is opened here.
+  const [revealed, setRevealed] = useState<number>();
+  if (reveal && reveal.id !== revealed) {
+    setRevealed(reveal.id);
+    const parsed = parseRef(reveal.ref);
+    if (parsed?.kind === "file") {
+      const open = tree.filter(
+        (image) => image.image.id === parsed.image && image.opened && !image.stale,
+      );
+      const target = open.find((image) => !image.image.device) ?? open[0];
+      const found = target?.opened?.view.record(parsed.record);
+      if (!target || !found) {
+        announce(
+          `To see record ${parsed.record}, open a drive from ${parsed.image} in the tree first. Opening your working copy keeps the original as it arrived.`,
+        );
+      } else {
+        const path = target.image.path;
+        const folder = target.opened?.view
+          .atPath(parentPath(found.path) ?? "")
+          .find((record) => record.kind === "dir");
+        const key =
+          folder && findNode(tree, folderKey(path, folder.record))
+            ? folderKey(path, folder.record)
+            : imageKey(path);
+        setExpanded(new Set([...expanded, ...ancestorKeys(tree, key), key]));
+        setFilter(NO_FILTER);
+        setRange({ from: "", to: "" });
+        setSelectedKey(key);
+        setSelectedRecord(found.record);
+        setFocusDetail((n) => n + 1);
+        announce(`Showing ${found.path} (record ${found.record}) on ${path}.`);
+      }
+    }
+  }
 
   const refFor = (record: FileRecord) =>
     imageNode ? formatRef({ kind: "file", image: imageNode.image.id, record: record.record }) : "";

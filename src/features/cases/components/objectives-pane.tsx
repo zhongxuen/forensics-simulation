@@ -1,30 +1,35 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { FOCUS_RING } from "@/components/ui/focus-ring";
 import { CharacterMessage } from "@/components/ui/character-message";
 import { LightbulbIcon, MedalIcon } from "@/components/ui/icons";
 import { ObjectiveTick } from "@/components/ui/objective-tick";
 import { ProgressBar } from "@/components/ui/progress-bar";
+import { Tabs } from "@/components/ui/tabs";
 import { getCastMember } from "@/content/cast";
 import { MAX_NOTES_LENGTH } from "@/lib/case-storage";
 import { cx } from "@/lib/cx";
+import { custodyLog } from "../custody";
 import { HINT_TIERS, visibleObjectives } from "../run/case-run";
 import { caseProgress, isCaseComplete } from "../run/evaluate";
 import type { WorkspacePaneProps } from "../workspace-panes";
 import { CaseText } from "./case-text";
+import { CustodyList } from "./debrief/custody-list";
 
 /**
- * The Objectives pane: the team's messages, the checklist with its free hints, the player's
- * notes, and, once every main objective is done, the way on to the report.
+ * The Objectives pane: two sub-tabs — the team's messages with the checklist and its free hints,
+ * and the chain of custody so far (file 10) — then, once every main objective is done, the way on
+ * to the report, and the player's notes.
  */
 export default function ObjectivesPane({ caseDef, run, dispatch }: WorkspacePaneProps) {
   const notesId = useId();
   const { done, total } = caseProgress(caseDef, run.completed);
   const complete = isCaseComplete(caseDef, run.completed);
+  const custody = useMemo(() => custodyLog(run.events, run.marks), [run.events, run.marks]);
 
-  return (
+  const checklist = (
     <div className="space-y-8">
       {run.story.length > 0 && (
         <section aria-labelledby={`${notesId}-chat`}>
@@ -117,6 +122,30 @@ export default function ObjectivesPane({ caseDef, run, dispatch }: WorkspacePane
         </ul>
         <p className="mt-4 text-sm text-muted">Hints are free and never change anything else.</p>
       </section>
+    </div>
+  );
+
+  return (
+    <div className="space-y-8">
+      <Tabs
+        label="Objectives views"
+        tabs={[
+          { id: "checklist", label: "Checklist", content: checklist },
+          {
+            id: "custody",
+            label: "Chain of custody",
+            content: (
+              <section aria-label="Chain of custody" className="space-y-3">
+                <p className="text-sm leading-6 text-secondary">
+                  Everything you&apos;ve done to the evidence so far, in order. It&apos;s built from
+                  what the tools did, so it can&apos;t be edited, and it goes on your debrief.
+                </p>
+                <CustodyList log={custody} />
+              </section>
+            ),
+          },
+        ]}
+      />
 
       {complete && run.phase === "workspace" && (
         <section
