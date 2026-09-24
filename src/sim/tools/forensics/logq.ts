@@ -90,6 +90,7 @@ export const logq: Tool = {
       "grep, awk and sort | uniq -c over text logs, the classic way to count by a field.",
       "A SIEM query in Splunk (stats count by src_ip), Elastic or Microsoft Sentinel (summarize count() by IpAddress).",
     ],
+    lesson: "logs-windows-logon-events",
   },
 
   run(args, state) {

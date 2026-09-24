@@ -1296,6 +1296,177 @@ const ENTRIES: readonly GlossaryEntryInput[] = [
     relatedTerms: ["cluster", "file-carving", "file-record"],
     relatedLessons: ["disk-carving"],
   },
+  {
+    id: "memory-image",
+    term: "Memory image",
+    aka: ["memory capture", "memory dump"],
+    topic: "forensics",
+    short:
+      "A copy of everything a running computer was holding in its working memory at one moment, saved to a file.",
+    long: "Working memory (RAM) holds what a computer is doing right now: every running program, every open connection, and code that was never saved to the drive. It is lost when the power goes, so it's captured first, while the machine is still on. The capture is one moment: it can't tell you what happened after.",
+    relatedTerms: ["volatile-data", "order-of-volatility", "process"],
+    relatedLessons: ["memory-why-ram-matters"],
+  },
+  {
+    id: "process-list",
+    term: "Active process list",
+    aka: ["process list"],
+    topic: "forensics",
+    short:
+      "The list Windows keeps of every program running right now, which task managers and most tools read.",
+    long: "Each running program has a record in memory, and Windows chains the records together into this list. A tool that walks the list, such as `mem ps`, sees what the list says. Code that wants to hide can take its own record out of the chain and keep running, so a careful examiner also scans the whole image with `mem psscan`.",
+    relatedTerms: ["process", "unlinked-process", "memory-image"],
+    relatedLessons: ["memory-processes-and-parents"],
+  },
+  {
+    id: "process-id",
+    term: "Process id",
+    aka: ["PID"],
+    topic: "forensics",
+    short:
+      "The number a computer gives each running program, so two copies with the same name can still be told apart.",
+    long: "Two programs can both be called `svchost.exe`; their PIDs are always different. Memory tools, logs and reports name a process by its PID, and `mem netscan --pid 6120` narrows a command to one.",
+    relatedTerms: ["process", "parent-process"],
+    relatedLessons: ["memory-processes-and-parents"],
+  },
+  {
+    id: "parent-process",
+    term: "Parent process",
+    topic: "forensics",
+    short:
+      "The running program that started another one, the way the desktop starts whatever you double-click.",
+    long: "Windows starts its own programs in a known order: `services.exe` starts every real `svchost.exe`, and the desktop, `explorer.exe`, starts what a person opens. A familiar name under an unfamiliar parent is one of the first things a memory examination looks for. `mem pstree` draws the family tree.",
+    relatedTerms: ["process", "process-id", "process-list"],
+    relatedLessons: ["memory-processes-and-parents"],
+  },
+  {
+    id: "unlinked-process",
+    term: "Unlinked process",
+    aka: ["hidden process"],
+    topic: "forensics",
+    short:
+      "A program that is still running but has taken itself out of the list Windows keeps of running programs, so tools that trust that list miss it.",
+    long: "Its record is still in memory, only no longer chained to the others. A scan of the whole memory image finds it anyway, which is why comparing `mem ps` with `mem psscan` is a standard step: anything the scan finds that the list doesn't, and that hasn't exited, was hiding.",
+    relatedTerms: ["process-list", "process", "memory-image"],
+    relatedLessons: ["memory-processes-and-parents"],
+  },
+  {
+    id: "beacon",
+    term: "Beacon",
+    aka: ["beaconing"],
+    topic: "forensics",
+    short:
+      "A program that quietly checks in with a faraway computer on a regular timer, waiting to be told what to do.",
+    long: "The check-ins look alike: the same address, the same port, a steady number of seconds apart. In a memory image they show up as a row of connections from one process; in a timeline, as a line that repeats like a clock ticking. Note the address and block it. Never connect to it to see who's there.",
+    relatedTerms: ["process", "port", "indicator-of-compromise"],
+    relatedLessons: ["memory-network-artefacts"],
+  },
+  {
+    id: "rwx-memory",
+    term: "RWX memory",
+    aka: ["PAGE_EXECUTE_READWRITE"],
+    topic: "forensics",
+    short:
+      "A stretch of a program's working memory that it can both change and run as code, marked RWX for read, write and execute.",
+    long: "Code loaded from a program's own file can be run but not changed. Memory that can be written and run, with no file behind it, was filled in while the program ran. That is how injected code looks, and also how a runtime compiler's output looks, so an examiner checks which program it is in and what its first bytes are.",
+    relatedTerms: ["code-injection", "runtime-compiler", "memory-image"],
+    relatedLessons: ["memory-code-injection"],
+  },
+  {
+    id: "code-injection",
+    term: "Code injection",
+    aka: ["process injection", "injected code"],
+    topic: "forensics",
+    short:
+      "Writing code into another running program's memory and running it there, so the work hides behind a name that belongs.",
+    long: "Nothing new appears in a list of running programs, which is the point. What it leaves is memory that can be written and run with no file behind it, often starting `MZ` when a whole program was copied in. MITRE ATT&CK lists the family as technique T1055, Process Injection.",
+    relatedTerms: ["rwx-memory", "malware", "process"],
+    relatedLessons: ["memory-code-injection"],
+  },
+  {
+    id: "runtime-compiler",
+    term: "Runtime compiler",
+    aka: ["JIT", "JIT compiler"],
+    topic: "forensics",
+    short:
+      "The part of some programs that turns code into machine instructions while they run, leaving memory the program can both change and run.",
+    long: ".NET, Java and web browsers all do this, on purpose, so a region of RWX memory in a program that uses one of them is expected. Its bytes start partway through machine instructions, with no file header. Telling it apart from injected code is part of every memory examination.",
+    relatedTerms: ["rwx-memory", "code-injection"],
+    relatedLessons: ["memory-code-injection"],
+  },
+  {
+    id: "event-id",
+    term: "Event id",
+    topic: "forensics",
+    short:
+      "The number Windows gives each kind of record it writes to its logs, such as 4624 for a sign-in that worked.",
+    long: "Event ids turn a log into something you can search. 4625 is a sign-in that didn't work, 4688 a program starting, 4720 a new account, 4732 an account added to a group. `logq --id 4625` picks out one kind.",
+    relatedTerms: ["log-entry", "logon-type"],
+    relatedLessons: ["logs-windows-logon-events"],
+  },
+  {
+    id: "logon-type",
+    term: "Logon type",
+    topic: "forensics",
+    short:
+      "A number in a Windows sign-in record that says how the account signed in: at the keyboard, over the network, or by remote desktop.",
+    long: "Type 2 is someone at the keyboard, 3 a connection over the network such as a shared folder, 5 a service starting, 7 unlocking the screen, and 10 remote desktop. The same account signing in two different ways can mean two different people.",
+    relatedTerms: ["event-id", "authentication"],
+    relatedLessons: ["logs-windows-logon-events"],
+  },
+  {
+    id: "time-zone",
+    term: "Time zone",
+    topic: "forensics",
+    short:
+      "A region's agreed clock setting, written as how far it sits ahead of or behind the world's reference time.",
+    long: "London is on UTC in winter and an hour ahead (British Summer Time, BST) in summer. Two records of the same moment can show different times on screen if one source displays local time, so an examiner converts everything to UTC before comparing.",
+    relatedTerms: ["coordinated-universal-time", "utc-offset", "clock-drift"],
+    relatedLessons: ["logs-time-zones-and-clocks"],
+  },
+  {
+    id: "utc-offset",
+    term: "UTC offset",
+    aka: ["offset"],
+    topic: "forensics",
+    short:
+      "The hours and minutes a local clock runs ahead of or behind the world's reference time, written like `+01:00`.",
+    long: "RFC 3339 writes a time with its offset on the end, so `2026-09-22T10:15:10+01:00` and `2026-09-22T09:15:10Z` are the same moment. A time written with no offset at all can't be placed until you find out which zone it came from.",
+    relatedTerms: ["coordinated-universal-time", "time-zone"],
+    relatedLessons: ["logs-time-zones-and-clocks"],
+  },
+  {
+    id: "super-timeline",
+    term: "Super-timeline",
+    aka: ["super timeline"],
+    topic: "forensics",
+    short:
+      "One list, in time order, of every moment found in every piece of evidence, with file times, log records and memory side by side.",
+    long: "Each source only sees part of what happened. Merged, they show a story: the sign-in, then the program starting, then its first connection, in the second each happened. `timeline` builds one, and `timeline --around` shows everything near one moment you've already found.",
+    relatedTerms: ["timeline", "macb-times", "log-entry"],
+    relatedLessons: ["logs-super-timelines"],
+  },
+  {
+    id: "finding",
+    term: "Report finding",
+    topic: "forensics",
+    short:
+      "One thing an investigation concluded, written as a plain statement and tied to the evidence that shows it.",
+    long: '"The account `trainee` signed in by remote desktop from `192.168.60.66` at 09:15:10 UTC" is a finding: it says one thing, and it points at the record that proves it. A report is a set of findings, and a reader can check each one.',
+    relatedTerms: ["artefact-ref", "digital-evidence"],
+    relatedLessons: ["report-writing-the-report"],
+  },
+  {
+    id: "artefact-ref",
+    term: "Artefact ref",
+    aka: ["ref"],
+    topic: "forensics",
+    short:
+      "A short name that points at exactly one piece of evidence, such as one log record or one running program, so a report can cite it.",
+    long: "`log:security/17` is the 17th record in the security log; `mem:train-lt-02-mem:pid/6120` is one process in one memory image. `pin` stores the ref of a line, and the report's Supporting evidence picker offers what you pinned.",
+    relatedTerms: ["finding", "digital-evidence"],
+    relatedLessons: ["report-writing-the-report"],
+  },
   // Defending: spotting attacks early and keeping systems safe.
   {
     id: "blue-team",

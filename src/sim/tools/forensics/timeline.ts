@@ -119,6 +119,7 @@ export const timeline: Tool = {
       "Autopsy's Timeline view, with its per-source tracks and zoom.",
       "Timesketch, where a team reviews and annotates a Plaso timeline together.",
     ],
+    lesson: "logs-super-timelines",
   },
 
   run(args, state, ctx) {

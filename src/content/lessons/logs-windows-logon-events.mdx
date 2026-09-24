@@ -1,0 +1,137 @@
+---
+id: logs-windows-logon-events
+title: Reading Windows sign-in records
+topic: forensics
+level: 2
+readingMinutes: 8
+analogy: "A building's door log. Every swipe is a line: which card, which door, what time, let in or turned away. Twelve turned-away swipes at the back door in thirty seconds, then one that worked, reads very differently from one person arriving at nine."
+summary: The security log's sign-in records, what each logon type number means, and how counting finds a burst of guesses before one that worked.
+prerequisites: [foundations-what-forensics-is]
+externalPrerequisites: [forensics-what-logs-are, blue-reading-alerts]
+relatedCommands: [logq, grep]
+glossaryTerms: [event-id, logon-type]
+cites: [ms-learn-event-4624, ms-learn-event-4625]
+---
+
+## The one-sentence version
+
+Windows writes a record every time an account signs in or is refused, with a number that says how it
+signed in and the address it came from, so the security log can tell you who got in, from where, and
+whether they had to guess first.
+
+Think of a building's door log. Every swipe is a line: which card, which door, what time, let in or
+turned away. Twelve turned-away swipes at the back door in thirty seconds, then one that worked,
+reads very differently from one person arriving at nine.
+
+<Quiz
+  question="An account always signs in with logon type 2. Tonight there's a 4624 for it with logon type 10 from another address. What does that tell you?"
+  options={[
+    {
+      text: "The same person signed in again, from a different desk",
+      explanation:
+        "Type 2 is someone at this computer's own keyboard. Type 10 is remote desktop, from another machine. It may be the same person, but the record doesn't show that, and a report shouldn't assume it.",
+    },
+    {
+      text: "Someone signed in to it by remote desktop from that address",
+      correct: true,
+      explanation:
+        "That's exactly what 4624 with type 10 records. Whether it was the account's owner is a separate question, answered by other evidence.",
+    },
+    {
+      text: "The sign-in didn't succeed, because the type changed",
+      explanation:
+        "4624 is always a sign-in that worked. One that didn't is 4625, and it records a logon type too.",
+    },
+  ]}
+/>
+
+## Why it matters in security
+
+Most break-ins start with a sign-in: a guessed password, a reused one, one found on a note. The
+security log is where that moment is written down, often the only place, and each record says more
+than "someone got in". It says which account, from which address, and in which way.
+
+The way matters. An account that only ever signs in at its own keyboard, suddenly signing in over
+remote desktop from another machine, is one of the clearest findings a beginner can make.
+
+## How it actually works
+
+### The event ids
+
+Windows gives each kind of record an <Term id="event-id">event id</Term>. For sign-ins:
+
+| Event id | Means                                                                           |
+| -------- | ------------------------------------------------------------------------------- |
+| 4624     | An account signed in (Microsoft Learn: "An account was successfully logged on") |
+| 4625     | A sign-in was refused ("An account failed to log on")                           |
+| 4720     | A new account was made                                                          |
+| 4732     | An account was added to a group, such as Administrators                         |
+
+### The logon types
+
+Every 4624 and 4625 has a `LogonType` field. Microsoft's page for 4624 lists them all; these are the
+ones you'll meet most:
+
+| <Term id="logon-type">Logon type</Term> | How                                                          |
+| --------------------------------------- | ------------------------------------------------------------ |
+| 2                                       | Interactive: at this computer's keyboard                     |
+| 3                                       | Network: a shared folder or another service over the network |
+| 5                                       | Service: Windows starting a service under an account         |
+| 7                                       | Unlock: someone unlocking a locked screen                    |
+| 10                                      | Remote interactive: remote desktop from another machine      |
+
+Types 4, 8, 9 and 11 exist too (batch jobs, cleartext network sign-ins, new credentials, and cached
+sign-ins without the domain), and the page explains each.
+
+### The fields to read
+
+`TargetUserName` is the account signing in. `IpAddress` is where it came from, `-` when it came from
+the keyboard. `WorkstationName` is the machine the record was written on. A 4625 adds why it was
+refused.
+
+### Count before you read
+
+Twelve refused sign-ins are twelve screens of text. Counted by address, they're one line: one
+address, twelve tries, in twenty-two seconds. That's a person or a program guessing, and the next
+4624 from the same address is the one that worked.
+
+## See it
+
+The drill laptop's security log has twenty records. Count them first, then read the one that matters.
+
+<MiniTerminal
+  scenario="ir-ws-drill"
+  commands={[
+    "logq --source security --count-by id",
+    "logq --source security --id 4625 --count-by IpAddress",
+    "logq --id 4624 --count-by LogonType",
+    "logq --id 4624 --where LogonType=10",
+  ]}
+  task="Type `logq --source security --count-by id` to count the security log's records by event id."
+  expect="logq"
+  success="Twelve 4625s between 09:14:00 and 09:14:22 UTC, then two 4624s: one at the keyboard at 08:01, and one by remote desktop at 09:15:10."
+/>
+
+Counted by address, all twelve refusals came from `192.168.60.66`, four each for `admin`,
+`administrator` and `trainee`. Counted by logon type, the two sign-ins that worked are different in
+kind: type 2 at 08:01, the trainee at the keyboard, and type 10 at `09:15:10Z` from
+`192.168.60.66`, remote desktop from the address that had been guessing. Two minutes later a 4720
+makes the account `practice-svc` and a 4732 adds it to Administrators: the drill making itself at
+home.
+
+## In practice
+
+In [Case 2, The Deleted Invoice](/cases/case-02), the bookkeeper's account signs in to their laptop
+by remote desktop (4624, type 10) from the yard office laptop, while their own sign-ins are always
+type 2. In [Case 3, Something Is Still Running](/cases/case-03), 312 refused sign-ins from one
+address come before the one that worked, and `logq --count-by` shows the burst in one table.
+
+## Common misconceptions
+
+- **"A 4624 for an account means its owner signed in."** It means the account did. Whoever had the
+  password could be behind it.
+- **"One 4625 means an attack."** One is a typo. A burst from one address, across several account
+  names, is guessing.
+- **"The logon type is a detail."** It's often the finding: the same account, a new way in.
+- **"Accounts that don't exist can't show up."** A 4625 records the name that was tried, real or not.
+  Guessers try `admin` and `administrator` everywhere.

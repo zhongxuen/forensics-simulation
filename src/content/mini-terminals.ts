@@ -483,6 +483,75 @@ const DISK: MiniTerminalScenario = {
   },
 };
 
+/** Where the Memory and Logs lessons' practice examination lives on the workstation. */
+export const DRILL_PRACTICE_DIR = "/home/examiner/cases/drill";
+
+/**
+ * The analyst workstation with the hunt drill's evidence attached, for the Memory and the Logs and
+ * timelines lessons (docs/plan/13-learning-center.md). Candlewright's second practice laptop,
+ * `train-lt-02`, generated from its story in src/content/practice/stories.ts: its drive, its
+ * security and sysmon-lite logs, and a memory image captured while the drill's practice beacon was
+ * still running. Kit's notes give the drill's times as the room's clocks showed them (BST), for the
+ * time-zone lesson.
+ */
+const DRILL: MiniTerminalScenario = {
+  id: "ir-ws-drill",
+  title: "examiner@ir-ws-01 (practice)",
+  description:
+    "Your analyst workstation with the team's hunt drill attached: a practice laptop's memory image, its sign-in and process logs, and its drive.",
+  seed: 9203,
+  evidence: "train-lt-02",
+  scenario: {
+    id: "ir-ws-drill",
+    startTime: "2026-09-22T10:00:00Z",
+    network: {
+      subnets: [{ cidr: "10.20.0.0/24", name: "Candlewright blue-team room" }],
+      hosts: [
+        {
+          id: "ir-ws-01",
+          hostname: "ir-ws-01.candlewright.example",
+          interfaces: [{ ip: "10.20.0.11", subnet: "10.20.0.0/24" }],
+          os: linux,
+          users: [{ name: "examiner", uid: 1000, groups: ["adm"] }],
+          fs: {
+            entries: [
+              {
+                path: `${DRILL_PRACTICE_DIR}/letter.txt`,
+                content: [
+                  "Letter of authorisation (practice)",
+                  "",
+                  "Candlewright Security may examine the practice laptop TRAIN-LT-02:",
+                  "its memory image, its logs and its drive. Nothing else. The machine",
+                  "on the Range that ran the drill is Kit's, and out of scope.",
+                  "",
+                  "Questions the examination should answer:",
+                  "  1. What was running on the laptop that shouldn't have been?",
+                  "  2. How did the drill get in, and when?",
+                  "",
+                  "Signed: Theo Ashgrove, team lead, 2026-09-22",
+                  "",
+                ].join("\n"),
+              },
+              {
+                path: `${DRILL_PRACTICE_DIR}/kit-notes.txt`,
+                content: [
+                  "Kit's drill notes. Times off the wall clock in the room (BST).",
+                  "10:14  started guessing sign-ins from the Range",
+                  "10:15  got in as trainee",
+                  "10:20  practice beacon running",
+                  "10:30  Idris took the memory image. Laptop still on.",
+                  "",
+                ].join("\n"),
+              },
+            ],
+          },
+        },
+      ],
+    },
+    session: { host: "ir-ws-01", user: "examiner", cwd: DRILL_PRACTICE_DIR },
+  },
+};
+
 export const MINI_TERMINALS: readonly MiniTerminalScenario[] = [
   HOME,
   PERMISSIONS,
@@ -491,6 +560,7 @@ export const MINI_TERMINALS: readonly MiniTerminalScenario[] = [
   WEB,
   PRACTICE,
   DISK,
+  DRILL,
 ];
 
 export const MINI_TERMINAL_IDS: readonly string[] = MINI_TERMINALS.map((mini) => mini.id);

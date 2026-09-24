@@ -1,0 +1,131 @@
+---
+id: memory-code-injection
+title: Code with no file behind it
+topic: forensics
+level: 3
+readingMinutes: 8
+analogy: "A library book with pages glued in. The catalogue says what the book is, and every printed page matches it. The glued-in pages came from nowhere on the shelf, and only someone who opens the book finds them."
+summary: How code gets written into another program's memory, what that leaves behind, and how to tell it apart from a runtime compiler doing its job.
+prerequisites: [memory-processes-and-parents]
+externalPrerequisites: [forensics-evidence-care]
+relatedCommands: [mem, strings]
+glossaryTerms: [code-injection, rwx-memory, runtime-compiler]
+cites: [amf-ch8, mitre-attack-t1055]
+---
+
+## The one-sentence version
+
+Code injection writes code into another running program's memory and runs it there, and what gives
+it away is memory that can be both changed and run with no file on disk behind it, which you then
+tell apart from the harmless kind by where it is and how it starts.
+
+Think of a library book with pages glued in. The catalogue says what the book is, and every printed
+page matches it. The glued-in pages came from nowhere on the shelf, and only someone who opens the
+book finds them.
+
+<Quiz
+  question="malfind shows two regions that can be written and run. One is in a .NET rota app and starts with ordinary machine instructions. The other is in svchost.exe and starts with MZ. Which do you report?"
+  options={[
+    {
+      text: "Both: writable, runnable memory is always injected code",
+      explanation:
+        "Runtime compilers in .NET, Java and browsers make memory like this on purpose. Reporting the rota app would send the client chasing a program that is doing its job.",
+    },
+    {
+      text: "The one in svchost.exe",
+      correct: true,
+      explanation:
+        "A service host has no reason to make code as it runs, and MZ is how every Windows program file begins: a whole program was copied into memory. The rota app's region is its runtime compiler at work.",
+    },
+    {
+      text: "Neither: without a file on disk there's nothing to prove",
+      explanation:
+        "No file on disk is the point. The region, its process and its first bytes are the evidence, and each has a ref your report can cite.",
+    },
+  ]}
+/>
+
+## Why it matters in security
+
+Running your own program is noisy: it gets a process, a name, a line in every list. Running your
+code inside someone else's program is quiet. The lists show only the host program, which belongs
+there. MITRE ATT&CK lists this family as technique T1055, Process Injection: code written into a
+live process to hide from defences that watch processes, and sometimes to borrow its permissions.
+
+It leaves little on disk. Memory is often the only place it can be seen, and _The Art of Memory
+Forensics_ (Chapter 8) gives the classic way to find it: look for memory that can run code but is
+backed by no file.
+
+## How it actually works
+
+### How code normally sits in memory
+
+A program's code is loaded from its own file on disk. Windows marks those pages as runnable but not
+writable, and each region records which file it came from. Data is the opposite: writable, not
+runnable. Keeping the two apart is one of the ways Windows makes attacks harder.
+
+### What injection leaves
+
+<Term id="code-injection">Code injection</Term> needs somewhere to put the code that it can write
+and then run. So it asks for memory marked `PAGE_EXECUTE_READWRITE`,
+<Term id="rwx-memory">RWX memory</Term>: read, write, execute. Nothing backs it; no file on disk
+holds those bytes. When a whole program is copied in, its first two bytes are `MZ`, the start of
+every Windows program file.
+
+`mem malfind` lists every RWX region with no file behind it and prints its first 64 bytes.
+
+### The honest look-alike
+
+A <Term id="runtime-compiler">runtime compiler</Term> (often called a JIT, because it compiles each piece of code at the moment it's needed) turns
+code into machine instructions while the program runs. .NET programs, Java and web browsers all do
+it, and the memory they write the instructions into is RWX with no file behind it too. Three
+questions tell them apart:
+
+| Ask                        | Injected code                                           | Runtime compiler                                           |
+| -------------------------- | ------------------------------------------------------- | ---------------------------------------------------------- |
+| Which process?             | One with no reason to make code, such as a service host | One that runs .NET, Java or a browser engine               |
+| First bytes?               | Often `MZ`, a program's header                          | Machine instructions, no header                            |
+| What else is odd about it? | Wrong folder, wrong parent, missing from the list       | Nothing: its path and command line are what they should be |
+
+No one answer settles it. All three together usually do.
+
+## See it
+
+malfind finds two regions on the drill laptop. Decide which one is the problem.
+
+<MiniTerminal
+  scenario="ir-ws-drill"
+  commands={[
+    "mem malfind train-lt-02",
+    "mem cmdline train-lt-02 --pid 2240",
+    "mem malfind train-lt-02 --pid 6120",
+  ]}
+  task="Type `mem malfind train-lt-02` to list memory that can be written and run, with no file behind it."
+  expect="mem"
+  success="Two regions. One in rota-app.exe (PID 2240) starts with machine instructions; one in svchost.exe (PID 6120) starts 4d 5a, MZ, and has the words practice beacon in it."
+/>
+
+The first region is in `rota-app.exe`, PID 2240: Candlewright's rota app, started by the trainee
+from `C:\Program Files\Candlewright`. It's a .NET program, and its bytes (`55 48 08 53…`) are
+machine instructions with no header. That's its runtime compiler. The second is in `svchost.exe`,
+PID 6120, the unlinked process from a downloads folder. Its bytes start `4d 5a`, `MZ`, and the text
+beside them reads `practice beacon, Candlewright drill`. A service host holding a whole program in
+writable memory is the finding. The rota app is the one to explain and leave alone.
+
+## In practice
+
+In [Case 3, Something Is Still Running](/cases/case-03), the fake `svchost.exe` on Quillfen
+Freight's dispatch server has an RWX region with no file behind it, and the server's .NET dispatch
+app has one too. Finding the injected region and telling it apart from the harmless one is an
+objective, and noticing the harmless one and saying why it isn't the problem is the case's bonus.
+
+## Common misconceptions
+
+- **"RWX memory means malware."** It means something wrote code while running. Runtime compilers do
+  that for a living.
+- **"If there's no file, there's no evidence."** The region, its bytes and its process are the
+  evidence. Pin them.
+- **"Injected code shows up as a new process."** It runs inside an existing one. That's the whole
+  reason to do it.
+- **"MZ proves it's malicious."** It proves a program's image is sitting in memory that can be
+  written. Where it sits, and why, is what makes it a finding.

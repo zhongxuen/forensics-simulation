@@ -30,7 +30,7 @@ import { hashHex } from "@/sim/evidence/hash";
 const catalog = loadLessonCatalog();
 const lessons = catalog.lessons;
 
-/** Every lesson written so far, by track. Prompt 13.3 adds the Memory and Logs tracks. */
+/** Every lesson, by track (docs/plan/13-learning-center.md, "Tracks and lessons"). */
 const EXPECTED_LESSONS = [
   "foundations-what-forensics-is",
   "foundations-order-of-volatility",
@@ -40,6 +40,14 @@ const EXPECTED_LESSONS = [
   "disk-macb-timestamps",
   "disk-deleted-vs-overwritten",
   "disk-carving",
+  "memory-why-ram-matters",
+  "memory-processes-and-parents",
+  "memory-network-artefacts",
+  "memory-code-injection",
+  "logs-windows-logon-events",
+  "logs-time-zones-and-clocks",
+  "logs-super-timelines",
+  "report-writing-the-report",
 ];
 
 /** The six sections, in order. Level 0 lessons may leave out "how it works" and misconceptions. */

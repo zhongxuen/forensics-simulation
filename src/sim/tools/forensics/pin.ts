@@ -51,6 +51,7 @@ export const pin: Tool = {
       "The notes and bookmark features in X-Ways Forensics and EnCase.",
       "In everyday practice: the running notes file and the exhibit list that end up as the report's appendix.",
     ],
+    lesson: "report-writing-the-report",
   },
 
   run(args, state) {

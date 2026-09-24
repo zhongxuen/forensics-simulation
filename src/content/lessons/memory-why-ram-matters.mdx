@@ -1,0 +1,126 @@
+---
+id: memory-why-ram-matters
+title: What memory knows that the disk doesn't
+topic: forensics
+level: 2
+readingMinutes: 7
+analogy: "A kitchen in the middle of dinner. The recipe book on the shelf tells you what could be cooked; the pans on the hob tell you what is cooking right now. Switch the hob off and wash up, and the recipe book is all that's left."
+summary: Why a running computer's memory is captured before anything else, what a memory image holds, and what one moment can and can't tell you.
+prerequisites: [foundations-order-of-volatility]
+externalPrerequisites: [forensics-evidence-care]
+relatedCommands: [mem, strings]
+glossaryTerms: [memory-image, volatile-data]
+cites: [amf-ch4, rfc-3227-s2-1]
+---
+
+## The one-sentence version
+
+A computer's working memory holds what it is doing right now, including things that were never
+saved to its drive, and all of it is gone the moment the power goes, so it is copied first.
+
+Think of a kitchen in the middle of dinner. The recipe book on the shelf (the drive) tells you what
+could be cooked. The pans on the hob (memory) tell you what is cooking right now. Switch the hob off
+and wash up, and the recipe book is all that's left.
+
+<Quiz
+  question="A laptop is still switched on and something on it is sending data out. What do you do first?"
+  options={[
+    {
+      text: "Pull the power cord, so it stops at once",
+      explanation:
+        "It does stop, and it takes the running programs, their connections and any code that only lived in memory with it. The drive survives, but the drive may not hold the thing you most need to see.",
+    },
+    {
+      text: "Capture its memory, then decide how to stop it",
+      correct: true,
+      explanation:
+        "Memory is the most perishable evidence on the machine. A few minutes spent copying it keeps what's running, what it's talking to and what it was started with.",
+    },
+    {
+      text: "Image the drive first, because the drive is the main evidence",
+      explanation:
+        "The drive will still be there in an hour. Memory changes every second the machine runs and vanishes at power-off, so it comes first.",
+    },
+  ]}
+/>
+
+## Why it matters in security
+
+A lot of what an attacker does never touches the drive. A program can be started from the network
+and run only in memory. Code can be written into another program while it runs. A connection lasts
+as long as the program holding it open. None of that is in a <Term id="forensic-image">disk image</Term>.
+
+Memory also shows the present tense. The drive tells you a program exists; memory tells you it was
+running, which account started it, what it was started with and who it was talking to. That's why
+RFC 3227 (§2.1) puts memory near the top of the order of volatility, and why _The Art of Memory
+Forensics_ (Chapter 4) says to preserve it before the machine is changed or switched off.
+
+## How it actually works
+
+### What a memory image holds
+
+A <Term id="memory-image">memory image</Term> is a copy of the computer's working memory (RAM),
+taken while it runs, saved to a file. It is <Term id="volatile-data">volatile data</Term> made to
+stay put. From it an examiner can rebuild:
+
+- **Processes**: every running program, with its number, its parent and when it started.
+- **Connections**: which program was talking to which address, and on which port.
+- **Command lines**: exactly what each program was asked to do.
+- **Memory regions**: stretches of memory and what each was allowed to do, including code that has
+  no file behind it.
+- **Text**: readable strings, such as addresses and commands, left in the bytes.
+
+### One moment, not a film
+
+A capture is a photograph. It shows what was true at the second it was taken. A program that
+started and finished an hour earlier may have left nothing, and anything after the capture isn't
+there. The drive and the logs fill in the before and after.
+
+### Capturing changes things
+
+Capturing memory runs a program on the machine, and that program takes some memory too. You can't
+avoid it. You can write down what you ran and when, which is part of the <Term id="chain-of-custody">chain of custody</Term>.
+
+### What the tools really do
+
+A real memory image is raw bytes with no labels. Tools such as Volatility find the structures the
+operating system keeps (the process list, the connection tables) and read them back out, which is
+why each Windows version needs its own layout. `mem` gives you the same questions in a teaching
+model, with the same answers a real examination would find.
+
+## See it
+
+Candlewright ran a hunt drill on a practice laptop, TRAIN-LT-02, and Idris captured its memory
+while it was still on. Ask the image what it knows.
+
+<MiniTerminal
+  scenario="ir-ws-drill"
+  commands={["mem", "mem info train-lt-02", "mem ps train-lt-02", "strings train-lt-02-mem"]}
+  task="Type `mem` to see which memory images are attached to this examination."
+  expect="mem"
+  success="One image, train-lt-02-mem, captured at 09:30:00 UTC. Try `mem info train-lt-02` next: six processes found by a scan, but only five in the active list."
+/>
+
+`mem info` says the image was captured at `09:30:00Z`, which the laptop's own clock showed as
+10:30 British Summer Time. It found six processes by scanning and five in the list Windows keeps.
+One program is running that the list doesn't mention; the next lesson finds it. `strings` shows
+the text left in memory: command lines, the words `practice beacon`, and one address repeated eight
+times.
+
+## In practice
+
+[Case 3, Something Is Still Running](/cases/case-03) opens with Quillfen Freight's dispatch server
+still switched on and something on it still talking to the internet. Kit wants to pull the plug.
+You decide whether memory comes first, and every question after that is asked of the memory image
+you did or didn't keep.
+
+## Common misconceptions
+
+- **"Switching it off preserves the evidence."** It preserves the drive. Memory, connections and
+  anything that only ran in memory are gone.
+- **"If it matters, it's on the disk."** Code can run without ever being saved. Memory is often the
+  only place it is visible at all.
+- **"A memory image shows what happened."** It shows what was happening at one moment. What came
+  before is in the logs and on the drive.
+- **"Capturing memory changes nothing."** It changes a little, on purpose and on the record, to keep
+  a lot.

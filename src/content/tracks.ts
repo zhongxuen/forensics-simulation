@@ -4,8 +4,7 @@
  * gate: every lesson is open, and a track never nags about lessons skipped.
  *
  * tests/unit/lesson-content.test.ts checks that every id here is a real lesson, that every lesson
- * is in a track, and that no lesson comes before its own prerequisites. The Memory and Logs and
- * timelines tracks arrive with prompt 13.3.
+ * is in a track, and that no lesson comes before its own prerequisites.
  */
 
 export interface Track {
@@ -43,4 +42,30 @@ export const DISK: Track = {
   ],
 };
 
-export const TRACKS: readonly Track[] = [FOUNDATIONS, DISK];
+export const MEMORY: Track = {
+  id: "memory",
+  title: "Memory",
+  description:
+    "Four lessons on what a running computer holds and a switched-off one forgets: why memory is captured first, processes and their parents, network connections, and code that hides inside another program.",
+  lessons: [
+    "memory-why-ram-matters",
+    "memory-processes-and-parents",
+    "memory-network-artefacts",
+    "memory-code-injection",
+  ],
+};
+
+export const LOGS_AND_TIMELINES: Track = {
+  id: "logs-and-timelines",
+  title: "Logs and timelines",
+  description:
+    "Four lessons on putting it all in order and saying what it means: Windows sign-in records, time zones and clocks, one timeline from every source, and a report where every finding points at evidence.",
+  lessons: [
+    "logs-windows-logon-events",
+    "logs-time-zones-and-clocks",
+    "logs-super-timelines",
+    "report-writing-the-report",
+  ],
+};
+
+export const TRACKS: readonly Track[] = [FOUNDATIONS, DISK, MEMORY, LOGS_AND_TIMELINES];

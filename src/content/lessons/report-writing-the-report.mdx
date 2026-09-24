@@ -1,0 +1,142 @@
+---
+id: report-writing-the-report
+title: A report where every answer points at evidence
+topic: forensics
+level: 2
+readingMinutes: 7
+analogy: 'A maths exam that says "show your working". The answer on its own gets you nothing you can check; the working lets anyone follow each step and see where it came from.'
+summary: "How an investigation ends: findings that each say one thing and cite the evidence that shows it, other explanations weighed, and fixes the client can act on."
+prerequisites: [foundations-chain-of-custody, logs-super-timelines]
+externalPrerequisites: [blue-incident-response]
+relatedCommands: [pin, logq, mem, cat]
+glossaryTerms: [finding, artefact-ref]
+cites: [nist-sp-800-86-s3-4, nist-sp-800-61r3-s3-1]
+---
+
+## The one-sentence version
+
+A forensic report answers the questions the client asked, one finding at a time, and every finding
+points at the exact piece of evidence that shows it, so someone who wasn't there can check each one.
+
+Think of a maths exam that says "show your working". The answer on its own gets you nothing anyone
+can check; the working lets them follow each step and see where it came from.
+
+<Quiz
+  question="Which of these is a finding a reader can check?"
+  options={[
+    {
+      text: "The laptop was definitely hacked by someone on the Range",
+      explanation:
+        'It\'s a conclusion with nothing underneath, and "hacked" and "someone" say less than the evidence does. Say what happened, and point at what shows it.',
+    },
+    {
+      text: "The account trainee signed in by remote desktop from 192.168.60.66 at 09:15:10 UTC (log:security/17)",
+      correct: true,
+      explanation:
+        "One statement, in plain words, with the time in UTC and a ref to the record that proves it. Anyone with the evidence can open log:security/17 and see the same thing.",
+    },
+    {
+      text: "Kit ran the drill, as everyone knows",
+      explanation:
+        "The evidence shows an address and an account, not a person. Knowing who sits at that address is context you can mention, labelled as such, never a finding on its own.",
+    },
+  ]}
+/>
+
+## Why it matters in security
+
+The report is what the client keeps. Everything before it (the imaging, the hashes, the hours of
+reading) matters only as far as the report carries it. A report that can't be checked asks the
+reader to trust you; a report where each finding cites evidence lets them see for themselves, and
+lets a court, an insurer or a second examiner do the same.
+
+It's also where the client learns what to change. NIST SP 800-61r3 (§3.1) says improvements to an
+organisation's defences often come out of the follow-up reports and lessons learned after an
+incident. A report that ends without fixes has done half its job.
+
+## How it actually works
+
+### Answer the letter's questions
+
+The letter of authorisation says what may be examined and what the client wants to know. The
+report answers those questions, in that order, and stays inside that scope. Something outside it
+that you couldn't help noticing gets one line saying it was out of scope, not an examination.
+
+### One finding, one statement, one ref
+
+A <Term id="finding">finding</Term> says one thing: who, what, when (in UTC), where. Under it sits
+an <Term id="artefact-ref">artefact ref</Term>, such as `log:security/17` or
+`mem:train-lt-02-mem:pid/6120`, naming exactly the record, file or process that shows it. `pin`
+collects those as you go, with a note on why each matters, so the report is built from the board and
+not from memory.
+
+### Weigh the other explanations
+
+NIST SP 800-86 (§3.4) lists what shapes a report, and the first is alternative explanations: for
+each finding, consider every plausible explanation and say which the evidence supports. The
+runtime compiler region that looked like injected code, the account sign-in that looked like its
+owner: say what you ruled out, and why.
+
+### Know who's reading
+
+§3.4 also names the audience. The client's owner needs plain words and what to do on Monday; a
+technical reader needs the refs and the times. The same findings serve both, with a short summary
+at the top.
+
+### Evidence decides, whoever it points at
+
+A report says what the evidence shows, even when it isn't what the client hoped. Sometimes that
+clears the person everyone suspected. That's the report working.
+
+## See it
+
+The drill's letter asks two questions. Gather the evidence for each onto the board.
+
+<MiniTerminal
+  scenario="ir-ws-drill"
+  commands={[
+    "cat letter.txt",
+    "logq --id 4624 --where LogonType=10",
+    "pin",
+    "mem psscan train-lt-02 | grep unlinked",
+    "pin",
+  ]}
+  task="Type `cat letter.txt` to read the two questions the examination has to answer."
+  expect="pin"
+  success="Two pins, two refs: log:security/17 for how the drill got in, and mem:train-lt-02-mem:pid/6120 for what was running that shouldn't have been."
+/>
+
+The first pin is `log:security/17`, the remote sign-in: it answers "how did the drill get in, and
+when" with a record anyone can open. The second is `mem:train-lt-02-mem:pid/6120`, the unlinked
+`svchost.exe`, which answers "what was running that shouldn't have been". Type
+`pin -m "remote sign-in from the Range"` instead and the note travels with the ref. Put into words:
+
+1. The account `trainee` signed in by remote desktop (logon type 10) from `192.168.60.66` at
+   09:15:10 UTC, after twelve refused sign-ins from the same address. (`log:security/17`)
+2. A program named `svchost.exe`, PID 6120, ran from `C:\Users\Public\Downloads`, started by
+   `explorer.exe`, missing from the active process list, and checked in with `192.168.60.66:443`
+   every minute. (`mem:train-lt-02-mem:pid/6120`)
+
+Then the fixes: block the address, remove `practice-svc`, turn off remote desktop where it isn't
+needed, and give `trainee` a password nobody can guess in twelve tries.
+
+## In practice
+
+Every case ends in a report, and every answer has a Supporting evidence picker holding your pins.
+An answer counts as supported only when it's right **and** a pin it cites proves it; the debrief
+shows each as supported, needs evidence or not yet, and you can change your report as often as you
+like. In [Case 1, The Clean Copy](/cases/case-01) that's one pinned note. In
+[Case 2, The Deleted Invoice](/cases/case-02) the owner asks you to "confirm it was the
+bookkeeper", and the evidence says otherwise. [Case 3, Something Is Still Running](/cases/case-03)
+ends with the fixes: what Quillfen Freight should change so the door isn't left open again.
+
+## Common misconceptions
+
+- **"The report is where you explain what you did."** It's where you say what you found. What you
+  did goes in the chain of custody, which the report can attach.
+- **"A confident answer is enough."** A right answer with nothing cited is one nobody can check. The
+  ref is what makes it a finding.
+- **"The report should give the client the answer they expect."** It gives the answer the evidence
+  supports, and says so plainly when that's a surprise.
+- **"Findings are the end."** Fixes are. A client who knows what happened and not what to change is
+  still exposed.

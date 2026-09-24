@@ -125,6 +125,7 @@ export const mem: Tool = {
       "MemProcFS, which shows a memory image as folders and files; and Redline, a memory and live-response collector.",
       "Capturing the memory in the first place is done with a tool such as WinPmem, DumpIt or Magnet RAM Capture, before the machine is turned off.",
     ],
+    lesson: "memory-why-ram-matters",
   },
 
   run(args, state) {

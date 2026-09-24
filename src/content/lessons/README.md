@@ -1,6 +1,6 @@
 # src/content/lessons
 
-Learning Center lessons: one `.mdx` file per lesson, written for complete beginners and going deeper than Hacker Simulation's forensics lessons, which they link to instead of repeating (`docs/plan/13-learning-center.md`). The tracks and their reading order are in `src/content/tracks.ts`. The Foundations and Disk tracks are written; Memory, and Logs and timelines follow in prompt 13.3.
+Learning Center lessons: one `.mdx` file per lesson, written for complete beginners and going deeper than Hacker Simulation's forensics lessons, which they link to instead of repeating (`docs/plan/13-learning-center.md`). The tracks and their reading order are in `src/content/tracks.ts`. All four tracks are written: Foundations, Disk, Memory, and Logs and timelines.
 
 ## Writing a lesson
 
@@ -36,8 +36,9 @@ House rules, enforced while the lesson compiles and in CI (`tests/unit/content-r
   - `<MiniTerminal scenario="ir-ws-practice" commands={["cat letter.txt"]} task="…" expect="cat" success="…" />` in the "See it" section: the real terminal on a practice machine from `src/content/mini-terminals.ts`. Every suggested command is run in CI, with the machine's practice evidence attached, and must succeed; a command that is meant to be refused goes in the prose, not the chips. The forensics machines:
     - `ir-ws-practice`, the analyst workstation with a practice examination (a letter, a custody log, a handover form, recorded hashes and two copies of a note) and the TRAIN-07 stick attached as `/dev/evidence/train-07`, for the Foundations lessons.
     - `ir-ws-disk`, the analyst workstation with Candlewright's practice laptop attached as `/dev/evidence/train-lt-01` and a working copy already made in `cases/practice/images`, for the Disk lessons.
+    - `ir-ws-drill`, the analyst workstation with the hunt drill on Candlewright's second practice laptop attached: its memory image (`train-lt-02-mem`), its security and sysmon-lite logs, its drive, the drill's letter and Kit's notes in local time, for the Memory, and Logs and timelines lessons.
 
-    Their evidence is generated, never written by hand: each drive is a story in `src/content/practice/stories.ts`, played by the case generator. Change a story, run `pnpm evidence:build`, and read the new output before quoting it in a lesson.
+    Their evidence is generated, never written by hand: each machine's evidence is a story in `src/content/practice/stories.ts`, played by the case generator. Change a story, run `pnpm evidence:build`, and read the new output before quoting it in a lesson.
 
   - `<Annotated>` and `<PacketDiagram>` break output or a message down part by part. Copy output from a real run of the engine.
 - "In practice" links the case where the player meets the idea: `[Case 1, The Clean Copy](/cases/case-01)`.

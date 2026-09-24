@@ -18,7 +18,7 @@ import {
   renderLessonBody,
   type LessonCatalog,
 } from "@/features/learning/server";
-import { defaultRegistry, listTools, renderHelp, renderManPage } from "@/sim";
+import { defaultRegistry, FORENSICS_TOOLS, listTools, renderHelp, renderManPage } from "@/sim";
 
 /**
  * CI fails on a dead cross-reference anywhere in the learning content
@@ -108,10 +108,10 @@ describe("the manual pages", () => {
     expect(dead).toEqual([]);
   });
 
-  it("link every disk tool to the lesson that teaches it", () => {
-    // pin, logq and timeline gain theirs with the Memory and Logs lessons (prompt 13.3).
-    const disk = ["acquire", "blocker", "carve", "hashsum", "inode", "lsfs", "recover", "strings"];
-    expect(disk.filter((name) => lessonOf(name) === undefined)).toEqual([]);
+  it("link every forensics tool to the lesson that teaches it", () => {
+    const tools = FORENSICS_TOOLS.map((tool) => tool.name);
+    expect(tools.length).toBeGreaterThan(0);
+    expect(tools.filter((name) => lessonOf(name) === undefined)).toEqual([]);
   });
 
   it("print where the lesson is, in man and in --help", () => {

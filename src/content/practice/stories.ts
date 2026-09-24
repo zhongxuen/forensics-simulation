@@ -11,9 +11,9 @@ import { PRACTICE_NOTE } from "../mini-terminals";
  * the committed file is not what the story builds today. Nobody writes the evidence by hand, so
  * every time, deleted file and carved object a lesson shows is one the story really left behind.
  *
- * Both stories happen on Candlewright's own training kit, from the training cupboard: a practice
- * laptop, `train-lt-01`, and a memory stick labelled TRAIN-07. No client's evidence is used to
- * teach, and no case is spoiled.
+ * Every story happens on Candlewright's own training kit, from the training cupboard: two practice
+ * laptops, `train-lt-01` and `train-lt-02`, and a memory stick labelled TRAIN-07. No client's
+ * evidence is used to teach, and no case is spoiled.
  */
 
 /** "2026-09-14T08:10:00Z" as an instant. Only UTC times, written in full, are accepted. */
@@ -226,7 +226,196 @@ const TRAIN_LT_01: CaseSpec = {
   },
 };
 
+/**
+ * TRAIN-LT-02: Candlewright's second practice laptop, for the Memory and the Logs and timelines
+ * lessons. On the morning of 2026-09-22 Kit ran the team's hunt drill on it from a practice machine
+ * on the Range (192.168.60.66): a burst of sign-in guesses, a remote sign-in that worked, a practice
+ * account added to Administrators, and a harmless practice beacon named `svchost.exe`, started from
+ * the wrong folder by the wrong parent, taken out of the active process list, with a region of
+ * writable, runnable memory inside it and a check-in every minute. The laptop's own rota app is a
+ * .NET program whose runtime compiler leaves a region of the same kind, which is the one to tell
+ * apart. Idris captured the memory before anyone switched the laptop off.
+ */
+const TRAIN_LT_02_MACHINE = {
+  ...LAPTOP,
+  id: "train-lt-02",
+  device: { model: "Pellmoor 128 GB solid-state drive", serial: "PM-TRN-0002" },
+} as const;
+
+/** The practice machine on the Range the drill came from (md-files/story-bible.md: 192.168.60.0/24). */
+export const DRILL_ADDRESS = "192.168.60.66";
+
+/** The practice beacon's process id, fixed so the lessons can name it. */
+export const DRILL_BEACON_PID = 6120;
+
+/** Bytes a runtime compiler leaves: the middle of machine instructions, with no file header. */
+const JIT_BYTES =
+  "\u0055\u0048\u0008\u0053\u0056\u0057\u0041\u0054\u0041\u0055\u0048\u0003\u0065\u0010";
+
+/** Bytes a whole program copied into memory starts with: MZ, the first two letters of every Windows program file. */
+const PROGRAM_BYTES =
+  "MZ\u0000\u0003\u0000\u0000\u0000\u0004\u0000practice beacon, Candlewright drill";
+
+/** The drill's sign-in guesses: three account names, four tries each, two seconds apart. */
+const GUESSES: readonly StoryAction[] = ["admin", "administrator", "trainee"].flatMap(
+  (account, a) =>
+    [0, 1, 2, 3].map((i): StoryAction => ({
+      at: at("2026-09-22T09:14:00Z") + (a * 4 + i) * 2_000,
+      actor: { kind: "attacker" },
+      on: "train-lt-02",
+      do: "failed-logon",
+      account,
+      type: "network",
+      from: DRILL_ADDRESS,
+    })),
+);
+
+const TRAIN_LT_02_STORY: readonly StoryAction[] = [
+  {
+    at: at("2026-09-22T07:50:00Z"),
+    actor: { kind: "system" },
+    on: "train-lt-02",
+    do: "run-process",
+    name: "services.exe",
+    path: "C:\\Windows\\System32\\services.exe",
+    parent: "System",
+    user: "SYSTEM",
+    pid: 612,
+    threads: 9,
+  },
+  {
+    at: at("2026-09-22T07:50:05Z"),
+    actor: { kind: "system" },
+    on: "train-lt-02",
+    do: "run-process",
+    name: "svchost.exe",
+    path: "C:\\Windows\\System32\\svchost.exe",
+    cmdline: "C:\\Windows\\System32\\svchost.exe -k netsvcs",
+    parent: "services.exe",
+    user: "SYSTEM",
+    pid: 884,
+    threads: 22,
+  },
+  {
+    at: at("2026-09-22T08:01:00Z"),
+    actor: TRAINEE,
+    on: "train-lt-02",
+    do: "logon",
+    account: "trainee",
+    type: "interactive",
+  },
+  {
+    at: at("2026-09-22T08:02:00Z"),
+    actor: TRAINEE,
+    on: "train-lt-02",
+    do: "run-process",
+    name: "rota-app.exe",
+    path: "C:\\Program Files\\Candlewright\\rota-app.exe",
+    cmdline: '"C:\\Program Files\\Candlewright\\rota-app.exe" --week 39',
+    parent: "explorer.exe",
+    user: "trainee",
+    pid: 2240,
+    threads: 12,
+  },
+  {
+    at: at("2026-09-22T08:02:10Z"),
+    actor: { kind: "system" },
+    on: "train-lt-02",
+    do: "inject",
+    note: "Not an attack: the rota app's .NET runtime compiling its own code, which leaves memory of the same kind.",
+    into: "rota-app.exe",
+    preview: JIT_BYTES,
+    size: 0x10000,
+  },
+  ...GUESSES,
+  {
+    at: at("2026-09-22T09:15:10Z"),
+    actor: { kind: "attacker" },
+    on: "train-lt-02",
+    do: "logon",
+    account: "trainee",
+    type: "remote",
+    from: DRILL_ADDRESS,
+  },
+  {
+    at: at("2026-09-22T09:17:00Z"),
+    actor: { kind: "attacker" },
+    on: "train-lt-02",
+    do: "create-account",
+    account: "practice-svc",
+    by: "trainee",
+  },
+  {
+    at: at("2026-09-22T09:17:30Z"),
+    actor: { kind: "attacker" },
+    on: "train-lt-02",
+    do: "add-to-group",
+    account: "practice-svc",
+    group: "Administrators",
+    by: "trainee",
+  },
+  {
+    at: at("2026-09-22T09:20:00Z"),
+    actor: { kind: "attacker" },
+    on: "train-lt-02",
+    do: "run-process",
+    name: "svchost.exe",
+    path: "C:\\Users\\Public\\Downloads\\svchost.exe",
+    cmdline: "C:\\Users\\Public\\Downloads\\svchost.exe -k drill",
+    parent: "explorer.exe",
+    user: "trainee",
+    pid: DRILL_BEACON_PID,
+    threads: 3,
+    unlinked: true,
+  },
+  {
+    at: at("2026-09-22T09:20:05Z"),
+    actor: { kind: "attacker" },
+    on: "train-lt-02",
+    do: "inject",
+    into: String(DRILL_BEACON_PID),
+    preview: PROGRAM_BYTES,
+  },
+  {
+    at: at("2026-09-22T09:21:00Z"),
+    actor: { kind: "attacker" },
+    on: "train-lt-02",
+    do: "connect",
+    process: String(DRILL_BEACON_PID),
+    remote: `${DRILL_ADDRESS}:443`,
+    every: 60,
+    times: 8,
+  },
+  {
+    at: at("2026-09-22T09:30:00Z"),
+    actor: ANALYST,
+    on: "train-lt-02",
+    do: "capture-memory",
+  },
+  {
+    at: at("2026-09-22T09:40:00Z"),
+    actor: ANALYST,
+    on: "ir-ws-01",
+    do: "hand-over",
+    item: "train-lt-02",
+    by: "Idris Fenwick",
+  },
+];
+
+const TRAIN_LT_02: CaseSpec = {
+  id: "train-lt-02",
+  seed: 9303,
+  machines: [TRAIN_LT_02_MACHINE, WORKSTATION],
+  story: TRAIN_LT_02_STORY,
+  evidence: {
+    disks: ["train-lt-02"],
+    logs: ["security", "sysmon-lite"],
+    memory: ["train-lt-02"],
+    zones: { disk: "Europe/London", security: "Europe/London" },
+  },
+};
+
 /** Every practice story, by id. The id is also the evidence file's name and a practice machine's `evidence`. */
-export const PRACTICE_STORIES: readonly CaseSpec[] = [TRAIN_07, TRAIN_LT_01];
+export const PRACTICE_STORIES: readonly CaseSpec[] = [TRAIN_07, TRAIN_LT_01, TRAIN_LT_02];
 
 export const PRACTICE_STORY_IDS: readonly string[] = PRACTICE_STORIES.map((story) => story.id);
