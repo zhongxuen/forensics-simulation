@@ -29,7 +29,7 @@ test.setTimeout(240_000);
 
 async function playCaseTwo(page: Page) {
   await page.goto("/cases");
-  await activate(page.getByRole("main").getByRole("link", { name: /The deleted invoice/ }));
+  await activate(page.getByRole("main").getByRole("link", { name: "Open Case 2" }));
   await expect(page).toHaveURL(/\/cases\/case-02$/);
   await expect(page.getByRole("heading", { level: 1, name: "The deleted invoice" })).toBeVisible();
   await expect(page.getByText(/Theo Ashgrove, team lead\. The owner wants a name/)).toBeVisible();

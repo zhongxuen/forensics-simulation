@@ -36,6 +36,8 @@ const UIUX_ANIMATIONS = [
   "animate-stamp",
   "animate-sweep",
   "animate-shimmer",
+  // The landing page's loop strip (prompt UX.2).
+  "animate-light-up",
 ];
 
 /** `250ms` → 250, `1.2s` → 1200. */

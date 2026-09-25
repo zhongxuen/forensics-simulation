@@ -13,7 +13,8 @@ import { FOCUS_RING, RAIL_TOOLTIP } from "./shell-styles";
 import { StartHereLink } from "./start-here-link";
 import { useSidebarCollapsed } from "./use-sidebar-collapsed";
 
-type SidebarProps = { nextStep: NextStep } & (
+/** `nextStep` is null where the sidebar shows none: inside a case, it would point at itself. */
+type SidebarProps = { nextStep: NextStep | null } & (
   | {
       /** The persistent desktop sidebar, collapsible to an icon rail. */
       variant: "desktop";
@@ -51,12 +52,14 @@ export function Sidebar(props: SidebarProps) {
         )}
       </div>
 
-      <StartHereLink
-        step={nextStep}
-        variant="sidebar"
-        current={pathname === nextStep.href}
-        onNavigate={onNavigate}
-      />
+      {nextStep && (
+        <StartHereLink
+          step={nextStep}
+          variant="sidebar"
+          current={pathname === nextStep.href}
+          onNavigate={onNavigate}
+        />
+      )}
 
       {/* Padding inside the scroll area keeps focus rings from being clipped. */}
       <nav

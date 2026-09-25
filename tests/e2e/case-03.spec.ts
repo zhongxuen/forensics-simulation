@@ -28,7 +28,7 @@ test.setTimeout(240_000);
 
 async function playCaseThree(page: Page) {
   await page.goto("/cases");
-  await activate(page.getByRole("main").getByRole("link", { name: /Something is still running/ }));
+  await activate(page.getByRole("main").getByRole("link", { name: "Open Case 3" }));
   await expect(page).toHaveURL(/\/cases\/case-03$/);
   await expect(
     page.getByRole("heading", { level: 1, name: "Something is still running" }),

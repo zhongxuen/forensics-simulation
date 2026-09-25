@@ -93,6 +93,57 @@ test.describe("states the player spends time in", () => {
     });
   }
 
+  test("axe: /cases and the sidebar with a case closed and one in progress", async ({ page }) => {
+    await page.addInitScript(() => {
+      const run = {
+        phase: "workspace",
+        log: [],
+        pins: [],
+        notes: "",
+        reportDraft: {},
+        completed: [],
+        hintsShown: {},
+        beatsPlayed: [],
+        savedAt: 1,
+      };
+      const closed = {
+        ...run,
+        phase: "debrief",
+        marks: [{ after: 0, kind: "submitted", supported: 3, total: 3 }],
+      };
+      localStorage.setItem(
+        "incident-room:cases:v1",
+        JSON.stringify({ v: 1, runs: { "case-01": closed, "case-02": run } }),
+      );
+    });
+    await page.goto("/cases");
+    await expect(page.getByText("Closed · 3 of 3 findings supported")).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Read the debrief for Case 1", exact: true }),
+    ).toBeVisible();
+    await expect(page.getByRole("link", { name: "Continue Case 2", exact: true })).toBeVisible();
+    // The sidebar points back at the case in progress.
+    await expect(page.locator("#app-sidebar").getByText(/Continue Case 2 · 0 of/)).toBeVisible();
+    expect(await seriousViolations(page)).toEqual([]);
+  });
+
+  test("inside a case the sidebar starts on the rail, and the saved setting is kept", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/cases/case-01");
+    const sidebar = page.locator("#app-sidebar");
+    await expect(page.getByRole("button", { name: "Expand sidebar" })).toBeVisible();
+    await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toContainText(
+      "The clean copy",
+    );
+    expect((await sidebar.boundingBox())?.width).toBeLessThan(100);
+    await page.getByRole("button", { name: "Expand sidebar" }).click();
+    await expect.poll(async () => (await sidebar.boundingBox())?.width).toBeGreaterThan(200);
+    expect(await page.evaluate(() => localStorage.getItem("incident-room:settings"))).toBeNull();
+    expect(await seriousViolations(page)).toEqual([]);
+  });
+
   test("axe: the search palette, open", async ({ page }) => {
     await page.goto("/learn");
     await page.waitForLoadState("networkidle");

@@ -29,7 +29,7 @@ test.setTimeout(180_000);
 
 async function playCaseOne(page: Page) {
   await page.goto("/");
-  await expect(page.getByText("SIMULATED: every piece of evidence is made up.")).toBeVisible();
+  await expect(page.getByText("Every piece of evidence here is made up.")).toBeVisible();
   // The whole chapter is out (prompt 15B.1): three cases, and nothing still being written.
   await expect(page.getByText(/Three cases at one made-up haulage yard/)).toBeVisible();
   await expect(page.getByText(/still being written/)).toHaveCount(0);
@@ -157,15 +157,23 @@ test("/cases lists all three cases, in chapter order, and the practice case", as
   await page.goto("/cases");
   const main = page.getByRole("main");
   const titles = ["The clean copy", "The deleted invoice", "Something is still running"];
-  for (const title of titles) {
-    await expect(main.getByRole("link", { name: new RegExp(title) })).toBeVisible();
+  // Each case is an article named by its title, with a button that says what happens (UX.2).
+  for (const [index, title] of titles.entries()) {
+    const card = main.getByRole("article", { name: title });
+    await expect(card).toBeVisible();
+    await expect(card.getByRole("link", { name: `Open Case ${index + 1}` })).toBeVisible();
   }
+  await expect(
+    main
+      .getByRole("region", { name: "Practice" })
+      .getByRole("link", { name: "Open the practice case" }),
+  ).toBeVisible();
   const order = await main
-    .getByRole("link")
+    .getByRole("heading", { level: 3 })
     .evaluateAll(
-      (links, wanted) =>
-        links
-          .map((link) => wanted.findIndex((title) => link.textContent?.includes(title)))
+      (headings, wanted) =>
+        headings
+          .map((heading) => wanted.findIndex((title) => heading.textContent?.includes(title)))
           .filter((index) => index !== -1),
       titles,
     );

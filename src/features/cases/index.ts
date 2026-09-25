@@ -66,10 +66,12 @@ export {
   CASE_LISTINGS,
   CHAPTER,
   RELEASED_CASE_LISTINGS,
+  caseSummaries,
   findCaseListing,
   type CaseListing,
   type CaseStatus,
 } from "./run/catalog";
+export { caseState, type CaseState, type CaseSummary, type SummarySource } from "./run/case-state";
 export { hasCaseEvidence, loadCaseEvidence } from "./run/evidence";
 export { PRACTICE_CASE } from "./run/practice-case";
 export { replayLog } from "./run/replay";

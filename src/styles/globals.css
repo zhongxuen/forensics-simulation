@@ -6,14 +6,20 @@
 @import "./code.css";
 
 /*
- * `rail:` styles the desktop sidebar while it's collapsed to an icon rail. The collapsed state is
+ * `rail:` styles the desktop sidebar while it's collapsed to an icon rail. The saved state is
  * data-sidebar="collapsed" on <html>, set by the settings module (src/lib/settings) and restored
- * before first paint by SettingsBootScript. Below `md` the sidebar is a drawer and never
- * collapses, so the variant only applies from `md` up.
+ * before first paint by SettingsBootScript. The app shell can override it for one page with
+ * data-sidebar-view="rail" or "full" on its own root (inside a case run it starts on the rail);
+ * it's rendered with the page's HTML, so that doesn't flash either. Below `md` the sidebar is a
+ * drawer and never collapses, so the variant only applies from `md` up.
  */
 @custom-variant rail {
   @media (width >= 48rem) {
-    :root[data-sidebar="collapsed"] & {
+    :root:is(
+        [data-sidebar="collapsed"]:not(:has([data-sidebar-view="full"])),
+        :has([data-sidebar-view="rail"])
+      )
+      & {
       @slot;
     }
   }

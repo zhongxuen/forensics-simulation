@@ -10,6 +10,10 @@ import { CHAPTER_ONE, isReleased } from "./cases/chapter";
 /** Hacker Simulation, the sibling game: Candlewright's red team, in the same world. */
 export const HACKER_SIMULATION_URL = "https://hacker-simulation.vercel.app";
 
+/** The landing page's eyebrow and H1: the studio small, the game's name large (UIUX.md §2.2). */
+export const EYEBROW = "Candlewright";
+export const TITLE = "Incident Room";
+
 /** What this is, in one sentence. */
 export const PITCH =
   "A story game where you join Candlewright Security's blue team and find out what happened to a client's computer, from a disk, a memory dump and a set of logs, in a simulated terminal. No experience needed.";
@@ -18,8 +22,46 @@ export const PITCH =
 export const CHAPTER_LENGTH =
   "Three cases at one made-up haulage yard: Case 1 takes about 15 minutes, and Cases 2 and 3 about 30 each.";
 
-/** The line that sits beside the SIMULATED marker. */
-export const SIMULATED_LINE = "SIMULATED: every piece of evidence is made up.";
+/** Under the button: what it costs to start. */
+export const START_NOTE =
+  "No sign-up, nothing to install, and your work is saved in this browser only.";
+
+/** The line that sits beside the SIMULATED marker, which already says "Simulated". */
+export const SIMULATED_LINE = "Every piece of evidence here is made up.";
+
+/** One step of a list on the landing page: a short name, then a sentence. */
+export interface LandingStep {
+  readonly title: string;
+  readonly detail: string;
+}
+
+/**
+ * The loop every case follows, drawn as a strip of four pictures (UIUX.md §2.2): the evidence
+ * comes in, you examine it, you pin what you find, and the report points at the pins.
+ */
+export const LOOP_STEPS: readonly LandingStep[] = [
+  { title: "Evidence", detail: "A disk, a memory dump and logs, signed for by the client." },
+  { title: "Terminal", detail: "Examine them with investigator tools, one command at a time." },
+  { title: "Case board", detail: "Pin each finding that proves something." },
+  { title: "Report", detail: "Answer who, what and when, pointing at your pins." },
+];
+
+/** "What you'll do in Case 1", in three steps: Case 1's objectives in plain words. */
+export const CASE_ONE_STEPS: readonly LandingStep[] = [
+  {
+    title: "Check the paperwork",
+    detail: "Read the client's signed letter and the handover form that came with the laptop.",
+  },
+  {
+    title: "Make a copy you can prove",
+    detail:
+      "Keep the drive safe from changes, copy it, and check the copy's fingerprint against the form.",
+  },
+  {
+    title: "Find the note",
+    detail: "Find the message someone left on the laptop's desktop, and pin it to your case board.",
+  },
+];
 
 export const DISCLAIMERS: readonly string[] = [
   "Every disk image, memory dump and log is made up and generated from a written story. Nothing here parses a real image or real memory, and the tools have invented names. Each tool's manual names the real tool it imitates.",
