@@ -88,7 +88,7 @@ export function MentorReviewCard({ state, facts, lessonTitle, onRequest }: Mento
               chain of custody read, and a lesson or two to try next.
             </CharacterMessage>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-              <Button variant="primary" icon={<LightbulbIcon />} onClick={onRequest}>
+              <Button variant="secondary" icon={<LightbulbIcon />} onClick={onRequest}>
                 Ask {MENTOR_FIRST_NAME} to look back at my case
               </Button>
               <p className="text-sm leading-6 text-muted">

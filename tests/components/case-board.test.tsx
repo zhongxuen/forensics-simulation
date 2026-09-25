@@ -8,6 +8,7 @@ import {
   type CaseReportQuestion,
   type RunnableCase,
 } from "@/features/cases";
+import { nextCaseFor } from "@/features/cases/components/debrief/debrief-screen";
 import {
   CASES_STORAGE_KEY,
   createCaseStorage,
@@ -377,6 +378,116 @@ describe("the report and the debrief", () => {
     expect(text).toContain("qf-lt-03, by");
     expect(text).toMatch(/1\. Hashed: Hashed \/dev\/evidence\/qf-lt-03 with SHA-256/);
     expect(text).toContain(`2. Pinned: Pinned ${invoice.ref} to the case board from a view.`);
+  });
+
+  it("counts what's filled in as the player goes, and cites pins as cards with checkbox semantics", async () => {
+    const { user } = await open(
+      reportedCase(),
+      save({ phase: "report", pins: [invoice.ref, logon.ref] }),
+    );
+    await screen.findByRole("heading", { level: 1, name: /Your report for/ }, CHUNK);
+    const progress = screen.getByRole("status");
+    expect(progress.textContent).toBe("0 of 3 answered, 0 with evidence");
+    // Submit sits in the sticky bar with the progress line.
+    expect(
+      progress.parentElement!.contains(screen.getByRole("button", { name: "Submit report" })),
+    ).toBe(true);
+
+    // The questions are a numbered list, and each pin is a card named by its source, ref and title.
+    const [first] = screen.getAllByRole("group", { name: "Supporting evidence" });
+    const card = within(first!).getByRole("checkbox", {
+      name: new RegExp(`Disk.*${invoice.ref}.*invoice-viewer\\.exe`),
+    });
+    expect(within(first!).getByRole("checkbox", { name: /Log.*security record/ })).toBeTruthy();
+
+    await user.click(screen.getByRole("radio", { name: "qf-lt-03" }));
+    expect(progress.textContent).toBe("1 of 3 answered, 0 with evidence");
+    // Space on the focused card ticks it, like any checkbox.
+    card.focus();
+    await user.keyboard(" ");
+    expect((card as HTMLInputElement).checked).toBe(true);
+    expect(progress.textContent).toBe("1 of 3 answered, 1 with evidence");
+    // A wrong answer counts the same: this line says what's filled in, never whether it's right.
+    await user.type(screen.getByRole("textbox", { name: /Which account/ }), "nobody");
+    expect(progress.textContent).toBe("2 of 3 answered, 1 with evidence");
+  });
+
+  it("leads the debrief with the stamp and the findings, then custody, then objectives, with one next step", async () => {
+    const caseDef = reportedCase();
+    const { user } = await open(
+      caseDef,
+      save({
+        phase: "debrief",
+        pins: [invoice.ref, logon.ref],
+        reportDraft: {
+          "which-drive": "qf-lt-03",
+          "when-downloaded": invoice.born,
+          "which-account": "yard",
+        },
+        citations: {
+          "which-drive": [invoice.ref],
+          "when-downloaded": [invoice.ref],
+          "which-account": [logon.ref],
+        },
+      }),
+    );
+    const title = await screen.findByRole("heading", { level: 1, name: /^Case closed:/ }, CHUNK);
+    const findings = screen.getByRole("heading", {
+      name: "Your report: 3 of 3 findings supported",
+    });
+    const custody = screen.getByRole("heading", { name: "Your chain of custody" });
+    const objectives = screen.getByRole("heading", { name: "Objectives" });
+    const follows = (a: Element, b: Element) =>
+      Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(screen.getByText("Case closed", { selector: "span" })).toBeTruthy();
+    expect(
+      follows(title, findings) && follows(findings, custody) && follows(custody, objectives),
+    ).toBe(true);
+
+    // Each finding's status is a word, not only a colour, and resolves in turn.
+    const chips = within(findings.parentElement!).getAllByText("Supported");
+    expect(chips).toHaveLength(3);
+    expect(chips.map((chip) => chip.closest(".animate-pop")?.getAttribute("style"))).toEqual([
+      "animation-delay: calc(0ms * var(--motion-scale));",
+      "animation-delay: calc(80ms * var(--motion-scale));",
+      "animation-delay: calc(160ms * var(--motion-scale));",
+    ]);
+    expect(document.body.textContent).not.toMatch(/score|points|%/i);
+
+    // One primary action. The practice case isn't in the chapter, so it's Back to your cases.
+    const primary = document.querySelectorAll("article .bg-accent");
+    expect([...primary].map((node) => node.textContent)).toEqual(["Back to your cases"]);
+    expect(screen.getByRole("button", { name: "Back to the workspace" })).toBeTruthy();
+    // Start the case again waits in the "⋯ Case" menu, behind its confirm dialog.
+    expect(screen.queryByRole("button", { name: "Start the case again" })).toBeNull();
+    await user.click(screen.getByRole("button", { name: "Case" }));
+    await user.click(screen.getByRole("menuitem", { name: "Start the case again" }));
+    expect(await screen.findByRole("dialog", { name: "Start this case again?" })).toBeTruthy();
+  });
+
+  it("makes Change your report the one primary action while a finding isn't supported", async () => {
+    await open(
+      reportedCase(),
+      save({ phase: "debrief", pins: [invoice.ref], reportDraft: { "which-drive": "qf-lt-03" } }),
+    );
+    await screen.findByRole("heading", { name: "Your report: 0 of 3 findings supported" }, CHUNK);
+    const primary = document.querySelectorAll("article .bg-accent");
+    expect([...primary].map((node) => node.textContent)).toEqual(["Change your report"]);
+  });
+});
+
+describe("the debrief's next case", () => {
+  it("goes to the chapter's next released case, and back to the list after the last", () => {
+    expect(nextCaseFor("case-01")).toEqual({
+      href: "/cases/case-02",
+      title: "The deleted invoice",
+    });
+    expect(nextCaseFor("case-02")).toEqual({
+      href: "/cases/case-03",
+      title: "Something is still running",
+    });
+    expect(nextCaseFor("case-03")).toBeNull();
+    expect(nextCaseFor("practice")).toBeNull();
   });
 });
 

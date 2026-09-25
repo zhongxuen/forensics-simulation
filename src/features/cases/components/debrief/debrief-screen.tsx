@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { CharacterMessage } from "@/components/ui/character-message";
 import { Dialog } from "@/components/ui/dialog";
-import { CheckIcon, DownloadIcon } from "@/components/ui/icons";
+import { ArrowRightIcon, CheckIcon, DownloadIcon } from "@/components/ui/icons";
+import { Menu } from "@/components/ui/menu";
+import { Stamp } from "@/components/ui/stamp";
 import { getCastMember } from "@/content/cast";
-import { CHAPTER_ONE } from "@/content/cases/chapter";
+import { CHAPTER_ONE, isReleased } from "@/content/cases/chapter";
 import {
   MentorReviewCard,
   type MentorSession,
@@ -28,6 +30,7 @@ import {
 } from "../../grading";
 import type { CaseReportQuestion, CaseReportSpec, RunnableCase } from "../../run/case-definition";
 import type { CaseRunAction, CaseRunState } from "../../run/case-run";
+import { findCaseListing } from "../../run/catalog";
 import { caseProgress } from "../../run/evaluate";
 import { CaseText } from "../case-text";
 import { SUMMARY_QUESTION } from "../report/report-screen";
@@ -55,11 +58,25 @@ interface DebriefScreenProps {
 }
 
 /**
- * The debrief: what you did, the bonuses you found, how each report answer landed ("n of m
- * findings supported", never a number that can go down, with each answer's meaning shown once
- * it's supported), what you learned, what the client can fix, and the chain of custody in full,
- * ready to download. Never a score (99 §Banned engagement mechanics). The report can be changed
- * and submitted again from here as often as the player likes.
+ * Where the debrief's main button goes: the chapter's next case once it's released. Null after the
+ * last case, or while the next one is still being written, when the button is Back to your cases.
+ */
+export function nextCaseFor(slug: string): { href: string; title: string } | null {
+  const index = CHAPTER_ONE.cases.indexOf(slug);
+  const next = index === -1 ? undefined : CHAPTER_ONE.cases[index + 1];
+  if (next === undefined || !isReleased(next)) return null;
+  return { href: `/cases/${next}`, title: findCaseListing(next)?.title ?? next };
+}
+
+/**
+ * The debrief (UIUX.md §2.7). It leads with the moment: a "Case closed" stamp and "**n of m
+ * findings supported**" (never a score, never a number that can go down), then how each report
+ * answer landed, with its meaning shown once it's supported. Then the chain of custody in full,
+ * ready to download, the objectives in brief, what you learned and what the client can fix. One
+ * main button, the next step: Next case, or Back to your cases when there isn't one (Change your
+ * report takes its place while a finding still isn't supported). Start the case again waits in
+ * the "⋯ Case" menu, behind its confirm dialog. The report can be changed and submitted again
+ * from here as often as the player likes.
  */
 export function DebriefScreen({
   caseDef,
@@ -80,49 +97,84 @@ export function DebriefScreen({
   );
   const summary = run.reportDraft[SUMMARY_QUESTION];
   const changeReport = () => dispatch({ type: "report" });
+  const report = caseDef.report && caseDef.report.questions.length > 0 ? caseDef.report : null;
+  const findings = useMemo(
+    () =>
+      report ? gradeReport(report, reportAnswers(run.reportDraft, run.citations), run.pins) : null,
+    [report, run.reportDraft, run.citations, run.pins],
+  );
+  // While a finding isn't supported yet, Change your report is the next step, so it's the one
+  // primary button on the screen; once they all are, the next case is.
+  const reportDone = findings === null || supportedCount(findings) === findings.length;
+  const next = nextCaseFor(caseDef.slug);
+  const objectivesLine = `${done} of ${total} objectives done.${
+    extras.length > 0
+      ? ` You found ${extras.length === 1 ? "1 bonus" : `${extras.length} bonuses`} too.`
+      : ""
+  }`;
 
   return (
     <article aria-labelledby="case-debrief-title" className="mx-auto max-w-3xl">
-      <p className="text-sm font-semibold text-accent">Debrief</p>
-      <h1
-        id="case-debrief-title"
-        ref={headingRef}
-        tabIndex={-1}
-        className="mt-2 text-3xl font-semibold tracking-tight text-balance outline-none"
-      >
-        Case closed: {caseDef.title}
-      </h1>
-      <p className="mt-4 text-lg leading-8 text-secondary">
-        {done} of {total} objectives done.
-        {extras.length > 0 &&
-          ` You found ${extras.length === 1 ? "1 bonus" : `${extras.length} bonuses`} too.`}
-      </p>
+      <header className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
+        <div className="min-w-0">
+          <p className="type-eyebrow">Debrief</p>
+          <h1
+            id="case-debrief-title"
+            ref={headingRef}
+            tabIndex={-1}
+            className="mt-2 type-page-title outline-none"
+          >
+            <span className="sr-only">Case closed: </span>
+            {caseDef.title}
+          </h1>
+        </div>
+        {/* The stamp's words start the heading already, so they're read once. */}
+        <div aria-hidden="true" className="pt-1 pr-2">
+          <Stamp celebrate>Case closed</Stamp>
+        </div>
+      </header>
 
-      <ul className="mt-6 space-y-3">
-        {caseDef.objectives
-          .filter((objective) => run.completed.includes(objective.id))
-          .map((objective) => (
-            <li key={objective.id} className="flex gap-3 leading-7">
-              <CheckIcon aria-hidden="true" className="mt-1.5 size-4 shrink-0 text-reward" />
-              <span>
-                {objective.name && <span className="font-semibold">{objective.name}: </span>}
-                <CaseText text={objective.success} />
-              </span>
-            </li>
-          ))}
-      </ul>
-
-      {caseDef.report && caseDef.report.questions.length > 0 && (
-        <Findings report={caseDef.report} run={run} onChangeReport={changeReport} />
+      {report && findings ? (
+        <Findings
+          report={report}
+          findings={findings}
+          run={run}
+          onChangeReport={changeReport}
+          primary={!reportDone}
+        />
+      ) : (
+        <p className="mt-6 type-section-title">{objectivesLine}</p>
       )}
+
+      <Custody caseDef={caseDef} run={run} evidence={evidence} />
+
+      <section aria-labelledby="debrief-objectives" className="mt-10">
+        <h2 id="debrief-objectives" className="type-section-title">
+          Objectives
+        </h2>
+        {report && <p className="mt-1 type-small text-secondary">{objectivesLine}</p>}
+        <ul className="mt-3 space-y-1.5">
+          {caseDef.objectives
+            .filter((objective) => run.completed.includes(objective.id))
+            .map((objective) => (
+              <li key={objective.id} className="flex gap-2.5 type-small">
+                <CheckIcon aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-reward" />
+                <span>
+                  {objective.name && <span className="font-semibold">{objective.name}: </span>}
+                  <CaseText text={objective.success} />
+                </span>
+              </li>
+            ))}
+        </ul>
+      </section>
 
       {caseDef.debrief && (
         <>
-          <p className="mt-8 leading-7">
+          <p className="mt-10 max-w-prose type-body">
             <CaseText text={caseDef.debrief.summary} />
           </p>
           <section aria-labelledby="debrief-learned" className="mt-6">
-            <h2 id="debrief-learned" className="text-sm font-semibold tracking-wide text-secondary">
+            <h2 id="debrief-learned" className="type-eyebrow">
               What you learned
             </h2>
             <ul className="mt-2 list-disc space-y-1.5 pl-5 leading-7">
@@ -134,7 +186,7 @@ export function DebriefScreen({
             </ul>
           </section>
           <section aria-labelledby="debrief-ethics" className="mt-6">
-            <h2 id="debrief-ethics" className="text-sm font-semibold tracking-wide text-secondary">
+            <h2 id="debrief-ethics" className="type-eyebrow">
               Why this was yours to look at
             </h2>
             <p className="mt-2 leading-7">
@@ -166,7 +218,7 @@ export function DebriefScreen({
 
       {summary && (
         <section aria-labelledby="debrief-summary" className="mt-6">
-          <h2 id="debrief-summary" className="text-sm font-semibold tracking-wide text-secondary">
+          <h2 id="debrief-summary" className="type-eyebrow">
             Your summary
           </h2>
           <p className="mt-2 leading-7 whitespace-pre-wrap">{summary}</p>
@@ -185,18 +237,35 @@ export function DebriefScreen({
         </div>
       )}
 
-      <Custody caseDef={caseDef} run={run} evidence={evidence} />
-
-      <div className="mt-8 flex flex-wrap gap-3">
-        <ButtonLink href="/cases" variant="primary">
-          Back to your cases
-        </ButtonLink>
+      <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-subtle pt-6">
+        {next ? (
+          <ButtonLink
+            href={next.href}
+            variant={reportDone ? "primary" : "secondary"}
+            icon={<ArrowRightIcon />}
+          >
+            Next case: {next.title}
+          </ButtonLink>
+        ) : (
+          <ButtonLink href="/cases" variant={reportDone ? "primary" : "secondary"}>
+            Back to your cases
+          </ButtonLink>
+        )}
         <Button variant="secondary" onClick={() => dispatch({ type: "resume" })}>
           Back to the workspace
         </Button>
-        <Button variant="danger" onClick={() => setConfirmRestart(true)}>
-          Start the case again
-        </Button>
+        <Menu
+          label="Case"
+          align="start"
+          items={[
+            {
+              id: "restart",
+              label: "Start the case again",
+              tone: "danger",
+              onSelect: () => setConfirmRestart(true),
+            },
+          ]}
+        />
       </div>
 
       <Dialog
@@ -391,23 +460,43 @@ function ChoiceFeedback({ question, answer, reason }: ChoiceFeedbackProps) {
   );
 }
 
-interface FindingsProps {
-  report: CaseReportSpec;
-  run: CaseRunState;
-  onChangeReport: () => void;
+/** How far apart the findings' chips resolve, and the latest any of them starts (UIUX.md §5). */
+const CHIP_STAGGER_MS = 80;
+const CHIP_LAST_START_MS = 480;
+
+/**
+ * After a submit each finding's chip resolves in turn: it pops in 80 ms after the one before, so
+ * the whole run ends inside celebrate-long. The delay scales with --motion-scale like every other
+ * effect, so under reduced motion they're all there at once. The status word is text from the
+ * start, for screen readers and for anyone who reads ahead.
+ */
+export function chipDelay(index: number): CSSProperties {
+  const ms = Math.min(index * CHIP_STAGGER_MS, CHIP_LAST_START_MS);
+  return { animationDelay: `calc(${ms}ms * var(--motion-scale))` };
 }
 
-/** Each report answer and how it landed, with what it means once it's supported. */
-function Findings({ report, run, onChangeReport }: FindingsProps) {
-  const findings = gradeReport(report, reportAnswers(run.reportDraft, run.citations), run.pins);
+interface FindingsProps {
+  report: CaseReportSpec;
+  findings: readonly Finding[];
+  run: CaseRunState;
+  onChangeReport: () => void;
+  /** Whether Change your report is the screen's one primary button: while a finding isn't supported. */
+  primary: boolean;
+}
+
+/** "n of m findings supported", then each report answer and how it landed. */
+function Findings({ report, findings, run, onChangeReport, primary }: FindingsProps) {
   const supported = supportedCount(findings);
   const total = report.questions.length;
+  const count = `${supported} of ${total} ${total === 1 ? "finding" : "findings"} supported`;
   return (
-    <section aria-labelledby="debrief-findings" className="mt-8">
-      <h2 id="debrief-findings" className="text-xl font-semibold">
-        Your report: {supported} of {total} {total === 1 ? "finding" : "findings"} supported
+    <section aria-labelledby="debrief-findings" className="mt-6">
+      {/* Named in one piece: browsers disagree on the spaces between a heading's block parts. */}
+      <h2 id="debrief-findings" aria-label={`Your report: ${count}`}>
+        <span className="block type-eyebrow">Your report</span>
+        <span className="mt-1 block type-page-title">{count}</span>
       </h2>
-      <ol className="mt-4 space-y-4">
+      <ol className="mt-6 space-y-4">
         {report.questions.map((question, index) => {
           const finding = findings[index];
           if (!finding) return null;
@@ -419,8 +508,12 @@ function Findings({ report, run, onChangeReport }: FindingsProps) {
               className="rounded-lg border border-subtle bg-surface-raised px-4 py-3"
             >
               <div className="flex flex-wrap items-start justify-between gap-2">
-                <p className="leading-7 font-semibold">{question.ask}</p>
-                <Badge tone={badge.tone}>{badge.label}</Badge>
+                <p className="leading-7 font-semibold">
+                  <span className="text-secondary">{index + 1}.</span> {question.ask}
+                </p>
+                <span className="inline-flex animate-pop" style={chipDelay(index)}>
+                  <Badge tone={badge.tone}>{badge.label}</Badge>
+                </span>
               </div>
               <p className="mt-1 leading-7 text-secondary">
                 You wrote: {answer ? <span className="text-primary">{answer}</span> : "nothing yet"}
@@ -447,7 +540,7 @@ function Findings({ report, run, onChangeReport }: FindingsProps) {
         })}
       </ol>
       <div className="mt-4 flex flex-wrap gap-3">
-        <Button variant={supported < total ? "primary" : "secondary"} onClick={onChangeReport}>
+        <Button variant={primary ? "primary" : "secondary"} onClick={onChangeReport}>
           Change your report
         </Button>
       </div>
@@ -488,8 +581,8 @@ function Custody({ caseDef, run, evidence }: CustodyProps) {
     URL.revokeObjectURL(url);
   };
   return (
-    <section aria-labelledby="debrief-custody" className="mt-8">
-      <h2 id="debrief-custody" className="text-xl font-semibold">
+    <section aria-labelledby="debrief-custody" className="mt-10">
+      <h2 id="debrief-custody" className="type-section-title">
         Your chain of custody
       </h2>
       <p className="mt-2 leading-7 text-secondary">

@@ -1,11 +1,12 @@
 "use client";
 
 import { useId, useMemo, type RefObject } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FOCUS_RING } from "@/components/ui/focus-ring";
 import { MAX_DRAFT_LENGTH } from "@/lib/case-storage";
 import { cx } from "@/lib/cx";
-import { boardCards, type BoardCard } from "@/features/case-board";
+import { boardCards, type BoardCard, type CardSource } from "@/features/case-board";
 import type { EvidenceSet } from "@/sim/types";
 import type { CaseReportQuestion, RunnableCase } from "../../run/case-definition";
 import type { CaseRunAction, CaseRunState } from "../../run/case-run";
@@ -32,12 +33,14 @@ const FIELD = cx(
 );
 
 /**
- * The report (docs/plan/10-case-board-report-custody.md §Report): the case's questions, each with
- * the control its kind of answer needs and a **Supporting evidence** picker that lists what's on
- * the board, then a free summary for the client. Answers are graded on the debrief: an answer is
- * supported only when something it cites proves it. Nothing is marked down: come back, pin, cite,
- * change an answer and submit again as often as you like. A case with no questions (the practice
- * case) is the summary alone.
+ * The report (docs/plan/10-case-board-report-custody.md §Report, UIUX.md §2.7): the case's
+ * questions, numbered, each with the control its kind of answer needs and a **Supporting
+ * evidence** picker that shows what's on the board as pin cards, then a free summary for the
+ * client. A sticky bar keeps Submit in reach, with how far through the report the player is ("2 of
+ * 3 answered, 1 with evidence"): what's filled in, never whether it's right. Answers are graded on
+ * the debrief: an answer is supported only when something it cites proves it. Nothing is marked
+ * down: come back, pin, cite, change an answer and submit again as often as you like. A case with
+ * no questions (the practice case) is the summary alone.
  */
 export function ReportScreen({ caseDef, run, dispatch, evidence, headingRef }: ReportScreenProps) {
   const id = useId();
@@ -47,60 +50,80 @@ export function ReportScreen({ caseDef, run, dispatch, evidence, headingRef }: R
     () => boardCards(run.pins, run.events, evidence, run.pinNotes),
     [run.pins, run.events, evidence, run.pinNotes],
   );
+  const progress = reportProgress(questions, run.reportDraft, run.citations, cards);
 
   return (
     <article aria-labelledby={`${id}-title`} className="mx-auto max-w-3xl">
-      <p className="text-sm font-semibold text-accent">Report</p>
+      <p className="type-eyebrow">Report</p>
       <h1
         id={`${id}-title`}
         ref={headingRef}
         tabIndex={-1}
-        className="mt-2 text-3xl font-semibold tracking-tight text-balance outline-none"
+        className="mt-2 type-page-title outline-none"
       >
         Your report for {caseDef.client.org}
       </h1>
       {questions.length > 0 ? (
-        <p className="mt-4 leading-7 text-secondary">
+        <p className="mt-4 max-w-prose type-body text-secondary">
           Answer each question from what you found, then tick the pinned evidence that shows it. An
           answer counts as <em>supported</em> when something you cite proves it, so the next person
           can check it without taking your word for it. You&apos;ll see how each one landed on the
           next screen, and you can come back, change it and submit again as often as you like.
         </p>
       ) : (
-        <p className="mt-4 leading-7 text-secondary">
+        <p className="mt-4 max-w-prose type-body text-secondary">
           Write a short summary for the client: what happened, and what they should fix.
         </p>
       )}
 
       {questions.length > 0 && cards.length === 0 && (
-        <p className="mt-6 rounded-lg border border-subtle bg-surface-raised px-4 py-3 leading-7 text-secondary">
+        <p className="mt-6 rounded-lg border border-subtle bg-surface-raised px-4 py-3 type-body text-secondary">
           Nothing is pinned yet, so no answer can point at evidence. Go back to the workspace and
           use <code className="font-mono">pin</code> after a command that shows a record.
         </p>
       )}
 
       {questions.length > 0 && (
-        <ol className="mt-8 space-y-10">
-          {questions.map((question, index) => (
-            <li key={question.id} className="space-y-4">
-              <QuestionField
-                question={question}
-                number={index + 1}
-                value={run.reportDraft[question.id] ?? ""}
-                cards={cards}
-                onChange={(text) => draft(question.id, text)}
-              />
-              <EvidencePicker
-                cards={cards}
-                cited={run.citations[question.id] ?? []}
-                onChange={(refs) => dispatch({ type: "cite", questionId: question.id, refs })}
-              />
-            </li>
-          ))}
+        <ol className="mt-8 space-y-6">
+          {questions.map((question, index) => {
+            const value = run.reportDraft[question.id] ?? "";
+            const cited = run.citations[question.id] ?? [];
+            return (
+              <li
+                key={question.id}
+                className="rounded-xl border border-subtle bg-surface-raised p-4 sm:p-5"
+              >
+                <div className="flex gap-3 sm:gap-4">
+                  <span
+                    aria-hidden="true"
+                    className="grid size-8 shrink-0 place-items-center rounded-full border-2 border-strong type-small font-semibold text-secondary"
+                  >
+                    {index + 1}
+                  </span>
+                  <div className="min-w-0 flex-1 space-y-4">
+                    <QuestionField
+                      question={question}
+                      value={value}
+                      cards={cards}
+                      onChange={(text) => draft(question.id, text)}
+                    />
+                    <EvidencePicker
+                      cards={cards}
+                      cited={cited}
+                      onChange={(refs) => dispatch({ type: "cite", questionId: question.id, refs })}
+                    />
+                    <p className="type-small text-muted">
+                      {questionState(value, citedOnBoard(cited, cards))}
+                    </p>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
         </ol>
       )}
 
-      <label htmlFor={`${id}-summary`} className="mt-10 block font-semibold">
+      <label htmlFor={`${id}-summary`} className="mt-10 block type-body font-semibold">
         {questions.length > 0 ? "Anything else for the client (optional)" : "Your summary"}
       </label>
       <textarea
@@ -112,35 +135,86 @@ export function ReportScreen({ caseDef, run, dispatch, evidence, headingRef }: R
         className={FIELD}
       />
 
-      <div className="mt-6 flex flex-wrap gap-3">
-        <Button variant="primary" onClick={() => dispatch({ type: "submitReport" })}>
-          Submit report
-        </Button>
-        <Button variant="secondary" onClick={() => dispatch({ type: "resume" })}>
-          Back to the workspace
-        </Button>
+      {/* Submit stays in reach however far down the report the player has scrolled. */}
+      <div className="sticky bottom-0 z-10 -mx-4 mt-8 border-t border-subtle bg-surface-base/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm sm:mx-0 sm:rounded-t-lg sm:px-5">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <Button variant="primary" onClick={() => dispatch({ type: "submitReport" })}>
+            Submit report
+          </Button>
+          <Button variant="secondary" onClick={() => dispatch({ type: "resume" })}>
+            Back to the workspace
+          </Button>
+          {questions.length > 0 && (
+            <p role="status" className="type-small text-secondary sm:ml-2">
+              {progressLine(progress)}
+            </p>
+          )}
+        </div>
       </div>
     </article>
   );
 }
 
+export interface ReportProgress {
+  readonly answered: number;
+  readonly withEvidence: number;
+  readonly total: number;
+}
+
+/**
+ * How far through the report the player is: the questions with an answer written, and how many of
+ * those cite something still on the board. It counts what's filled in, never whether it's right:
+ * that's the debrief's job, after Submit.
+ */
+export function reportProgress(
+  questions: readonly Pick<CaseReportQuestion, "id">[],
+  draft: Readonly<Record<string, string>>,
+  citations: Readonly<Record<string, readonly string[]>>,
+  cards: readonly Pick<BoardCard, "ref">[],
+): ReportProgress {
+  let answered = 0;
+  let withEvidence = 0;
+  for (const question of questions) {
+    if (!(draft[question.id] ?? "").trim()) continue;
+    answered += 1;
+    if (citedOnBoard(citations[question.id] ?? [], cards) > 0) withEvidence += 1;
+  }
+  return { answered, withEvidence, total: questions.length };
+}
+
+/** "2 of 3 answered, 1 with evidence". */
+export function progressLine({ answered, withEvidence, total }: ReportProgress): string {
+  return `${answered} of ${total} answered, ${withEvidence} with evidence`;
+}
+
+/** How many of an answer's citations are still on the board: a removed pin can't be cited. */
+function citedOnBoard(cited: readonly string[], cards: readonly Pick<BoardCard, "ref">[]): number {
+  return cited.filter((ref) => cards.some((card) => card.ref === ref)).length;
+}
+
+/** One question's line under its picker: what's filled in so far, never whether it's right. */
+function questionState(value: string, cited: number): string {
+  const evidence = cited === 0 ? "nothing cited yet" : `${cited} cited`;
+  return `${value.trim() ? "Answered" : "Not answered yet"} · ${evidence}`;
+}
+
 interface QuestionFieldProps {
   question: CaseReportQuestion;
-  number: number;
   value: string;
   cards: readonly BoardCard[];
   onChange: (text: string) => void;
 }
 
 /** One question, with the control its kind of answer needs. */
-function QuestionField({ question, number, value, cards, onChange }: QuestionFieldProps) {
+function QuestionField({ question, value, cards, onChange }: QuestionFieldProps) {
   const id = useId();
-  const label = `${number}. ${question.ask}`;
+  const label = question.ask;
+  const labelClass = "block pt-0.5 type-body font-semibold text-pretty";
 
   if (question.type === "choice" && question.choices) {
     return (
       <fieldset>
-        <legend className="leading-7 font-semibold">{label}</legend>
+        <legend className={labelClass}>{label}</legend>
         <div className="mt-3 space-y-2">
           {question.choices.map((choice) => (
             <label
@@ -174,7 +248,7 @@ function QuestionField({ question, number, value, cards, onChange }: QuestionFie
   if (question.type === "evidence-pick") {
     return (
       <div>
-        <label htmlFor={id} className="block leading-7 font-semibold">
+        <label htmlFor={id} className={labelClass}>
           {label}
         </label>
         <select
@@ -205,11 +279,11 @@ function QuestionField({ question, number, value, cards, onChange }: QuestionFie
   const times = timestamp ? cards.filter((card) => card.utc !== undefined) : [];
   return (
     <div>
-      <label htmlFor={id} className="block leading-7 font-semibold">
+      <label htmlFor={id} className={labelClass}>
         {label}
       </label>
       {help && (
-        <p id={`${id}-help`} className="mt-1 text-sm leading-6 text-secondary">
+        <p id={`${id}-help`} className="mt-1 type-small text-secondary">
           {help}
         </p>
       )}
@@ -245,13 +319,24 @@ function QuestionField({ question, number, value, cards, onChange }: QuestionFie
   );
 }
 
+/** A pin's source, as the Case Board names it. */
+const SOURCE_LABEL: Readonly<Record<CardSource, string>> = {
+  disk: "Disk",
+  memory: "Memory",
+  log: "Log",
+};
+
 interface EvidencePickerProps {
   cards: readonly BoardCard[];
   cited: readonly string[];
   onChange: (refs: string[]) => void;
 }
 
-/** The pins an answer cites. It lists what's on the board and nothing else. */
+/**
+ * The pins an answer cites, as cards like the Board's: source, what it is, its ref and note. Each
+ * card is a checkbox (a native one, visually hidden inside its label), so Tab reaches each pin and
+ * Space ticks it. It lists what's on the board and nothing else.
+ */
 function EvidencePicker({ cards, cited, onChange }: EvidencePickerProps) {
   const toggle = (ref: string, on: boolean) =>
     onChange(
@@ -260,29 +345,65 @@ function EvidencePicker({ cards, cited, onChange }: EvidencePickerProps) {
         : cited.filter((item) => item !== ref),
     );
   return (
-    <fieldset className="rounded-lg border border-subtle px-4 pt-2 pb-3">
-      <legend className="px-1 text-sm font-semibold">Supporting evidence</legend>
+    <fieldset>
+      <legend className="type-eyebrow">Supporting evidence</legend>
       {cards.length === 0 ? (
-        <p className="text-sm leading-6 text-secondary">
+        <p className="mt-2 type-small text-secondary">
           Pinned items show up here to cite. You haven&apos;t pinned anything yet.
         </p>
       ) : (
-        <ul className="space-y-1.5">
+        <ul className="mt-2 grid gap-2 sm:grid-cols-2">
           {cards.map((card) => (
-            <li key={card.ref}>
-              <label className="flex cursor-pointer items-start gap-3 rounded-md px-2 py-1.5 hover:bg-surface-overlay">
+            <li key={card.ref} className="min-w-0">
+              <label
+                className={cx(
+                  "flex h-full cursor-pointer items-start gap-3 rounded-lg border border-subtle bg-surface-base px-3 py-2.5 hover:border-strong",
+                  // A tint under this much small text would cost it contrast: a ticked card gets
+                  // an amber edge instead.
+                  "has-checked:border-accent has-checked:shadow-[inset_0_0_0_1px_var(--accent)]",
+                  LABEL_FOCUS_RING,
+                )}
+              >
                 <input
                   type="checkbox"
                   checked={cited.includes(card.ref)}
                   onChange={(event) => toggle(card.ref, event.target.checked)}
-                  className="mt-1.5 size-4 shrink-0 accent-accent"
+                  className="peer sr-only"
                 />
-                <span className="min-w-0 leading-7">
-                  <span className="font-mono text-sm break-all">{card.title}</span>
-                  <span className="block text-xs text-muted">
-                    {card.ref}
-                    {card.note && ` · ${card.note}`}
+                <span
+                  aria-hidden="true"
+                  className="mt-0.5 grid size-4.5 shrink-0 place-items-center rounded-sm border-2 border-strong text-surface-base peer-checked:border-accent peer-checked:bg-accent"
+                >
+                  <svg
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={cx("size-3", !cited.includes(card.ref) && "invisible")}
+                  >
+                    <path d="M3.5 8.5 6.5 11.5 12.5 5" />
+                  </svg>
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex flex-wrap items-center gap-1.5">
+                    <Badge>{SOURCE_LABEL[card.source]}</Badge>
+                    <Badge tone="evidence-tag" className="min-w-0">
+                      {card.ref}
+                    </Badge>
                   </span>
+                  <span className="mt-1.5 block type-data font-semibold break-all">
+                    {card.title}
+                  </span>
+                  {card.utc && (
+                    <span className="block type-small text-secondary">
+                      {card.timeLabel} <span className="type-data">{card.utc}</span>
+                    </span>
+                  )}
+                  {card.note && (
+                    <span className="mt-0.5 block type-small text-secondary">{card.note}</span>
+                  )}
                 </span>
               </label>
             </li>

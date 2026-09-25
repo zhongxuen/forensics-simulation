@@ -122,6 +122,10 @@ async function playCaseOne(page: Page) {
   await expect(
     page.getByRole("heading", { level: 1, name: /Your report for Quillfen/ }),
   ).toBeFocused();
+  // Submit stays in reach at the foot of the screen, with how far through the report you are.
+  const progress = page.getByRole("status").filter({ hasText: /answered/ });
+  await expect(progress).toHaveText("0 of 3 answered, 0 with evidence");
+  await expect(page.getByRole("button", { name: "Submit report" })).toBeInViewport();
   for (const choice of [
     "Yes — its SHA-256 is the SHA-256 on the handover form",
     "SHA-256, because that is the hash written on the handover form",
@@ -138,6 +142,11 @@ async function playCaseOne(page: Page) {
   const pickers = page.getByRole("group", { name: "Supporting evidence" });
   await expect(pickers).toHaveCount(3);
   for (const index of [0, 1]) await cite(page, pickers.nth(index));
+  await expect(progress).toHaveText("3 of 3 answered, 2 with evidence");
+  // Each pin is a card that says where it came from.
+  await expect(
+    pickers.nth(2).getByRole("checkbox", { name: /^Disk disk:qf-lt-03:.*the-door-was-open\.txt/ }),
+  ).not.toBeChecked();
   expect(await seriousViolations(page)).toEqual([]);
 
   await activate(page.getByRole("button", { name: "Submit report" }));
@@ -161,10 +170,27 @@ async function playCaseOne(page: Page) {
     page.getByRole("heading", { name: "Your report: 3 of 3 findings supported" }),
   ).toBeVisible();
   await expect(page.getByRole("heading", { level: 1, name: /Case closed/ })).toBeFocused();
+  // Each status is a word, never colour alone.
+  await expect(page.getByText("Supported", { exact: true })).toHaveCount(3);
   // Hashed before anything opened the drive: the chain of custody's bonus.
   await expect(page.getByText("Fingerprint First:", { exact: false })).toBeVisible();
   await expect(page.getByText("Submitted the report: 3 of 3 findings supported.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Download the custody record" })).toBeVisible();
   expect(await seriousViolations(page)).toEqual([]);
+  // Nothing on the debrief is wider than the screen, the phone's included.
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+
+  // One next step: Case 2. Starting again waits in the "⋯ Case" menu, behind its confirm dialog.
+  await expect(page.getByRole("button", { name: "Start the case again" })).toHaveCount(0);
+  const menu = page.getByRole("button", { name: "Case", exact: true });
+  await menu.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("menuitem", { name: "Start the case again" })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(menu).toBeFocused();
+  await activate(page.getByRole("link", { name: "Next case: The deleted invoice" }));
+  await expect(page).toHaveURL(/\/cases\/case-02$/);
+  await expect(page.getByRole("heading", { level: 1, name: "The deleted invoice" })).toBeVisible();
 }
 
 test("Case 1 from the landing page to the debrief, keyboard only", async ({ page }) => {
@@ -176,8 +202,6 @@ test.describe("on a 360 px phone", () => {
 
   test("Case 1 can be finished, keyboard only", async ({ page }) => {
     await playCaseOne(page);
-    // Nothing on the debrief is wider than the screen.
-    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   });
 });
 
