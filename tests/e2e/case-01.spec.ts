@@ -1,11 +1,11 @@
-import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { prompt } from "./helpers";
+import { activate, horizontalOverflow, seriousViolations, showView, type } from "./keyboard";
 
 /**
  * Case 1, "The clean copy", end to end from the landing page, **keyboard only**: nothing here
- * clicks. Focus moves with Tab, `focus()` on the thing a keyboard user would Tab to, and keys. It
- * is the "Case 1 only" release's promise (docs/plan/15-quality-and-launch.md §Quality checklist):
+ * clicks (the steps are in keyboard.ts). It was the "Case 1 only" release's promise, and is the
+ * first of the three (docs/plan/15-quality-and-launch.md §Quality checklist):
  * a visitor with no account lands, opens Case 1, copies the drive, proves the copy, pins the note,
  * and writes a report whose every answer is supported. On the way it submits once with an answer
  * that cites nothing, sees "Needs evidence", cites the pin and submits again
@@ -16,54 +16,6 @@ import { prompt } from "./helpers";
  * open (the Board and the chain of custody included), the report and the debrief.
  */
 
-async function seriousViolations(page: Page) {
-  // A line that is still fading in would be measured at part opacity: wait for it to arrive.
-  await page.waitForFunction(() =>
-    document.getAnimations().every((animation) => animation.playState !== "running"),
-  );
-  const results = await new AxeBuilder({ page })
-    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"])
-    .analyze();
-  return results.violations
-    .filter((violation) => violation.impact === "serious" || violation.impact === "critical")
-    .map((violation) => ({
-      rule: violation.id,
-      impact: violation.impact,
-      where: violation.nodes.slice(0, 5).map((node) => node.target.join(" ")),
-    }));
-}
-
-/** Presses Enter on something a keyboard user has reached. */
-async function activate(target: Locator) {
-  await target.focus();
-  await expect(target).toBeFocused();
-  await target.press("Enter");
-}
-
-/** Types a command at the prompt with the keyboard, and waits for its output. */
-async function type(page: Page, command: string): Promise<Locator> {
-  await showView(page, "Terminal");
-  const input = prompt(page);
-  await input.focus();
-  await page.keyboard.type(command);
-  await page.keyboard.press("Enter");
-  const block = page.getByRole("region", { name: `Command: ${command}` }).last();
-  await expect(block).toBeVisible();
-  return block;
-}
-
-/**
- * Shows a workspace view: a tab on the right on a desktop, or one of the tabs above everything on
- * a phone (where the terminal is a tab too). On a desktop the terminal is always showing.
- */
-async function showView(page: Page, name: string) {
-  const tab = page.getByRole("tab", { name, exact: true });
-  if ((await tab.count()) === 0) return;
-  if ((await tab.getAttribute("aria-selected")) === "true") return;
-  await activate(tab);
-  await expect(tab).toHaveAttribute("aria-selected", "true");
-}
-
 /** Ticks the pinned note's record in one answer's Supporting evidence, with the keyboard. */
 async function cite(page: Page, picker: Locator) {
   const box = picker.getByRole("checkbox", { name: /the-door-was-open\.txt/ });
@@ -72,10 +24,15 @@ async function cite(page: Page, picker: Locator) {
   await expect(box).toBeChecked();
 }
 
+// A whole case with axe on every screen: more than the default minute on a busy machine.
+test.setTimeout(180_000);
+
 async function playCaseOne(page: Page) {
   await page.goto("/");
   await expect(page.getByText("SIMULATED: every piece of evidence is made up.")).toBeVisible();
-  await expect(page.getByText("Cases 2 and 3 are still being written.")).toBeVisible();
+  // The whole chapter is out (prompt 15B.1): three cases, and nothing still being written.
+  await expect(page.getByText(/Three cases at one made-up haulage yard/)).toBeVisible();
+  await expect(page.getByText(/still being written/)).toHaveCount(0);
   expect(await seriousViolations(page)).toEqual([]);
 
   await activate(page.getByRole("link", { name: "Open Case 1" }));
@@ -192,24 +149,28 @@ test.describe("on a 360 px phone", () => {
   test("Case 1 can be finished, keyboard only", async ({ page }) => {
     await playCaseOne(page);
     // Nothing on the debrief is wider than the screen.
-    const overflow = await page.evaluate(
-      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-    );
-    expect(overflow).toBeLessThanOrEqual(0);
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   });
 });
 
-test("/cases lists Case 1 and the practice case, not the cases still being written", async ({
-  page,
-}) => {
+test("/cases lists all three cases, in chapter order, and the practice case", async ({ page }) => {
   await page.goto("/cases");
   const main = page.getByRole("main");
-  await expect(main.getByRole("link", { name: /The clean copy/ })).toBeVisible();
-  await expect(main.getByText("The deleted invoice")).toHaveCount(0);
-  await expect(main.getByText("Something is still running")).toHaveCount(0);
-  // Their pages stay, so a link or a save that points at one still lands somewhere.
-  const response = await page.goto("/cases/case-02");
-  expect(response?.status()).toBe(200);
+  const titles = ["The clean copy", "The deleted invoice", "Something is still running"];
+  for (const title of titles) {
+    await expect(main.getByRole("link", { name: new RegExp(title) })).toBeVisible();
+  }
+  const order = await main
+    .getByRole("link")
+    .evaluateAll(
+      (links, wanted) =>
+        links
+          .map((link) => wanted.findIndex((title) => link.textContent?.includes(title)))
+          .filter((index) => index !== -1),
+      titles,
+    );
+  expect(order).toEqual([0, 1, 2]);
+  expect(await seriousViolations(page)).toEqual([]);
 });
 
 test("reduced motion: Case 1 opens and plays with motion turned off", async ({ page }) => {

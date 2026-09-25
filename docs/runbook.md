@@ -1,6 +1,6 @@
 # Runbook: Candlewright: Incident Room
 
-How the site is deployed, what it needs, how to take a release back, and how to run a playtest. Written for the "Case 1 only" release (`docs/plan/15-quality-and-launch.md`, part A, 2026-09-24). Part B (15B.1) updates it for the full launch.
+How the site is deployed, what it needs, how to take a release back, and how to run a playtest. Written for the "Case 1 only" release (`docs/plan/15-quality-and-launch.md`, part A, 2026-09-24), and updated for the full launch (part B, prompt 15B.1, 2026-09-25): all three cases released, and the sandbox.
 
 The operations sections follow Hacker Simulation's runbook (`../hacker-simulation/md-files/remaining.md`, "Operations runbook" and "Playtest kit"), because the two sites share an engine, a posture and an owner.
 
@@ -73,7 +73,7 @@ curl -sI https://forensics-simulation.vercel.app/ | grep -iE "content-security-p
 E2E_BASE_URL=https://forensics-simulation.vercel.app pnpm test:e2e
 ```
 
-What CI checks on every push (`.github/workflows/ci.yml`): lint, types, format, the dependency audit, unit, content and component tests, `evidence:check`, `case:validate --strict`, coverage gates, the production build, `bundle:check`, `security:bundle`, and the Playwright suite (axe on every route, Case 1 keyboard-only on a desktop and a 360 px phone, reduced motion, security headers).
+What CI checks on every push (`.github/workflows/ci.yml`): lint, types, format, the dependency audit, unit, content and component tests, `evidence:check`, `case:validate --strict`, coverage gates, the production build, `bundle:check`, `security:bundle`, and the Playwright suite (axe on every route and on the sandbox terminal in each of its five colour themes, all three cases keyboard-only on a desktop and a 360 px phone with axe on every screen, reduced motion, security headers).
 
 `pnpm perf:vitals` isn't in CI (it needs a quiet machine). Run it before a release against `pnpm build && pnpm start`.
 
@@ -101,6 +101,18 @@ These need a dashboard or a person. Tick them here as they're done.
 - [ ] Screen reader pass (§7) and the playtests (§7)
 - [ ] Add the firewall rule (§3) — **due**: the mentor shipped with plan file 14
 
+## 6b. Owner steps for the full launch (15B.1)
+
+Everything a machine can check passed on 2026-09-25 (§8), except the INP budget in `pnpm perf:vitals`, which is written up below. These need a person or a dashboard:
+
+- [ ] **Merge to `main`**. The work is on `learning-13.2` (waves 4 and 5 merged into it, then Case 3 and 15B.1). Open a PR to `main`, let CI go green, merge. Vercel deploys production from `main`
+- [ ] **Smoke-test production** (§4): headers with `curl`, then `E2E_BASE_URL=https://forensics-simulation.vercel.app pnpm test:e2e`, and write the result in §8
+- [ ] **Screen reader pass** (§7), now through all three cases' first five minutes and the sandbox
+- [ ] **Playtests** (§7): three people with no security background play Case 1, and one of them plays all three. Record stuck points and fixes in §8
+- [ ] **INP on a quiet machine or a real phone.** `perf:vitals` measured `/cases` and `/cases/case-01` over the 200 ms budget on this laptop (§8). Run it again on a quiet machine; if it still fails, look at Speed Insights' real-visitor INP after a week of traffic before deciding what to change. What was found is in "Known limits" below
+- [ ] **Firewall rule** (§3), still due: the mentor is live
+- [ ] Optional: add `ANTHROPIC_API_KEY` (§2). The game is complete without it
+
 ## 7. What a machine can't check
 
 ### Screen reader pass
@@ -114,6 +126,11 @@ NVDA (Windows) or VoiceOver (macOS), about an hour, through Case 1's first five 
 - [ ] An objective ticking is announced, and a hint can be opened and read
 - [ ] `pin` says what was pinned. The report's radio groups and the time field read with their question
 - [ ] The debrief's "n of m findings supported" is reached and read
+- [ ] Case 2: the owner's message and the door log read as documents; a report question's Supporting evidence checkboxes read with the pin's note
+- [ ] Case 2: after a choice-beat answer, Noor's line on the debrief says who is speaking, and "Change your report" is reached
+- [ ] Case 3: the Evidence Browser's Processes table reads its caption, column headers and the "In active list?" column
+- [ ] Case 3: the "Which process is the problem?" picker reads each board item; the chapter closing on the debrief reads Idris's line and says the Hacker Simulation link opens in a new tab
+- [ ] Sandbox: the heading says there are no goals, and "Try this first" and the cheat sheet are reachable after the terminal
 
 ### Playtest kit
 
@@ -144,11 +161,17 @@ NVDA (Windows) or VoiceOver (macOS), about an hour, through Case 1's first five 
 | 2026-09-24 | Released. `main` pushed, CI green, production public. Smoke test against production: every route 200 (`/styleguide` 404), CSP without `unsafe-eval`, HSTS, `X-Frame-Options`, no `set-cookie`, and all 43 Playwright tests passed with `E2E_BASE_URL` set to production. "CI passed" required on `main`, Web Analytics and Speed Insights on |
 | 2026-09-24 | Rollback rehearsed: Instant Rollback from 15A.1 (`dpl_Hv58…`) to 02.2 (`dpl_3PNw…`), then Promote back to 15A.1. "Open Case 1" back on `/` afterwards |
 | —          | Automatic promotion confirmed on (the next merge to `main` goes live without a Promote)                                                                                                                                                                                                                                                                                                                                                                        |
+| 2026-09-25 | Full launch prepared (15B.1), on `learning-13.2` after merging 11.1 (Case 2) and 14.1 (the mentor) and building 12.1 (Case 3). Machine-checked: lint, types, format, 145 Vitest files (2,490 tests), `evidence:check` (4 cases, 3 practice stories, the sandbox), `case:validate --strict`, coverage gates, `bundle:check` (largest page 185.7 KB), `security:bundle`, Playwright 74 of 74 (axe on every route and the sandbox terminal in all five colour themes, Cases 1–3 keyboard-only on desktop and 360 px, reduced motion, headers). `perf:vitals` (throttled phone, median of 3): `/` LCP 1164 ms, INP 80 ms, CLS 0.016; `/cases` 1492 ms, **336 ms**, 0; `/cases/case-01` 1408 ms, **224 ms**, 0. **INP is over budget on two pages** (see Known limits) |
 | —          | Screen reader pass                                                                                                                                                                                                                                                                                                                                                                        |
 | —          | Playtests (P1–P3)                                                                                                                                                                                                                                                                                                                                                                         |
 
 ### Known limits of this release
 
-- The app has one colour theme (dark) in v1, so "axe in light and dark" is one pass. The terminal's five colour themes are contrast-audited by `tests/unit/terminal-themes.test.ts`.
-- Case 1's report questions can only point at the note's record: there is no ref for "this image's hash" until file 10's custody log (recorded in `src/content/cases/case-01.yaml`).
-- The workspace's Timeline and Board tabs are empty states until files 09 and 10.
+- The app has one colour theme (dark) in v1, so "axe in light and dark" is one pass over the site, plus a pass over the sandbox terminal in each of its five colour themes (`tests/e2e/a11y.spec.ts`), which `tests/unit/terminal-themes.test.ts` also contrast-audits.
+- Case 1's report questions can only point at the note's record: there is no ref for "this image's hash" (recorded in `src/content/cases/case-01.yaml`).
+- **INP over budget in `perf:vitals`** (4× CPU, 2026-09-25). It was already over before today's work: the commit before 11.1 and 14.1 were merged measured `/cases` 256 ms and `/cases/case-01` 496 ms, against 160 and 192 ms at the 15A release. Two causes were found:
+  1. **A key pressed before hydration has finished.** The script presses Tab as soon as the network is idle, and React then hydrates synchronously inside that keydown (up to about 460 ms on the case page). A `<Suspense>` boundary around the page content in `AppShell` now lets the page hydrate on its own, which took `/cases/case-01` from 496 to 224 ms. On `/cases` the key lands in the shell itself, so it still waits.
+  2. **Opening the ⌘K palette** costs 140–220 ms throttled, nearly all of it in `dialog.showModal()`: the whole page's style is recalculated (a modal dialog makes everything else inert). Selector cost is small (Chrome's selector stats), and removing the `:has()` and forced-state rules made no reliable difference.
+  Next steps, if a quiet-machine run and Speed Insights agree: hydrate less in the shell (render the palette's dialog body only once it is first opened), and consider a non-modal palette with its own focus trap.
+- The sandbox hands over five log sources: no story action writes `vpn` yet (`src/content/cases/sandbox.yaml`).
+- Case 3's two choice beats are report questions (the runner has no in-workspace choice yet), as Case 2's is. Case 3's header comment says so.

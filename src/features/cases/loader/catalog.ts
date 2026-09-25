@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { Case } from "@/content/cases/schema";
+import { SANDBOX_FILE, type Case } from "@/content/cases/schema";
 import {
   CASE_FILE_EXTENSION,
   CaseSourceError,
@@ -69,7 +69,8 @@ export function loadCaseCatalog(dir: string = CASES_DIR): CaseCatalog {
   }
   return buildCaseCatalog(
     names
-      .filter((name) => name.endsWith(CASE_FILE_EXTENSION))
+      // The sandbox is written like a case but isn't one (loader/sandbox.ts).
+      .filter((name) => name.endsWith(CASE_FILE_EXTENSION) && name !== SANDBOX_FILE)
       .map((fileName) => ({
         fileName,
         case: parseCaseSource(readFileSync(join(dir, fileName), "utf8"), fileName),

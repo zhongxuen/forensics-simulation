@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { CHAPTER_ONE } from "@/content/cases/chapter";
 import {
+  CHAPTER_LENGTH,
   DISCLAIMERS,
   HACKER_SIMULATION_URL,
   PITCH,
@@ -12,7 +13,13 @@ import { findBannedWords } from "@/content/voice";
 
 describe("the landing page's promises", () => {
   it("follow the voice rules", () => {
-    for (const line of [PITCH, SIMULATED_LINE, ...DISCLAIMERS, stillBeingWritten() ?? ""]) {
+    for (const line of [
+      PITCH,
+      SIMULATED_LINE,
+      CHAPTER_LENGTH,
+      ...DISCLAIMERS,
+      stillBeingWritten() ?? "",
+    ]) {
       expect(findBannedWords(line), line).toEqual([]);
     }
   });
@@ -29,5 +36,12 @@ describe("the landing page's promises", () => {
 
   it("link the same Hacker Simulation the lessons do", () => {
     expect(HACKER_SIMULATION_LEARN_URL.startsWith(`${HACKER_SIMULATION_URL}/`)).toBe(true);
+    // The chapter's closing points at Hacker Simulation's Chapter 2, on the same site.
+    expect(CHAPTER_ONE.upNext.href.startsWith(`${HACKER_SIMULATION_URL}/`)).toBe(true);
+  });
+
+  it("release the whole chapter (prompt 15B.1), so nothing is still being written", () => {
+    expect(CHAPTER_ONE.cases.every((id) => CHAPTER_ONE.released[id] === true)).toBe(true);
+    expect(stillBeingWritten()).toBeUndefined();
   });
 });

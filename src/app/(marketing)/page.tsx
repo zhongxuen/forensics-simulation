@@ -4,6 +4,7 @@ import { FOCUS_RING } from "@/components/ui/focus-ring";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import { SimulatedBadge } from "@/components/ui/simulated-badge";
 import {
+  CHAPTER_LENGTH,
   DISCLAIMERS,
   HACKER_SIMULATION_URL,
   PITCH,
@@ -44,8 +45,8 @@ export default function HomePage() {
           {FIRST_STEP.title}
         </ButtonLink>
         <p className="text-base leading-7 text-secondary">
-          Case 1 takes about 15 minutes. No sign-up, nothing to install, and your work is saved in
-          this browser only.{" "}
+          {CHAPTER_LENGTH} No sign-up, nothing to install, and your work is saved in this browser
+          only.{" "}
           <Link href="/privacy" className={LINK}>
             What we store
           </Link>

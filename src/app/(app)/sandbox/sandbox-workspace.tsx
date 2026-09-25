@@ -1,15 +1,52 @@
 "use client";
 
+import { use, useMemo } from "react";
 import { Callout } from "@/components/ui/callout";
-import { WORKSTATION } from "@/content/sandbox/workstation";
 import { CommandCheatSheet, Terminal, useTerminalSession } from "@/features/terminal";
+import { attachEvidence } from "@/sim";
+import type { EvidenceSet, ScenarioSpec } from "@/sim/types";
+
+export interface SandboxWorkspaceProps {
+  /** The workstation with the sandbox's folder, built on the server from `sandbox.yaml`. */
+  readonly scenario: ScenarioSpec;
+  readonly seed: number;
+  /** When the kit was handed over: the workstation's clock, and the evidence's `now`. */
+  readonly startsAt: number;
+  readonly tryThis: readonly { readonly command: string; readonly why: string }[];
+}
+
+let pending: Promise<EvidenceSet> | undefined;
 
 /**
- * The sandbox: the terminal on the analyst workstation, with no objectives. Nothing is kept
- * between visits.
+ * The sandbox's evidence (src/content/sandbox/evidence.json, built by `pnpm evidence:build`), in
+ * a chunk of its own that only this page asks for (00 §4 row 12). One promise, shared by every
+ * render.
  */
-export function SandboxWorkspace() {
-  const session = useTerminalSession({ scenario: WORKSTATION.scenario, seed: WORKSTATION.seed });
+function sandboxEvidence(): Promise<EvidenceSet> {
+  pending ??= import("@/content/sandbox/evidence.json").then((loaded: unknown) => {
+    // A JSON module is the value itself under `default`, whichever way the bundler wrapped it.
+    const set =
+      typeof loaded === "object" && loaded !== null && "default" in loaded
+        ? loaded.default
+        : loaded;
+    return set as EvidenceSet;
+  });
+  return pending;
+}
+
+/**
+ * The sandbox: the terminal on the analyst workstation with the practice kit attached under
+ * `/dev/evidence`, every write-blocker on, and no objectives. Reset machine attaches it again, as
+ * it arrived. Nothing is kept between visits.
+ */
+export function SandboxWorkspace({ scenario, seed, startsAt, tryThis }: SandboxWorkspaceProps) {
+  const evidence = use(sandboxEvidence());
+  const setup = useMemo(
+    () => (sim: Parameters<typeof attachEvidence>[0]) =>
+      attachEvidence(sim, evidence, { now: startsAt }),
+    [evidence, startsAt],
+  );
+  const session = useTerminalSession({ scenario, seed, setup });
 
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
@@ -20,8 +57,8 @@ export function SandboxWorkspace() {
       <aside className="space-y-6" aria-label="Help for this machine">
         <Callout kind="tip" title="Nothing can break here. Try anything.">
           <p>
-            This is a practice copy of your workstation. Delete things, change things, get lost:
-            Reset machine puts everything back.
+            Turn a write-blocker off, read the original, change the drive&apos;s hash: Reset machine
+            puts the evidence back as it arrived.
           </p>
         </Callout>
         <section
@@ -32,15 +69,15 @@ export function SandboxWorkspace() {
             Try this first
           </h2>
           <ul className="mt-3 space-y-3">
-            {WORKSTATION.tryThis.map((idea) => (
+            {tryThis.map((idea) => (
               <li key={idea.command}>
-                <code className="font-mono text-sm text-accent">{idea.command}</code>
+                <code className="font-mono text-sm break-words text-accent">{idea.command}</code>
                 <p className="text-sm leading-6 text-secondary">{idea.why}</p>
               </li>
             ))}
           </ul>
         </section>
-        <CommandCheatSheet />
+        <CommandCheatSheet leadWith="Investigate" />
       </aside>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Suspense, useEffect, useRef, useState, type ReactNode } from "react";
 import { SimulatedBadge } from "@/components/ui/simulated-badge";
 import { sectionForPathname } from "@/lib/app-sections";
 import { cx } from "@/lib/cx";
@@ -138,7 +138,9 @@ export function AppShell({ nextStep, children }: AppShellProps) {
               // Bottom padding on small screens clears the Start here bar.
               className="flex-1 px-4 pt-8 pb-32 outline-none sm:px-6 md:pb-8 lg:px-10 lg:py-12"
             >
-              {children}
+              {/* Its own hydration boundary: a key pressed before the page has finished hydrating
+                  (a Tab, ⌘K) only waits for the part it lands in, not the whole page (INP). */}
+              <Suspense>{children}</Suspense>
             </main>
           </div>
 

@@ -6,6 +6,8 @@ One YAML file per case, named after its id (`case-01.yaml`). A case file holds t
 
 A file starting with `_` is a **fixture**: it exercises the pipeline and is never offered to a player. `_fixture.yaml` is the one, and it is the shortest full example of every part of the format.
 
+`sandbox.yaml` is not a case either: it is the goal-free practice kit at `/sandbox`, a story with no client, objectives or report, checked by `SandboxSchema` (the same machine and story rules as a case) and built into `src/content/sandbox/evidence.json`. The case catalog skips it.
+
 `chapter.ts` is the other file here that is not a case: the chapter's title, the two lines that frame it, and the **order its cases are played in**. Everything that needs to know which case comes first reads it from there — the landing page's button, the app shell's "Start here", the case list — so moving a case in the chapter moves it everywhere. `tests/content/case-chapter.test.ts` checks its ids against this folder.
 
 ## What a case file holds

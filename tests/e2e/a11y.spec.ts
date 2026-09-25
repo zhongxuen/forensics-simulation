@@ -10,7 +10,10 @@ import { run } from "./helpers";
  * with output, the search palette. Vendored from Hacker Simulation's a11y spec and adapted to
  * these routes (VENDORED.md). Lessons are read from their folder, so a new one is checked without
  * anyone remembering to add it; file 03 does the same for cases once they live in
- * src/content/cases. The case workspace states are in case-01.spec.ts.
+ * src/content/cases. The case workspace states are in the case-01, case-02 and case-03 specs.
+ *
+ * The site has one colour theme, dark (src/styles/tokens.css: "the only theme in v1"). What a
+ * player can change is the terminal's colours, so the sandbox terminal is checked in each of them.
  *
  * axe finds what a machine can: missing names, contrast, roles, structure. It can't say whether a
  * page makes sense with a screen reader; a person checks that (file 15).
@@ -70,9 +73,25 @@ test.describe("states the player spends time in", () => {
   test("axe: the sandbox terminal, with output", async ({ page }) => {
     await page.goto("/sandbox");
     await run(page, "ls");
-    await run(page, "cat notes.txt");
+    await run(page, "cat about.txt");
+    await run(page, "mem psscan train-lt-03-mem");
     expect(await seriousViolations(page)).toEqual([]);
   });
+
+  // The terminal colour themes in src/content/themes, by id (this folder never imports the app).
+  for (const theme of ["candlewright", "phosphor", "amber", "deep-sea", "high-contrast"]) {
+    test(`axe: the sandbox terminal in the ${theme} theme`, async ({ page }) => {
+      await page.addInitScript((id) => {
+        localStorage.setItem("incident-room:settings", JSON.stringify({ terminalTheme: id }));
+      }, theme);
+      await page.goto("/sandbox");
+      await run(page, "logq --id 4625 --count-by IpAddress");
+      // The default theme is the plain tokens, so it sets no attribute on <html>.
+      const expected = theme === "candlewright" ? null : theme;
+      expect(await page.locator("html").getAttribute("data-terminal-theme")).toBe(expected);
+      expect(await seriousViolations(page)).toEqual([]);
+    });
+  }
 
   test("axe: the search palette, open", async ({ page }) => {
     await page.goto("/learn");

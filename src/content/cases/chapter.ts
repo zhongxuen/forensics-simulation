@@ -59,9 +59,9 @@ export const CHAPTER_ONE: Chapter = {
     label: "Play Chapter 2 of Hacker Simulation",
   },
   cases: ["case-01", "case-02", "case-03"],
-  // The "Case 1 only" release (docs/plan/15-quality-and-launch.md, part A). Cases 2 and 3 are
-  // released by prompt 15B.1, once files 11 and 12 have written them.
-  released: { "case-01": true, "case-02": false, "case-03": false },
+  // Released by prompt 15B.1 (docs/plan/15-quality-and-launch.md, part B), after the "Case 1 only"
+  // release of part A. Flip a flag back to take a case off the list without deleting anything.
+  released: { "case-01": true, "case-02": true, "case-03": true },
 };
 
 /** The chapter's first case: where a visitor with no account starts. */

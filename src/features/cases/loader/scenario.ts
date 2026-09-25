@@ -33,8 +33,6 @@ export interface CaseScenario {
 export function caseScenario(entry: Case, evidence: EvidenceSet): CaseScenario {
   const dir = caseDir(entry.id);
   const startsAt = examinerStart(entry, evidence);
-  const host = WORKSTATION.scenario.network.hosts[0];
-  if (!host) throw new Error("caseScenario: the workstation scenario has no host.");
 
   const files: FsEntrySpec[] = [
     { path: `${dir}/letter.txt`, content: letterText(entry) },
@@ -50,20 +48,35 @@ export function caseScenario(entry: Case, evidence: EvidenceSet): CaseScenario {
   return {
     seed: entry.seed,
     startsAt,
-    scenario: {
-      ...WORKSTATION.scenario,
-      // A fixture's id starts with "_", which a scenario id may not, so it is dropped here.
-      id: `case-${entry.id.replace(/^_+/, "")}`,
-      startTime: formatInstant(startsAt),
-      network: {
-        ...WORKSTATION.scenario.network,
-        hosts: [
-          { ...host, fs: { ...host.fs, entries: [...(host.fs?.entries ?? []), ...files] } },
-          ...WORKSTATION.scenario.network.hosts.slice(1),
-        ],
-      },
-      session: { ...WORKSTATION.scenario.session, cwd: dir },
+    // A fixture's id starts with "_", which a scenario id may not, so it is dropped here.
+    scenario: workstationWith(`case-${entry.id.replace(/^_+/, "")}`, startsAt, dir, files),
+  };
+}
+
+/**
+ * The analyst workstation with a folder of paperwork added, its clock at `startsAt` and the
+ * terminal opening in `dir`. A case's folder is built this way, and so is the sandbox's.
+ */
+export function workstationWith(
+  id: string,
+  startsAt: Instant,
+  dir: string,
+  files: readonly FsEntrySpec[],
+): ScenarioSpec {
+  const host = WORKSTATION.scenario.network.hosts[0];
+  if (!host) throw new Error("workstationWith: the workstation scenario has no host.");
+  return {
+    ...WORKSTATION.scenario,
+    id,
+    startTime: formatInstant(startsAt),
+    network: {
+      ...WORKSTATION.scenario.network,
+      hosts: [
+        { ...host, fs: { ...host.fs, entries: [...(host.fs?.entries ?? []), ...files] } },
+        ...WORKSTATION.scenario.network.hosts.slice(1),
+      ],
     },
+    session: { ...WORKSTATION.scenario.session, cwd: dir },
   };
 }
 
@@ -96,7 +109,12 @@ function letterText(entry: Case): string {
  * are built from the same place and can never drift apart.
  */
 function handoverText(entry: Case, evidence: EvidenceSet): string {
-  const lines = [`Evidence handover form — ${entry.client.org}`, ""];
+  return handoverForm(entry.client.org, evidence);
+}
+
+/** The handover form for whoever the evidence came from: a client, or Candlewright's own kit. */
+export function handoverForm(from: string, evidence: EvidenceSet): string {
+  const lines = [`Evidence handover form — ${from}`, ""];
   if (evidence.handover.length === 0) {
     lines.push("Nothing has been handed over yet.", "");
     return lines.join("\n");

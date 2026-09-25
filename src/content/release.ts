@@ -14,6 +14,10 @@ export const HACKER_SIMULATION_URL = "https://hacker-simulation.vercel.app";
 export const PITCH =
   "A story game where you join Candlewright Security's blue team and find out what happened to a client's computer, from a disk, a memory dump and a set of logs, in a simulated terminal. No experience needed.";
 
+/** How long the chapter is, under the button. The minutes are each case file's `estimatedMinutes`. */
+export const CHAPTER_LENGTH =
+  "Three cases at one made-up haulage yard: Case 1 takes about 15 minutes, and Cases 2 and 3 about 30 each.";
+
 /** The line that sits beside the SIMULATED marker. */
 export const SIMULATED_LINE = "SIMULATED: every piece of evidence is made up.";
 
