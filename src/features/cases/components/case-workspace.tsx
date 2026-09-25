@@ -42,6 +42,7 @@ import type { RunnableCase } from "../run/case-definition";
 import type { CaseRunAction, CaseRunState } from "../run/case-run";
 import { currentObjective } from "../run/case-run";
 import { caseProgress } from "../run/evaluate";
+import { objectiveSuggestions } from "../run/suggestions";
 import {
   PANE_LABELS,
   PANE_ORDER,
@@ -385,6 +386,7 @@ export function CaseWorkspace({
         // scrolling box instead of stretching the page.
         className={cx("relative h-full", drawer && "min-h-0 flex-1")}
         outputClassName="min-h-0 flex-1"
+        suggestions={objectiveSuggestions(caseDef, run)}
         {...(fillRequest && { fillRequest })}
         {...(mentor && {
           // "Explain this" on any terminal line, error or whole result. The terminal builds the

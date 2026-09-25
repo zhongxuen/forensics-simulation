@@ -62,6 +62,7 @@ export {
   type ObjectiveEvaluator,
   type RunBoard,
 } from "./run/evaluate";
+export { objectiveSuggestions } from "./run/suggestions";
 export {
   CASE_LISTINGS,
   CHAPTER,

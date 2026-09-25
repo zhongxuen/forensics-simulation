@@ -32,8 +32,9 @@ describe("Terminal", () => {
 
   it("carries the SIMULATED marker and the toolbar actions", () => {
     expect(html).toContain("Simulated");
-    expect(html).toContain("Copy transcript");
-    expect(html).toContain("Reset machine");
+    // Copy transcript and Reset machine sit in the "More" menu, closed until it's opened.
+    expect(html).toContain("More");
+    expect(html).toContain('aria-haspopup="menu"');
     expect(html).toContain("Help");
   });
 

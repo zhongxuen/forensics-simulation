@@ -10,7 +10,7 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from "react";
-import { Button } from "@/components/ui/button";
+import { Menu } from "@/components/ui/menu";
 import { SimulatedBadge } from "@/components/ui/simulated-badge";
 import { cx } from "@/lib/cx";
 import { useSettings } from "@/lib/settings";
@@ -34,11 +34,18 @@ export interface TerminalProps {
   title?: string;
   /** Suggested commands for the chips row. Defaults to ones that work where you are. */
   chips?: readonly string[];
+  /**
+   * Suggestions that follow what the learner is doing (a case's current objective): tool names,
+   * never a hint's whole answer, with the ones already run successfully left out by the caller.
+   * Given, they replace the chips, and an empty list hides the row. Left out, the chips work as
+   * before.
+   */
+  suggestions?: readonly string[];
   /** Start the guided first-run tour when the terminal first shows (a mission's guidedTour). */
   startTour?: boolean;
   /** Change this number to start the tour again from a control outside the terminal. */
   tourRequest?: number;
-  /** Extra controls in the header, before Copy and Reset. */
+  /** Extra controls in the header, before Help and the menu with Copy and Reset. */
   actions?: ReactNode;
   className?: string;
   /** Classes for the output area: its height, mostly. */
@@ -91,6 +98,7 @@ export function Terminal({
   session,
   title,
   chips,
+  suggestions,
   startTour = false,
   tourRequest,
   actions,
@@ -376,7 +384,7 @@ export function Terminal({
     input.setSelectionRange(fillRequest.line.length, fillRequest.line.length);
   }, [fillRequest]);
 
-  const chipCommands = chips ?? session.suggestions;
+  const chipCommands = suggestions ?? chips ?? session.suggestions;
   const lastId = blocks.at(-1)?.id;
 
   return (
@@ -415,12 +423,13 @@ export function Terminal({
               { id: "commands", label: "List the commands", onSelect: () => fillPrompt("help") },
             ]}
           />
-          <Button variant="ghost" size="sm" onClick={copyTranscript}>
-            Copy transcript
-          </Button>
-          <Button variant="ghost" size="sm" onClick={reset}>
-            Reset machine
-          </Button>
+          <Menu
+            label="More"
+            items={[
+              { id: "copy", label: "Copy transcript", onSelect: () => void copyTranscript() },
+              { id: "reset", label: "Reset machine", onSelect: reset },
+            ]}
+          />
         </div>
         <p role="status" className="w-full text-sm text-secondary empty:hidden">
           {copyStatus}
@@ -457,7 +466,7 @@ export function Terminal({
             <span className="text-term-cyan">help</span>, or open Help and take the terminal tour.
           </p>
         )}
-        <div ref={contentRef}>
+        <div ref={contentRef} className="space-y-2">
           {blocks.map((block, index) => (
             <OutputBlock
               key={block.id}
