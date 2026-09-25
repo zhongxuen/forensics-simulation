@@ -23,6 +23,8 @@ interface RecordTableProps {
   onSelect: (record: FileRecord) => void;
   /** Enter on a row: into a folder, or over to the record's details. */
   onOpen: (record: FileRecord) => void;
+  /** A click opens the row as Enter does (the drill-in layout), instead of only selecting it. */
+  openOnClick?: boolean;
   onTogglePin: (record: FileRecord) => void;
   isPinned: (record: FileRecord) => boolean;
   sort: SortOrder;
@@ -58,6 +60,7 @@ export function RecordTable({
   selected,
   onSelect,
   onOpen,
+  openOnClick = false,
   onTogglePin,
   isPinned,
   sort,
@@ -174,7 +177,10 @@ export function RecordTable({
                 }}
                 tabIndex={active ? 0 : -1}
                 aria-current={isSelected ? "true" : undefined}
-                onClick={() => onSelect(record)}
+                onClick={() => {
+                  onSelect(record);
+                  if (openOnClick) onOpen(record);
+                }}
                 onDoubleClick={() => onOpen(record)}
                 onKeyDown={(event) => onKeyDown(event, record)}
                 className={cx(
@@ -183,7 +189,7 @@ export function RecordTable({
                   isSelected ? "bg-surface-overlay" : "hover:bg-surface-raised",
                 )}
               >
-                <td className="max-w-56 px-2.5 py-1.5">
+                <td className="max-w-64 min-w-44 px-2.5 py-1.5">
                   <span className="flex flex-wrap items-baseline gap-x-1.5 font-mono">
                     <span className="sr-only">{record.kind === "dir" ? "Folder: " : "File: "}</span>
                     <span aria-hidden="true" className="text-muted">

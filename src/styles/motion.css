@@ -74,6 +74,9 @@
 @theme inline {
   /* Entrances for toasts, dialogs and popovers. */
   --animate-fade-in: fade-in calc(var(--duration-base) * var(--motion-scale)) var(--ease-enter) both;
+  /* The way out for something removed, like a case board card: it fades and drops a little. */
+  --animate-fade-out: fade-out calc(var(--duration-base) * var(--motion-scale)) var(--ease-exit)
+    both;
   /* A line that slides in under something, like an objective's success line. */
   --animate-rise-in: rise-in calc(var(--duration-slow) * var(--motion-scale)) var(--ease-enter)
     calc(var(--duration-fast) * var(--motion-scale)) both;
@@ -148,6 +151,13 @@
 
 @keyframes fade-in {
   from {
+    opacity: 0;
+    transform: translateY(0.25rem);
+  }
+}
+
+@keyframes fade-out {
+  to {
     opacity: 0;
     transform: translateY(0.25rem);
   }

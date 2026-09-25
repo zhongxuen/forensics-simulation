@@ -15,6 +15,8 @@ interface ImageDetailProps {
   node: ImageNode;
   evidence: EvidenceSet;
   onOpen: () => void;
+  /** Whether to show the Open button: not when an empty state beside it already has one. */
+  showOpen?: boolean;
 }
 
 /**
@@ -22,7 +24,7 @@ interface ImageDetailProps {
  * hashes on the handover form, and the one button that reads it. Opening an original with its
  * blocker off changes it, and this says so before and after, in the tools' own words.
  */
-export function ImageDetail({ node, evidence, onOpen }: ImageDetailProps) {
+export function ImageDetail({ node, evidence, onOpen, showOpen = true }: ImageDetailProps) {
   const { image } = node;
   const device = image.device;
   const form = evidence.handover.find((item) => item.item === image.id);
@@ -107,9 +109,11 @@ export function ImageDetail({ node, evidence, onOpen }: ImageDetailProps) {
               write-blocker off, or the machine was reset. Open it again to see it as it is now.
             </p>
           )}
-          <Button variant="primary" onClick={onOpen}>
-            {node.stale ? "Open it again" : `Open ${image.id}`}
-          </Button>
+          {showOpen && (
+            <Button variant="primary" onClick={onOpen}>
+              {node.stale ? "Open it again" : `Open ${image.id}`}
+            </Button>
+          )}
         </div>
       ) : (
         <p className="text-secondary">

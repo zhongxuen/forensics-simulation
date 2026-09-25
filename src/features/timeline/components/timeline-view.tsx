@@ -3,7 +3,9 @@
 import { useId, useMemo, useReducer, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Callout } from "@/components/ui/callout";
+import { FOCUS_RING } from "@/components/ui/focus-ring";
 import { cx } from "@/lib/cx";
+import { useElementWidth } from "@/hooks/use-element-width";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { formatInstant, parseRef, sourceZone, UTC_ZONE } from "@/sim";
 import type { EvidenceSet, TimelineEntry } from "@/sim/types";
@@ -30,6 +32,12 @@ import {
 } from "../model/view";
 import { TimelineTable } from "./timeline-table";
 import { TimelineTracks } from "./timeline-tracks";
+
+/**
+ * From this many pixels of pane width (Focus pane on a laptop), the filters and the chosen
+ * moment's details move to a column beside the tracks, so the tracks keep the top of the pane.
+ */
+export const TIMELINE_WIDE_FROM_PX = 900;
 
 export interface TimelineViewProps {
   /** The evidence the entries came from: for the zones each source kept. */
@@ -60,6 +68,10 @@ export interface TimelineViewProps {
  * filtered moments, the zone banner, the filters, and the chosen moment's details with its Pin
  * button. The pane (timeline-pane.tsx) feeds it from the case; the frame-time bench feeds it
  * thousands of made-up moments.
+ *
+ * It lays itself out for the room the pane gives it. Narrow (beside the terminal), the filters
+ * fold into a bar above the tracks. Wide (Focus pane), the tracks take the main column at full
+ * height and the filters and details sit in a column beside them. The keys are the same in both.
  */
 export function TimelineView({
   set,
@@ -77,6 +89,9 @@ export function TimelineView({
   const [announcement, setAnnouncement] = useState("");
   const rootRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion(rootRef);
+  // Unmeasured (no layout, as in a test) counts as wide: everything open at once.
+  const width = useElementWidth(rootRef);
+  const wide = width === undefined || width >= TIMELINE_WIDE_FROM_PX;
   const baseId = useId();
   const keysId = `${baseId}-keys`;
 
@@ -181,63 +196,66 @@ export function TimelineView({
 
   const zones = zoneTracks(set, shown, tracks);
 
-  return (
-    <div ref={rootRef} className="space-y-4">
-      {zones.mixed && <ZoneBanner zones={zones} local={state.local} />}
-
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <Toggle
-          label="View"
-          options={[
-            ["tracks", "Tracks"],
-            ["table", "Table"],
-          ]}
-          value={state.mode}
-          onChange={(mode: TimelineMode) => dispatch({ type: "setMode", mode })}
-        />
-        <div className="flex items-center gap-1.5" role="group" aria-label="Zoom">
-          <Button
-            size="sm"
-            variant="secondary"
-            disabled={state.zoom === "all" || state.mode === "table"}
-            onClick={() => zoom(-1)}
-          >
-            Zoom out
-          </Button>
-          <Button
-            size="sm"
-            variant="secondary"
-            disabled={state.zoom === "seconds" || state.mode === "table"}
-            onClick={() => zoom(1)}
-          >
-            Zoom in
-          </Button>
-          <span className="text-sm text-secondary">{zoomLabel(state.zoom)}</span>
-        </div>
-        <Toggle
-          label="Clock"
-          options={[
-            ["utc", "UTC"],
-            ["local", "Own clocks"],
-          ]}
-          value={state.local ? "local" : "utc"}
-          onChange={(value) => {
-            if ((value === "local") !== state.local) toggleZone();
-          }}
-        />
-      </div>
-
-      <Filters
-        tracks={allTracks}
-        hidden={state.hidden}
-        counts={countBySource(entries)}
-        onToggle={(source) => dispatch({ type: "toggleSource", source })}
-        range={state.range}
-        onRange={brush}
-        highlightMs={state.highlightMs}
-        onHighlight={(ms) => dispatch({ type: "setHighlight", ms })}
+  const toolbar = (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+      <Toggle
+        label="View"
+        options={[
+          ["tracks", "Tracks"],
+          ["table", "Table"],
+        ]}
+        value={state.mode}
+        onChange={(mode: TimelineMode) => dispatch({ type: "setMode", mode })}
       />
+      <div className="flex items-center gap-1.5" role="group" aria-label="Zoom">
+        <Button
+          size="sm"
+          variant="secondary"
+          disabled={state.zoom === "all" || state.mode === "table"}
+          onClick={() => zoom(-1)}
+        >
+          Zoom out
+        </Button>
+        <Button
+          size="sm"
+          variant="secondary"
+          disabled={state.zoom === "seconds" || state.mode === "table"}
+          onClick={() => zoom(1)}
+        >
+          Zoom in
+        </Button>
+        <span className="text-sm text-secondary">{zoomLabel(state.zoom)}</span>
+      </div>
+      <Toggle
+        label="Clock"
+        options={[
+          ["utc", "UTC"],
+          ["local", "Own clocks"],
+        ]}
+        value={state.local ? "local" : "utc"}
+        onChange={(value) => {
+          if ((value === "local") !== state.local) toggleZone();
+        }}
+      />
+    </div>
+  );
 
+  const filters = (
+    <Filters
+      tracks={allTracks}
+      hidden={state.hidden}
+      counts={countBySource(entries)}
+      onToggle={(source) => dispatch({ type: "toggleSource", source })}
+      range={state.range}
+      onRange={brush}
+      highlightMs={state.highlightMs}
+      onHighlight={(ms) => dispatch({ type: "setHighlight", ms })}
+      collapsible={!wide}
+    />
+  );
+
+  const main = (
+    <>
       {shown.length === 0 ? (
         <p className="text-secondary">
           No moments match. Switch a source back on, or clear the range.
@@ -287,7 +305,11 @@ export function TimelineView({
           onToggleZone={toggleZone}
         />
       )}
+    </>
+  );
 
+  const details = (
+    <>
       {selected ? (
         <EntryDetail
           set={set}
@@ -313,6 +335,28 @@ export function TimelineView({
             press Enter. Everything close to it in time lights up on every track.
           </p>
         )
+      )}
+    </>
+  );
+
+  return (
+    <div ref={rootRef} data-layout={wide ? "wide" : "narrow"} className="space-y-4">
+      {zones.mixed && <ZoneBanner zones={zones} local={state.local} />}
+      {toolbar}
+      {wide ? (
+        <div className="grid grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)] items-start gap-5">
+          <div className="min-w-0 space-y-4">{main}</div>
+          <div className="min-w-0 space-y-4">
+            {filters}
+            {details}
+          </div>
+        </div>
+      ) : (
+        <>
+          {filters}
+          {main}
+          {details}
+        </>
       )}
 
       <p aria-live="polite" aria-atomic="true" className="sr-only">
@@ -379,7 +423,7 @@ function Toggle<T extends string>({
 function ZoneBanner({ zones, local }: { zones: ReturnType<typeof zoneTracks>; local: boolean }) {
   const utc = zones.utc.map((source) => TRACK_LABELS[source]);
   return (
-    <Callout kind="concept" title="Time zones">
+    <Callout kind="info" title="Time zones">
       {local ? (
         <p>
           Each time is on its own source&apos;s clock:{" "}
@@ -418,6 +462,7 @@ function Filters({
   onRange,
   highlightMs,
   onHighlight,
+  collapsible,
 }: {
   tracks: readonly TimelineEntry["source"][];
   hidden: readonly TimelineEntry["source"][];
@@ -427,9 +472,13 @@ function Filters({
   onRange: (range: TimeRange | undefined) => void;
   highlightMs: number;
   onHighlight: (ms: number) => void;
+  /** Folds behind a Filters button (the narrow layout), with a line saying what's on. */
+  collapsible: boolean;
 }) {
   const id = useId();
+  const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState({ from: "", to: "" });
+  const expanded = !collapsible || open;
   const shownRange = range ? { from: inputValue(range.from), to: inputValue(range.to) } : draft;
   const setEnd = (end: "from" | "to", value: string) => {
     const next = { ...shownRange, [end]: value };
@@ -439,76 +488,122 @@ function Filters({
     if (from !== undefined && to !== undefined) onRange({ from, to });
   };
 
+  const showWhole = range && (
+    <Button
+      size="sm"
+      variant="ghost"
+      onClick={() => {
+        setDraft({ from: "", to: "" });
+        onRange(undefined);
+      }}
+    >
+      Show the whole case
+    </Button>
+  );
+  const on = tracks.length - hidden.filter((source) => tracks.includes(source)).length;
+
   return (
-    <div className="space-y-3 rounded-md border border-subtle px-3 py-3">
-      <fieldset className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <legend className="mb-1 text-sm font-semibold">Sources</legend>
-        {tracks.map((source) => (
-          <label key={source} className="flex items-center gap-1.5 text-sm">
+    <div className="space-y-3 rounded-md border border-subtle bg-surface-raised px-3 py-3">
+      {collapsible && (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <button
+            type="button"
+            aria-expanded={open}
+            aria-controls={`${id}-body`}
+            onClick={() => setOpen(!open)}
+            className={cx(
+              "flex items-center gap-1.5 rounded px-1 text-sm font-semibold hover:text-primary",
+              FOCUS_RING,
+            )}
+          >
+            <span
+              aria-hidden="true"
+              className={cx(
+                "inline-block transition-transform fx-duration-fast",
+                open && "rotate-90",
+              )}
+            >
+              ▸
+            </span>
+            Filters
+          </button>
+          <span className="text-sm text-secondary">
+            {on} of {tracks.length} {tracks.length === 1 ? "source" : "sources"},{" "}
+            {range ? "a stretch of the case" : "the whole case"}
+          </span>
+          {!open && showWhole}
+        </div>
+      )}
+      <div
+        id={`${id}-body`}
+        hidden={!expanded}
+        className={cx("space-y-3", collapsible && "animate-fade-in border-t border-subtle pt-3")}
+      >
+        <fieldset className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <legend className="mb-1 text-sm font-semibold">Sources</legend>
+          {tracks.map((source) => (
+            <label key={source} className="flex items-center gap-1.5 text-sm">
+              <input
+                type="checkbox"
+                checked={!hidden.includes(source)}
+                onChange={() => onToggle(source)}
+                className="size-4 accent-accent"
+              />
+              {TRACK_LABELS[source]} <span className="text-muted">({counts.get(source) ?? 0})</span>
+            </label>
+          ))}
+        </fieldset>
+        <div className="flex flex-wrap items-end gap-3">
+          <label className="grid gap-1 text-sm" htmlFor={`${id}-from`}>
+            From (UTC)
             <input
-              type="checkbox"
-              checked={!hidden.includes(source)}
-              onChange={() => onToggle(source)}
-              className="size-4 accent-accent"
+              id={`${id}-from`}
+              type="datetime-local"
+              step={1}
+              value={shownRange.from}
+              onChange={(event) => setEnd("from", event.target.value)}
+              className={cx(FIELD, "font-mono")}
             />
-            {TRACK_LABELS[source]} <span className="text-muted">({counts.get(source) ?? 0})</span>
           </label>
-        ))}
-      </fieldset>
-      <div className="flex flex-wrap items-end gap-3">
-        <label className="grid gap-1 text-sm" htmlFor={`${id}-from`}>
-          From (UTC)
-          <input
-            id={`${id}-from`}
-            type="datetime-local"
-            step={1}
-            value={shownRange.from}
-            onChange={(event) => setEnd("from", event.target.value)}
-            className="rounded-md border border-strong bg-surface-base px-2 py-1 font-mono text-sm"
-          />
-        </label>
-        <label className="grid gap-1 text-sm" htmlFor={`${id}-to`}>
-          To (UTC)
-          <input
-            id={`${id}-to`}
-            type="datetime-local"
-            step={1}
-            value={shownRange.to}
-            onChange={(event) => setEnd("to", event.target.value)}
-            className="rounded-md border border-strong bg-surface-base px-2 py-1 font-mono text-sm"
-          />
-        </label>
-        {range && (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => {
-              setDraft({ from: "", to: "" });
-              onRange(undefined);
-            }}
-          >
-            Show the whole case
-          </Button>
-        )}
-        <label className="grid gap-1 text-sm" htmlFor={`${id}-near`}>
-          Light up moments within
-          <select
-            id={`${id}-near`}
-            value={highlightMs}
-            onChange={(event) => onHighlight(Number(event.target.value))}
-            className="rounded-md border border-strong bg-surface-base px-2 py-1 text-sm"
-          >
-            {HIGHLIGHT_WINDOWS.map((window) => (
-              <option key={window.ms} value={window.ms}>
-                {window.label}
-              </option>
-            ))}
-          </select>
-        </label>
+          <label className="grid gap-1 text-sm" htmlFor={`${id}-to`}>
+            To (UTC)
+            <input
+              id={`${id}-to`}
+              type="datetime-local"
+              step={1}
+              value={shownRange.to}
+              onChange={(event) => setEnd("to", event.target.value)}
+              className={cx(FIELD, "font-mono")}
+            />
+          </label>
+          {expanded && showWhole}
+          <label className="grid gap-1 text-sm" htmlFor={`${id}-near`}>
+            Light up moments within
+            <select
+              id={`${id}-near`}
+              value={highlightMs}
+              onChange={(event) => onHighlight(Number(event.target.value))}
+              className={FIELD}
+            >
+              {HIGHLIGHT_WINDOWS.map((window) => (
+                <option key={window.ms} value={window.ms}>
+                  {window.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       </div>
     </div>
   );
 }
+
+/** A form field on the pane's surfaces: the date and time inputs and the select. */
+const FIELD = cx(
+  "h-8 rounded-md border border-strong bg-surface-base px-2 text-sm text-primary hover:border-accent",
+  "[&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-70",
+  FOCUS_RING,
+);
 
 /** An instant as a datetime-local input's value, in UTC, to the second. */
 function inputValue(at: number): string {

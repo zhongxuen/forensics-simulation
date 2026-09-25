@@ -167,3 +167,46 @@ test("axe: the timeline's tracks with a moment chosen, and its table", async ({ 
   await expect(page.getByRole("table")).toBeVisible();
   expect(await seriousViolations(page)).toEqual([]);
 });
+
+/**
+ * Each pane lays itself out for the room it has (prompt UX.5): beside the terminal the Evidence
+ * Browser drills in and the Timeline folds its filters; with Focus pane, the browser shows its
+ * three columns and the Timeline puts its filters beside the tracks. axe runs on every pane in
+ * both, with something open in each, and the board has a card to check.
+ */
+test("axe: every pane, beside the terminal and with Focus pane", async ({ page }) => {
+  await startCase(page);
+  await openDeletedRecords(page);
+  const browser = page.locator("[data-layout]").first();
+  await expect(browser).toHaveAttribute("data-layout", "drill-in");
+  await expect(page.getByRole("navigation", { name: "Where you are in the drive" })).toBeVisible();
+  await deletedRow(page).click();
+  await expect(page.getByRole("button", { name: "Back to the records" })).toBeVisible();
+  await page.getByRole("button", { name: "Pin to the case board" }).click();
+  expect(await seriousViolations(page)).toEqual([]);
+
+  const tracks = await openTimeline(page);
+  await expect(page.locator('[data-layout="narrow"]')).toBeVisible();
+  await tracks.focus();
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("Enter");
+  expect(await seriousViolations(page)).toEqual([]);
+
+  await page.getByRole("tab", { name: /^Board/ }).click();
+  await expect(page.getByRole("article").first()).toBeVisible();
+  expect(await seriousViolations(page)).toEqual([]);
+
+  await page.getByRole("button", { name: "Focus pane" }).click();
+  await page.getByRole("tab", { name: "Evidence" }).click();
+  await expect(page.locator('[data-layout="columns"]')).toBeVisible();
+  await expect(page.getByRole("tree", { name: "Evidence" })).toBeVisible();
+  await expect(page.getByRole("table")).toBeVisible();
+  expect(await seriousViolations(page)).toEqual([]);
+
+  await page.getByRole("tab", { name: "Timeline" }).click();
+  await expect(page.locator('[data-layout="wide"]')).toBeVisible();
+  expect(await seriousViolations(page)).toEqual([]);
+
+  await page.getByRole("tab", { name: /^Board/ }).click();
+  expect(await seriousViolations(page)).toEqual([]);
+});

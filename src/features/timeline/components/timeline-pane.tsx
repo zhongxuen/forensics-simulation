@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Callout } from "@/components/ui/callout";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { WorkspacePaneProps } from "@/features/cases";
 import { browsableImages, buildTimeline, parseRef } from "@/sim";
 import type { BrowsableImage, DiskImage, EvidenceSet } from "@/sim/types";
+import { cx } from "@/lib/cx";
 import { entrySentence, TRACK_LABELS } from "../model/view";
 import { TimelineView } from "./timeline-view";
 
@@ -28,6 +30,9 @@ interface ReadDrive {
  * otherwise the original through its write-blocker; with the blocker off, that read changes the
  * original, exactly as `timeline` in the terminal would. If the drive changes after it was read,
  * its moments come off until it is read again.
+ *
+ * Lining the moments up happens after the tab has drawn (a deferred render), so opening the tab,
+ * or adding a drive's times, never holds the page: skeleton tracks stand in until they're ready.
  */
 export function TimelinePane({ evidence, run, dispatch, workstation, reveal }: WorkspacePaneProps) {
   const [reads, setReads] = useState<Readonly<Record<string, ReadDrive>>>({});
@@ -45,17 +50,26 @@ export function TimelinePane({ evidence, run, dispatch, workstation, reveal }: W
     });
   }, [sim, evidence, reads]);
 
-  const set = useMemo<EvidenceSet | null>(
-    () =>
-      evidence && {
-        ...evidence,
-        disks: drives.flatMap((drive) => (drive.fresh ? [drive.fresh.image] : [])),
-      },
-    [evidence, drives],
-  );
-  const entries = useMemo(() => (set ? buildTimeline(set) : []), [set]);
+  // The evidence the timeline is built from. It changes only when a drive's times come on or off,
+  // not with every command the terminal runs (adjusting state while rendering).
+  const images = drives.flatMap((drive) => (drive.fresh ? [drive.fresh.image] : []));
+  const [held, setHeld] = useState(() => ({ evidence, images, set: withDisks(evidence, images) }));
+  if (
+    held.evidence !== evidence ||
+    held.images.length !== images.length ||
+    held.images.some((image, index) => image !== images[index])
+  ) {
+    setHeld({ evidence, images, set: withDisks(evidence, images) });
+  }
+  const set = held.set;
 
-  if (!evidence || !set || (evidence.disks.length === 0 && entries.length === 0)) {
+  // Built in a render of its own, after the tab shows: null until the first one is ready.
+  const building = useDeferredValue(set, null);
+  const entries = useMemo(() => (building ? buildTimeline(building) : undefined), [building]);
+  const ready = entries !== undefined && building === set;
+  const inView = building !== null && entries !== undefined && entries.length > 0;
+
+  if (!evidence || !set || (evidence.disks.length === 0 && entries?.length === 0)) {
     return (
       <EmptyState
         titleAs="h3"
@@ -109,33 +123,42 @@ export function TimelinePane({ evidence, run, dispatch, workstation, reveal }: W
         ),
       )}
 
-      {entries.length > 0 && (
-        <TimelineView
-          set={set}
-          entries={entries}
-          pins={run.pins}
-          onPin={(ref) => dispatch({ type: "pin", ref })}
-          onUnpin={(ref) => dispatch({ type: "unpin", ref })}
-          showInTerminal={workstation.showInTerminal}
-          showInEvidence={(ref) => workstation.show("evidence", ref)}
-          {...(workstation.explain && {
-            // The entry's own sentence — the same words a screen reader hears — and nothing else:
-            // the mentor never receives the evidence set (docs/plan/14-mentor.md §Spec).
-            explainEntry: (entry) =>
-              workstation.explain?.({
-                text: entrySentence(set, entry, false),
-                title: `${TRACK_LABELS[entry.source]} on ${entry.host}`,
-                fallback: `${entrySentence(set, entry, false)} That is one moment on the timeline: where it came from, when it happened, what kind of moment it was, and what it says.`,
-              }),
-          })}
-          {...(reveal && { reveal })}
-          missing={(ref) => {
-            const parsed = parseRef(ref);
-            return parsed?.kind === "file"
-              ? `${parsed.image}'s file times aren't on the timeline yet. Add them first, then show it again.`
-              : `${ref} has no moment on the timeline.`;
-          }}
-        />
+      {entries === undefined ? (
+        <TracksSkeleton />
+      ) : (
+        inView && (
+          <div
+            aria-busy={!ready}
+            className={cx("transition-opacity fx-duration-fast", !ready && "opacity-60")}
+          >
+            <TimelineView
+              set={building}
+              entries={entries}
+              pins={run.pins}
+              onPin={(ref) => dispatch({ type: "pin", ref })}
+              onUnpin={(ref) => dispatch({ type: "unpin", ref })}
+              showInTerminal={workstation.showInTerminal}
+              showInEvidence={(ref) => workstation.show("evidence", ref)}
+              {...(workstation.explain && {
+                // The entry's own sentence — the same words a screen reader hears — and nothing
+                // else: the mentor never receives the evidence set (docs/plan/14-mentor.md §Spec).
+                explainEntry: (entry) =>
+                  workstation.explain?.({
+                    text: entrySentence(building, entry, false),
+                    title: `${TRACK_LABELS[entry.source]} on ${entry.host}`,
+                    fallback: `${entrySentence(building, entry, false)} That is one moment on the timeline: where it came from, when it happened, what kind of moment it was, and what it says.`,
+                  }),
+              })}
+              {...(reveal && { reveal })}
+              missing={(ref) => {
+                const parsed = parseRef(ref);
+                return parsed?.kind === "file"
+                  ? `${parsed.image}'s file times aren't on the timeline yet. Add them first, then show it again.`
+                  : `${ref} has no moment on the timeline.`;
+              }}
+            />
+          </div>
+        )
       )}
     </div>
   );
@@ -177,6 +200,26 @@ function DriveCard({
           {stale ? `Add ${id}'s times again` : `Add ${id}'s file times`}
         </Button>
       )}
+    </div>
+  );
+}
+
+/** The case's evidence with only these drives' read images on it, or null for no evidence. */
+function withDisks(evidence: EvidenceSet | null, disks: readonly DiskImage[]): EvidenceSet | null {
+  return evidence && { ...evidence, disks: [...disks] };
+}
+
+/** Grey tracks in the shape of what's coming, while the moments are lined up. */
+function TracksSkeleton() {
+  return (
+    <div className="space-y-3 rounded-md border border-subtle p-3">
+      <Skeleton label="Lining up every moment in the evidence…" rows={1} className="w-1/3" />
+      {[0, 1, 2, 3].map((row) => (
+        <div key={row} aria-hidden="true" className="flex items-center gap-3">
+          <div className="h-3 w-20 shrink-0 animate-shimmer rounded-md fx-skeleton" />
+          <div className="h-6 flex-1 animate-shimmer rounded-md fx-skeleton" />
+        </div>
+      ))}
     </div>
   );
 }

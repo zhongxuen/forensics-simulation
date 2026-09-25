@@ -18,6 +18,10 @@ import { expect, test, type Page } from "@playwright/test";
 
 const ENTRIES = 5000;
 
+// Playwright's own trace snapshots the page on every action, from inside the page: that work would
+// be measured as the app's.
+test.use({ trace: "off" });
+
 /** One frame on a 60 Hz display, plus a little room: a longer gap means a frame was missed. */
 const DROPPED_FRAME_MS = 20;
 
@@ -200,5 +204,124 @@ test.describe("timeline frame rate", () => {
     const stats = await report(page, "brush");
     await expect(page.getByRole("button", { name: "Show the whole case" })).toBeVisible();
     expectSmooth(stats, idle, "brushing");
+  });
+});
+
+/**
+ * The freeze seen once in UIUX.md §2.5 (prompt UX.5): with a few commands in the log, switching
+ * from the Timeline to the Board stopped the tab answering. This plays Case 2's first steps (a
+ * copy, a listing, pins from the terminal and from the logs), opens the Timeline with the drive's
+ * times added, then goes Timeline → Board and back four times while a performance trace records.
+ * Every long task the browser reports during the switches must be under 200 ms. The trace is
+ * attached to the results, to open in the browser's Performance panel.
+ *
+ * E2E_CPU_THROTTLE=4 slows the CPU fourfold, a stand-in for a mid laptop, as the frame-rate
+ * numbers in src/features/timeline/README.md were taken; CI runs it unthrottled.
+ */
+const LONG_TASK_LIMIT_MS = 200;
+
+async function command(page: Page, line: string) {
+  const input = page.getByRole("textbox", { name: /^Command, in/ });
+  await input.fill(line);
+  await input.press("Enter");
+  await expect(page.getByRole("region", { name: `Command: ${line}` }).last()).toBeVisible();
+}
+
+test.describe("switching panes", () => {
+  test.skip(({ browserName }) => browserName !== "chromium", "traced on one engine only");
+
+  test("goes Timeline → Board after a few commands without a long task over 200 ms", async ({
+    page,
+    browser,
+  }) => {
+    test.setTimeout(120_000);
+    await page.goto("/cases/case-02");
+    await page.getByRole("button", { name: "Start case" }).click();
+    await expect(page.getByRole("textbox", { name: /^Command, in/ })).toBeVisible({
+      timeout: 30_000,
+    });
+
+    for (const line of [
+      "cat handover.txt",
+      "acquire /dev/evidence/qf-lt-07 --out images/qf-lt-07.img",
+      "lsfs images/qf-lt-07.img -r -d",
+      "inode images/qf-lt-07.img 48",
+      'pin -m "invoice record"',
+      "logq --id 4624 --where LogonType=10",
+      'pin -m "remote sign-in"',
+      "logq --source firewall --where dst=203.0.113.80",
+      'pin -m "upload"',
+    ]) {
+      await command(page, line);
+    }
+
+    const timelineTab = page.getByRole("tab", { name: "Timeline", exact: true });
+    await timelineTab.click();
+    await page.getByRole("button", { name: /^Add qf-lt-07's file times/ }).click({
+      timeout: 20_000,
+    });
+    await expect(page.getByRole("application", { name: "Timeline tracks" })).toBeVisible();
+
+    if (process.env.E2E_CPU_THROTTLE) {
+      const cdp = await page.context().newCDPSession(page);
+      await cdp.send("Emulation.setCPUThrottlingRate", {
+        rate: Number(process.env.E2E_CPU_THROTTLE),
+      });
+    }
+    await browser.startTracing(page, { screenshots: false });
+    // The switches run inside the page, waiting with plain DOM queries: Playwright's own locators
+    // walk the accessibility tree from inside the page, and would be measured as the app's work.
+    const { longTasks, switches } = await page.evaluate(async () => {
+      const longTasks: number[] = [];
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) longTasks.push(entry.duration);
+      });
+      observer.observe({ type: "longtask", buffered: false });
+      const tab = (name: RegExp) =>
+        [...document.querySelectorAll<HTMLElement>('[role="tab"]')].find((element) =>
+          name.test(element.textContent ?? ""),
+        );
+      const until = (ready: () => boolean) =>
+        new Promise<void>((resolve) => {
+          const check = () => (ready() ? resolve() : requestAnimationFrame(check));
+          check();
+        });
+      const panel = (name: RegExp) =>
+        document.getElementById(tab(name)?.getAttribute("aria-controls") ?? "");
+      const shown = (name: RegExp, selector: string) => () => {
+        const element = panel(name);
+        return Boolean(element && !element.hidden && element.querySelector(selector));
+      };
+      const switches: number[] = [];
+      const go = async (name: RegExp, selector: string) => {
+        const began = performance.now();
+        tab(name)?.click();
+        await until(shown(name, selector));
+        // Until the frame after the switch has painted.
+        await new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve)));
+        switches.push(performance.now() - began);
+      };
+      for (let round = 0; round < 4; round += 1) {
+        await go(/^Board/, "article");
+        await go(/^Timeline/, '[role="application"]');
+      }
+      await go(/^Board/, "article");
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      observer.disconnect();
+      return { longTasks, switches };
+    });
+    const trace = await browser.stopTracing();
+    await test.info().attach("timeline-to-board-trace", {
+      body: trace,
+      contentType: "application/json",
+    });
+    const worst = Math.max(0, ...longTasks);
+    console.log(
+      `Timeline ⇄ Board: switches ${switches.map((ms) => ms.toFixed(0)).join(", ")} ms; ` +
+        `${longTasks.length} long tasks, worst ${worst.toFixed(0)} ms`,
+    );
+    expect(worst, `a long task of ${worst.toFixed(0)} ms while switching panes`).toBeLessThan(
+      LONG_TASK_LIMIT_MS,
+    );
   });
 });

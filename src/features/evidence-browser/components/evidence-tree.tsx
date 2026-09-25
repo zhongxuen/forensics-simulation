@@ -10,6 +10,11 @@ interface EvidenceTreeProps {
   /** The selected node's key. Selection follows focus, so it's also the one tab stop. */
   selected: string | undefined;
   onSelect: (key: string) => void;
+  /**
+   * A click on a node's name, after it's selected: the drill-in layout goes in to a folder's
+   * records. The keys never call it, so the keyboard works the same in every layout.
+   */
+  onActivate?: (node: TreeNode) => void;
   onExpand: (key: string, open: boolean) => void;
   /** Opens (reads) an image that hasn't been opened, or has changed since. */
   onOpenImage: (path: string) => void;
@@ -40,6 +45,7 @@ export function EvidenceTree({
   expanded,
   selected,
   onSelect,
+  onActivate,
   onExpand,
   onOpenImage,
   onTogglePin,
@@ -125,6 +131,7 @@ export function EvidenceTree({
         onClick={(event) => {
           event.stopPropagation();
           onSelect(node.key);
+          onActivate?.(node);
         }}
         // The ring goes round the node's own line, not the folders under it.
         className="outline-none [&:focus-visible>div]:outline-2 [&:focus-visible>div]:outline-focus-ring"
@@ -151,12 +158,19 @@ export function EvidenceTree({
               !expandable(node) && "invisible",
             )}
           >
-            {open && !needsOpening(node) ? "▾" : "▸"}
+            <span
+              className={cx(
+                "inline-block transition-transform fx-duration-fast",
+                open && !needsOpening(node) && "rotate-90",
+              )}
+            >
+              ▸
+            </span>
           </span>
           <NodeText id={labelIds.get(node.key)} node={node} pinned={isPinned(node)} />
         </div>
         {open && node.children.length > 0 && !needsOpening(node) && (
-          <ul role="group">
+          <ul role="group" className="animate-fade-in">
             {node.children.map((child, i) =>
               renderNode(child, level + 1, i + 1, node.children.length),
             )}

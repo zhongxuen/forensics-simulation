@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { CaseRunner, loadCaseEvidence, PRACTICE_CASE, replayLog } from "@/features/cases";
 import { EvidenceBrowser } from "@/features/evidence-browser";
 import { createCaseStorage } from "@/lib/case-storage";
@@ -426,5 +426,117 @@ describe("in the practice case", () => {
     expect(session.lastEvents).toEqual([
       expect.objectContaining({ type: "evidence.readOriginal", blocker: false }),
     ]);
+  });
+});
+
+/**
+ * Pretends every element is `px` wide: jsdom has no layout, so a component that sizes itself to
+ * its pane measures nothing (and lays itself out wide) unless told otherwise.
+ */
+function paneWidth(px: number) {
+  return vi.spyOn(Element.prototype, "getBoundingClientRect").mockReturnValue({
+    width: px,
+    height: 0,
+    x: 0,
+    y: 0,
+    top: 0,
+    left: 0,
+    right: px,
+    bottom: 0,
+    toJSON: () => ({}),
+  } as DOMRect);
+}
+
+describe("the layout, by the pane's width", () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it("lays the tree, the table and the details side by side from 900 px", async () => {
+    paneWidth(1100);
+    const { container } = render(<Harness />);
+    expect(container.querySelector("[data-layout]")?.getAttribute("data-layout")).toBe("columns");
+  });
+
+  it("offers the one drive to open while nothing is open, and keeps the filters until then", async () => {
+    paneWidth(600);
+    const user = userEvent.setup();
+    render(<Harness />);
+    expect(
+      screen.getByRole("heading", { name: "A drive's files will be listed here" }),
+    ).toBeTruthy();
+    expect(screen.queryByRole("checkbox", { name: "Deleted only" })).toBeNull();
+    // One Open button: the drive's own details don't repeat it.
+    expect(screen.getAllByRole("button", { name: "Open qf-lt-09" })).toHaveLength(1);
+
+    await user.click(screen.getByRole("button", { name: "Open qf-lt-09" }));
+    expect(item(/Windows \(partition 1\)/)).toBeTruthy();
+    expect(
+      screen.queryByRole("heading", { name: "A drive's files will be listed here" }),
+    ).toBeNull();
+    expect(screen.getByRole("checkbox", { name: "Deleted only" })).toBeTruthy();
+  });
+
+  it("never offers to open an original whose write-blocker is off", () => {
+    paneWidth(600);
+    render(<Harness blocker={false} />);
+    expect(
+      screen.queryByRole("heading", { name: "A drive's files will be listed here" }),
+    ).toBeNull();
+    expect(screen.getByText(/The write-blocker is off/)).toBeTruthy();
+  });
+
+  it("drills in below 900 px: drives, a folder's records, one record, with a breadcrumb and Back", async () => {
+    paneWidth(600);
+    const user = userEvent.setup();
+    const { container } = render(<Harness />);
+    expect(container.querySelector("[data-layout]")?.getAttribute("data-layout")).toBe("drill-in");
+    item(/qf-lt-09/).focus();
+    await user.keyboard("{Enter}");
+    expect(screen.queryByRole("table")).toBeNull();
+
+    // A click on a folder's name goes in to its records; the tree steps aside.
+    await user.click(item(/^Users$/));
+    expect(screen.queryByRole("tree")).toBeNull();
+    const where = () => screen.getByRole("navigation", { name: "Where you are in the drive" });
+    expect(within(where()).getByText("Users").getAttribute("aria-current")).toBe("location");
+    expect(document.activeElement?.textContent).toBe("Records");
+
+    // A click on a folder's row goes into it; on a file's row, to its details.
+    await user.click(row(/dana/));
+    await user.click(row(/Documents/));
+    expect(within(where()).getByText("Documents")).toBeTruthy();
+    await user.click(row(/rota\.txt/));
+    expect(screen.queryByRole("table")).toBeNull();
+    expect(document.activeElement?.textContent).toContain("rota.txt");
+    expect(within(where()).getByText("rota.txt").getAttribute("aria-current")).toBe("location");
+
+    await user.click(screen.getByRole("button", { name: /Back to the records/ }));
+    expect(row(/rota\.txt/)).toBeTruthy();
+    // The keys are the same drilled in: Enter on a file's row goes to its details.
+    row(/rota\.txt/).focus();
+    await user.keyboard("{Enter}");
+    expect(document.activeElement?.textContent).toContain("rota.txt");
+
+    await user.click(within(where()).getByRole("button", { name: "Drives and folders" }));
+    expect(tree()).toBeTruthy();
+    expect(screen.queryByRole("navigation", { name: "Where you are in the drive" })).toBeNull();
+  });
+
+  it("shows what a filter finds, drilled in, and folds the time window away until asked", async () => {
+    paneWidth(600);
+    const user = userEvent.setup();
+    render(<Harness />);
+    item(/qf-lt-09/).focus();
+    await user.keyboard("{Enter}");
+
+    const toggle = screen.getByRole("button", { name: /Time window/ });
+    const between = screen.getByLabelText("Between (UTC)");
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+    expect(between.closest("fieldset")?.hidden).toBe(true);
+    await user.click(toggle);
+    expect(between.closest("fieldset")?.hidden).toBe(false);
+
+    await user.click(screen.getByRole("checkbox", { name: "Deleted only" }));
+    expect(row(/inv-0413\.pdf/)).toBeTruthy();
+    expect(within(screen.getByRole("navigation")).getByText("Filtered records")).toBeTruthy();
   });
 });

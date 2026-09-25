@@ -67,7 +67,7 @@ export function CelebrationsSection({ id }: { id: string }) {
           without={DISPLAY_ONLY}
           variants={[
             {
-              label: "Tip, new idea, heads up",
+              label: "Tip, new idea, note, heads up",
               render: () => (
                 <div className="max-w-xl space-y-4">
                   <Callout kind="tip">
@@ -80,6 +80,12 @@ export function CelebrationsSection({ id }: { id: string }) {
                     <p>
                       Every computer has numbered doors for different jobs. These doors are called{" "}
                       <strong className="text-primary">ports</strong>.
+                    </p>
+                  </Callout>
+                  <Callout kind="info" title="Time zones">
+                    <p>
+                      Security log times are shown in UTC. The laptop kept its own clock in
+                      Europe/London (UTC+01:00).
                     </p>
                   </Callout>
                   <Callout kind="warning">

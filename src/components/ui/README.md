@@ -3,7 +3,7 @@
 Design-system primitives, one component per file, named exports only. Every one is on `/styleguide` (in `pnpm dev`) in each of its states, with the reason for any state it doesn't have.
 
 - **Basics:** `Button` / `ButtonLink`, `Badge` (with the `evidence-tag` tone for artefact refs, and `popKey`), `Card` (with the `letter` variant and its `signed` line), `Panel`, `Tabs` (the selected underline slides), `Dialog`, `Tooltip`, `Menu` (a menu button: the "⋯ Case" overflow menu), `SplitPane` (two panes and a keyboard-movable separator), `ProgressBar`, `ProgressRing`, `StatTile`, `CodeBlock`, `EmptyState`, `Toast` / `ToastViewport`, `Spinner`, `Skeleton` (loading rows), and `SimulatedBadge` (the non-dismissible SIMULATED marker: once per view, the shell's top bar plus any terminal).
-- **Beginner and celebration:** `Callout` (tip / concept / warning), `CoachMark` (guided-tour pointer), `ObjectiveTick` (open, current with a "Now" eyebrow, or done; an optional `details` slot), `Stamp` (the debrief's "Case closed"), `SecretFoundToast`, `MissionComplete`, `CharacterMessage` (story and mentor speech bubble). The reward colour is for these alone.
+- **Beginner and celebration:** `Callout` (tip / concept / info / warning), `CoachMark` (guided-tour pointer), `ObjectiveTick` (open, current with a "Now" eyebrow, or done; an optional `details` slot), `Stamp` (the debrief's "Case closed"), `SecretFoundToast`, `MissionComplete`, `CharacterMessage` (story and mentor speech bubble). The reward colour is for these alone.
 - **Shared:** `candle-mark.tsx` (Candlewright's mark), `icons.tsx` (decorative line icons), `focus-ring.ts` (`FOCUS_RING`, the one keyboard focus style).
 
 Rules:

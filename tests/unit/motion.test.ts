@@ -38,6 +38,8 @@ const UIUX_ANIMATIONS = [
   "animate-shimmer",
   // The landing page's loop strip (prompt UX.2).
   "animate-light-up",
+  // A case board card on its way off the board (prompt UX.5).
+  "animate-fade-out",
 ];
 
 /** `250ms` → 250, `1.2s` → 1200. */

@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { CaseRunner, loadCaseEvidence, PRACTICE_CASE } from "@/features/cases";
 import { onTrack, sourcesIn, TimelineView } from "@/features/timeline";
 import { CASES_STORAGE_KEY, createCaseStorage, type CaseStorage } from "@/lib/case-storage";
@@ -128,6 +128,51 @@ describe("the tracks from the keyboard", () => {
   });
 });
 
+describe("the layout, by the pane's width", () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  /** jsdom has no layout: pretend every element is `px` wide. */
+  const paneWidth = (px: number) =>
+    vi.spyOn(Element.prototype, "getBoundingClientRect").mockReturnValue({
+      width: px,
+      height: 0,
+      x: 0,
+      y: 0,
+      top: 0,
+      left: 0,
+      right: px,
+      bottom: 0,
+      toJSON: () => ({}),
+    } as DOMRect);
+
+  it("puts the filters and details beside the tracks with Focus pane's room", () => {
+    paneWidth(1100);
+    const { container } = renderView();
+    expect(container.querySelector("[data-layout]")?.getAttribute("data-layout")).toBe("wide");
+    expect(screen.getByRole("checkbox", { name: /^Security log/ })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Filters" })).toBeNull();
+  });
+
+  it("folds the filters into a bar above the tracks beside the terminal", async () => {
+    paneWidth(600);
+    const { container, user } = renderView();
+    expect(container.querySelector("[data-layout]")?.getAttribute("data-layout")).toBe("narrow");
+    // The zone banner still leads, as a note.
+    expect(container.querySelector('[role="note"]')?.textContent).toContain("Time zones");
+    const filters = screen.getByRole("button", { name: "Filters" });
+    expect(filters.getAttribute("aria-expanded")).toBe("false");
+    expect(screen.queryByRole("checkbox", { name: /^Security log/ })).toBeNull();
+    const summary = () => screen.getByText(/sources, the whole case/).textContent;
+    const all = sourcesIn(entries).length;
+    expect(summary()).toBe(`${all} of ${all} sources, the whole case`);
+
+    await user.click(filters);
+    await user.click(screen.getByRole("checkbox", { name: /^Security log/ }));
+    await user.click(filters);
+    expect(summary()).toBe(`${all - 1} of ${all} sources, the whole case`);
+  });
+});
+
 describe("one selection, two views", () => {
   it("keeps the chosen moment when switching to the table, and back", async () => {
     const { user } = renderView();
@@ -214,7 +259,8 @@ describe("the Timeline pane in the workspace", () => {
     expect(screen.getByText(/through its write-blocker, which is on/)).toBeTruthy();
     expect(screen.queryByRole("checkbox", { name: /^Drive/ })).toBeNull();
     await user.click(add);
-    expect(screen.getByRole("checkbox", { name: /^Drive/ })).toBeTruthy();
+    // The timeline is lined up again in a render of its own, after the click has drawn.
+    expect(await screen.findByRole("checkbox", { name: /^Drive/ })).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Add qf-lt-03's file times" })).toBeNull();
 
     await user.click(screen.getByRole("button", { name: "Table" }));

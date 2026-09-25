@@ -160,6 +160,28 @@ describe("the Case Board", () => {
     expect(saved(shelf)?.pinNotes).toEqual({ [invoice.ref]: "the download" });
   });
 
+  it("draws each card as an evidence tag, and a card put back rises in", async () => {
+    const { user } = await open(PRACTICE_CASE, save({ pins: [invoice.ref] }));
+    await user.click(await screen.findByRole("tab", { name: "Board" }, CHUNK));
+    const card = await screen.findByRole("article", { name: /invoice-viewer\.exe/ }, CHUNK);
+    // The ref on an evidence-tag badge (monospace, amber outline), the source in words too.
+    const tag = within(card).getByText(invoice.ref).parentElement;
+    expect(tag?.className).toContain("font-mono");
+    expect(tag?.className).toContain("border-accent");
+    expect(within(card).getByText("Disk")).toBeTruthy();
+    // It was on the board when the board opened, so it stays still.
+    expect(card.className).not.toContain("animate-rise-in");
+
+    await user.click(within(card).getByRole("button", { name: "Remove" }));
+    const toast = screen
+      .getAllByRole("status")
+      .find((element) => element.textContent?.includes("Taken off the board")) as HTMLElement;
+    expect(document.activeElement).toBe(within(toast).getByRole("button", { name: "Undo" }));
+    await user.click(within(toast).getByRole("button", { name: "Undo" }));
+    const back = await screen.findByRole("article", { name: /invoice-viewer\.exe/ });
+    expect(back.className).toContain("animate-rise-in");
+  });
+
   it("links to the terminal and the Evidence Browser", async () => {
     const { user } = await open(PRACTICE_CASE, save({ pins: [invoice.ref, logon.ref] }));
     await user.click(await screen.findByRole("tab", { name: "Board" }, CHUNK));
