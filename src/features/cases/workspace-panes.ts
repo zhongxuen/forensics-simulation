@@ -18,8 +18,8 @@ import type { CaseRunAction, CaseRunState } from "./run/case-run";
 
 export type PaneId = "evidence" | "timeline" | "board" | "objectives";
 
-/** Tab order, left to right. */
-export const PANE_ORDER: readonly PaneId[] = ["evidence", "timeline", "board", "objectives"];
+/** Tab order, left to right: the workspace opens on the first (UIUX.md §2.5). */
+export const PANE_ORDER: readonly PaneId[] = ["objectives", "evidence", "timeline", "board"];
 
 /** What every pane gets. */
 export interface WorkspacePaneProps {

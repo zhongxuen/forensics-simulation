@@ -1,128 +1,123 @@
 "use client";
 
-import { useId, useMemo } from "react";
+import { useId, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FOCUS_RING } from "@/components/ui/focus-ring";
-import { CharacterMessage } from "@/components/ui/character-message";
 import { LightbulbIcon, MedalIcon } from "@/components/ui/icons";
 import { ObjectiveTick } from "@/components/ui/objective-tick";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { Tabs } from "@/components/ui/tabs";
-import { getCastMember } from "@/content/cast";
 import { MAX_NOTES_LENGTH } from "@/lib/case-storage";
 import { cx } from "@/lib/cx";
 import { custodyLog } from "../custody";
-import { HINT_TIERS, visibleObjectives } from "../run/case-run";
+import type { CaseObjective } from "../run/case-definition";
+import { currentObjective, HINT_TIERS, visibleObjectives } from "../run/case-run";
 import { caseProgress, isCaseComplete } from "../run/evaluate";
 import type { WorkspacePaneProps } from "../workspace-panes";
 import { CaseText } from "./case-text";
 import { CustodyList } from "./debrief/custody-list";
 
 /**
- * The Objectives pane: two sub-tabs — the team's messages with the checklist and its free hints,
- * and the chain of custody so far (file 10) — then, once every main objective is done, the way on
- * to the report, and the player's notes.
+ * The Objectives pane: two sub-tabs — the checklist, and the chain of custody so far (file 10) —
+ * then, once every main objective is done, a word that the report is next, and the player's notes.
+ *
+ * The checklist puts "now" first (UIUX.md §2.5): the current objective expanded, with why it
+ * matters and the hints shown so far; later ones as titles only; done ones collapsed to their
+ * tick, with their success line a click away. The newest tick stays open, so its success line
+ * lands as the reward while the next objective expands under it. Asking for a hint happens in the
+ * Now strip above, and the team's messages live there too, so a new one never pushes this list
+ * down. A bonus keeps its why and hints behind a disclosure, so it doesn't compete with "now".
  */
 export default function ObjectivesPane({ caseDef, run, dispatch }: WorkspacePaneProps) {
   const notesId = useId();
   const { done, total } = caseProgress(caseDef, run.completed);
   const complete = isCaseComplete(caseDef, run.completed);
   const custody = useMemo(() => custodyLog(run.events, run.marks), [run.events, run.marks]);
+  const current = currentObjective(caseDef, run);
+  const newest = run.completed.at(-1);
 
   const checklist = (
-    <div className="space-y-8">
-      {run.story.length > 0 && (
-        <section aria-labelledby={`${notesId}-chat`}>
-          <h3 id={`${notesId}-chat`} className="text-sm font-semibold tracking-wide text-secondary">
-            Team chat
-          </h3>
-          <ol className="mt-3 space-y-4" aria-live="polite">
-            {run.story.map((entry) => {
-              const speaker = getCastMember(entry.speaker);
-              return (
-                <li key={entry.id}>
-                  <CharacterMessage
-                    speaker={{
-                      name: speaker?.name ?? entry.speaker,
-                      ...(speaker && { role: speaker.role, initials: speaker.initials }),
-                    }}
-                    tone={speaker?.tone ?? "teammate"}
-                  >
-                    {entry.text}
-                  </CharacterMessage>
-                </li>
-              );
-            })}
-          </ol>
-        </section>
-      )}
+    <section aria-labelledby={`${notesId}-objectives`}>
+      <h3 id={`${notesId}-objectives`} className="type-eyebrow">
+        Objectives
+      </h3>
+      <ProgressBar
+        value={done}
+        max={total}
+        label="Main objectives done"
+        showValue
+        className="mt-2"
+      />
 
-      <section aria-labelledby={`${notesId}-objectives`}>
-        <h3
-          id={`${notesId}-objectives`}
-          className="text-sm font-semibold tracking-wide text-secondary"
-        >
-          Objectives
-        </h3>
-        <ProgressBar
-          value={done}
-          max={total}
-          label="Main objectives done"
-          showValue
-          className="mt-2"
-        />
-
-        <ul className="mt-4 space-y-5">
-          {visibleObjectives(caseDef, run).map((objective) => {
-            const ticked = run.completed.includes(objective.id);
+      <ul className="mt-5 space-y-5">
+        {visibleObjectives(caseDef, run).map((objective) => {
+          const bonus = objective.optional === true || objective.hidden === true;
+          const title = (
+            <>
+              {objective.name && <span className="font-semibold">{objective.name}: </span>}
+              <CaseText text={objective.description} />
+            </>
+          );
+          if (run.completed.includes(objective.id)) {
+            return (
+              <ObjectiveTick
+                key={objective.id}
+                bonus={bonus}
+                status="done"
+                success={
+                  <DoneSuccess
+                    id={`${notesId}-${objective.id}`}
+                    startOpen={objective.id === newest}
+                    text={objective.success}
+                  />
+                }
+              >
+                {title}
+              </ObjectiveTick>
+            );
+          }
+          if (objective.id === current?.id) {
             const shown = run.hintsShown[objective.id] ?? 0;
             return (
               <ObjectiveTick
                 key={objective.id}
-                bonus={objective.optional === true || objective.hidden === true}
-                {...(ticked
-                  ? { status: "done", success: <CaseText text={objective.success} /> }
-                  : { status: "open" })}
+                bonus={bonus}
+                status="current"
                 details={
-                  !ticked && (
-                    <div className="space-y-2 text-sm leading-6 text-secondary">
-                      <p>
-                        <span className="font-semibold text-primary">Why: </span>
-                        <CaseText text={objective.why} />
-                      </p>
-                      {shown > 0 && (
-                        <ol className="space-y-1.5" aria-label="Hints for this objective">
-                          {objective.hints.slice(0, shown).map((hint, tier) => (
-                            <li key={tier} className="rounded-md bg-surface-overlay px-3 py-2">
-                              <span className="font-semibold text-accent">Hint {tier + 1}: </span>
-                              <CaseText text={hint} />
-                            </li>
-                          ))}
-                        </ol>
-                      )}
-                      {shown < Math.min(HINT_TIERS, objective.hints.length) && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          icon={<LightbulbIcon />}
-                          onClick={() => dispatch({ type: "hint", objectiveId: objective.id })}
-                        >
-                          {shown === 0 ? "Show a hint" : "Show another hint"}
-                        </Button>
-                      )}
-                    </div>
-                  )
+                  <div className="mt-2 space-y-2 type-small text-secondary">
+                    <p>
+                      <span className="font-semibold text-primary">Why: </span>
+                      <CaseText text={objective.why} />
+                    </p>
+                    <HintList hints={objective.hints.slice(0, shown)} />
+                    <p className="text-muted">
+                      {shown === 0
+                        ? "Stuck? Show a hint from the Now bar above."
+                        : "Any hints left are in the Now bar above."}
+                    </p>
+                  </div>
                 }
               >
-                {objective.name && <span className="font-semibold">{objective.name}: </span>}
-                <CaseText text={objective.description} />
+                {title}
               </ObjectiveTick>
             );
-          })}
-        </ul>
-        <p className="mt-4 text-sm text-muted">Hints are free and never change anything else.</p>
-      </section>
-    </div>
+          }
+          return (
+            <ObjectiveTick
+              key={objective.id}
+              bonus={bonus}
+              status="open"
+              {...(bonus && {
+                details: <BonusDetails objective={objective} run={run} dispatch={dispatch} />,
+              })}
+            >
+              {title}
+            </ObjectiveTick>
+          );
+        })}
+      </ul>
+      <p className="mt-4 type-small text-muted">Hints are free and never change anything else.</p>
+    </section>
   );
 
   return (
@@ -136,7 +131,7 @@ export default function ObjectivesPane({ caseDef, run, dispatch }: WorkspacePane
             label: "Chain of custody",
             content: (
               <section aria-label="Chain of custody" className="space-y-3">
-                <p className="text-sm leading-6 text-secondary">
+                <p className="type-small text-secondary">
                   Everything you&apos;ve done to the evidence so far, in order. It&apos;s built from
                   what the tools did, so it can&apos;t be edited, and it goes on your debrief.
                 </p>
@@ -150,7 +145,7 @@ export default function ObjectivesPane({ caseDef, run, dispatch }: WorkspacePane
       {complete && run.phase === "workspace" && (
         <section
           aria-labelledby={`${notesId}-done`}
-          className="flex flex-wrap items-center gap-4 rounded-xl border border-reward bg-surface-raised px-5 py-4"
+          className="flex items-center gap-4 rounded-xl border border-reward bg-surface-raised px-5 py-4"
         >
           <span
             aria-hidden="true"
@@ -162,21 +157,19 @@ export default function ObjectivesPane({ caseDef, run, dispatch }: WorkspacePane
             <h3 id={`${notesId}-done`} className="font-semibold text-reward">
               Every main objective is done!
             </h3>
-            <p className="text-sm leading-6 text-secondary">
-              Keep looking if you like, or write up what you found.
+            <p className="type-small text-secondary">
+              Keep looking if you like. When you&apos;re ready, Write your report is in the Now bar
+              above.
             </p>
           </div>
-          <Button variant="primary" onClick={() => dispatch({ type: "report" })}>
-            Write your report
-          </Button>
         </section>
       )}
 
       <section>
-        <label htmlFor={notesId} className="text-sm font-semibold tracking-wide text-secondary">
+        <label htmlFor={notesId} className="type-eyebrow">
           Your notes
         </label>
-        <p id={`${notesId}-help`} className="mt-1 text-sm text-muted">
+        <p id={`${notesId}-help`} className="mt-1 type-small text-muted">
           Anything you want to remember about this case.
         </p>
         <textarea
@@ -192,6 +185,97 @@ export default function ObjectivesPane({ caseDef, run, dispatch }: WorkspacePane
           )}
         />
       </section>
+    </div>
+  );
+}
+
+interface DoneSuccessProps {
+  id: string;
+  /** The newest tick starts open, so its success line lands as the reward. */
+  startOpen: boolean;
+  text: string;
+}
+
+/** A done objective's success line, behind a disclosure so the list stays short. */
+function DoneSuccess({ id, startOpen, text }: DoneSuccessProps) {
+  const [open, setOpen] = useState(startOpen);
+  return (
+    <span className="flex flex-col items-start gap-1">
+      <span id={id} hidden={!open}>
+        <CaseText text={text} />
+      </span>
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen(!open)}
+        className={cx(
+          "rounded-sm type-small font-medium text-accent underline-offset-4 hover:underline",
+          FOCUS_RING,
+        )}
+      >
+        {open ? "Hide what you found" : "What you found"}
+      </button>
+    </span>
+  );
+}
+
+function HintList({ hints }: { hints: readonly string[] }) {
+  if (hints.length === 0) return null;
+  return (
+    <ol className="space-y-1.5" aria-label="Hints for this objective">
+      {hints.map((hint, tier) => (
+        <li key={tier} className="rounded-md bg-surface-overlay px-3 py-2 text-primary">
+          <span className="font-semibold text-accent">Hint {tier + 1}: </span>
+          <CaseText text={hint} />
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+interface BonusDetailsProps {
+  objective: CaseObjective;
+  run: WorkspacePaneProps["run"];
+  dispatch: WorkspacePaneProps["dispatch"];
+}
+
+/** A bonus that isn't done yet: its why and hints, on demand. */
+function BonusDetails({ objective, run, dispatch }: BonusDetailsProps) {
+  const id = useId();
+  const [open, setOpen] = useState(false);
+  const shown = run.hintsShown[objective.id] ?? 0;
+  return (
+    <div className="mt-1">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen(!open)}
+        className={cx(
+          "rounded-sm type-small font-medium text-accent underline-offset-4 hover:underline",
+          FOCUS_RING,
+        )}
+      >
+        {open ? "Hide why and hints" : "Why and hints"}
+      </button>
+      <div id={id} hidden={!open} className="mt-2 space-y-2 type-small text-secondary">
+        <p>
+          <span className="font-semibold text-primary">Why: </span>
+          <CaseText text={objective.why} />
+        </p>
+        <HintList hints={objective.hints.slice(0, shown)} />
+        {shown < Math.min(HINT_TIERS, objective.hints.length) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={<LightbulbIcon />}
+            onClick={() => dispatch({ type: "hint", objectiveId: objective.id })}
+          >
+            {shown === 0 ? "Show a hint for this bonus" : "Show another hint for this bonus"}
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

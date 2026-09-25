@@ -87,9 +87,17 @@ describe("CaseRunner", () => {
     const shelf: Shelf = new Map();
     const user = await startCase(storageOver(shelf));
 
-    // The SIMULATED marker is in the header, whichever view is open.
-    expect(screen.getAllByRole("button", { name: /simulated/i }).length).toBeGreaterThan(0);
+    // The workspace opens on Objectives, with the current objective in the Now strip above.
     expect(tab("Objectives").getAttribute("aria-selected")).toBe("true");
+    const now = screen.getByRole("region", { name: "Now" });
+    expect(now.textContent).toContain(PRACTICE_CASE.objectives[0]!.description.replaceAll("`", ""));
+    // The app's top bar carries the page's SIMULATED marker; the terminal carries its own.
+    await user.click(tab("Terminal"));
+    expect(
+      within(screen.getByRole("region", { name: "Terminal" })).getByRole("button", {
+        name: /simulated/i,
+      }),
+    ).toBeTruthy();
 
     await run(user, "cat cases/practice/letter.txt");
     expect(within(output()).getByRole("region", { name: /Command: cat/ }).textContent).toContain(
@@ -203,7 +211,10 @@ describe("CaseRunner", () => {
     await run(user, "ls");
     expect(JSON.parse(shelf.get(CASES_STORAGE_KEY) ?? "{}").runs.practice).toBeDefined();
 
-    await user.click(screen.getByRole("button", { name: "Start the case again" }));
+    // Start the case again lives in the "⋯ Case" menu, still behind its confirm dialog.
+    expect(screen.queryByRole("button", { name: "Start the case again" })).toBeNull();
+    await user.click(screen.getByRole("button", { name: "Case" }));
+    await user.click(screen.getByRole("menuitem", { name: "Start the case again" }));
     const dialog = await screen.findByRole("dialog", { name: "Start this case again?" });
     await user.click(within(dialog).getByRole("button", { name: "Start the case again" }));
     expect(await screen.findByRole("button", { name: "Start case" })).toBeTruthy();
@@ -234,14 +245,87 @@ describe("CaseRunner", () => {
     expect(screen.getByText(/Logs from/)).toBeTruthy();
   });
 
-  it("moves between tabs with the arrow keys", async () => {
+  it("moves between tabs with the arrow keys, in the order Terminal, Objectives, Evidence, Timeline, Board", async () => {
     const user = await startCase(storageOver(new Map()));
+    const views = screen.getByRole("tablist", { name: "Workspace views" });
+    expect(
+      within(views)
+        .getAllByRole("tab")
+        .map((element) => element.textContent),
+    ).toEqual(["Terminal", "Objectives", "Evidence", "Timeline", "Board"]);
     tab("Objectives").focus();
-    await user.keyboard("{ArrowRight}");
+    await user.keyboard("{ArrowLeft}");
     expect(tab("Terminal").getAttribute("aria-selected")).toBe("true");
     expect(document.activeElement).toBe(tab("Terminal"));
+    await user.keyboard("{ArrowRight}{ArrowRight}");
+    expect(tab("Evidence").getAttribute("aria-selected")).toBe("true");
     await user.keyboard("{End}");
-    expect(tab("Objectives").getAttribute("aria-selected")).toBe("true");
+    expect(tab("Board").getAttribute("aria-selected")).toBe("true");
+    await user.keyboard("{Home}");
+    expect(tab("Terminal").getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("puts the current objective in the Now strip, with why on demand and a free hint", async () => {
+    const user = await startCase(storageOver(new Map()));
+    const now = screen.getByRole("region", { name: "Now" });
+    const first = PRACTICE_CASE.objectives[0]!;
+    const why = within(now).getByRole("button", { name: "Why it matters" });
+    expect(why.getAttribute("aria-expanded")).toBe("false");
+    await user.click(why);
+    expect(why.getAttribute("aria-expanded")).toBe("true");
+    expect(now.textContent).toContain(first.why.replaceAll("`", ""));
+
+    await user.click(within(now).getByRole("button", { name: "Show a hint" }));
+    expect(within(now).getByText(/Hint 1 of/)).toBeTruthy();
+    expect(within(now).getByRole("button", { name: "Show another hint" })).toBeTruthy();
+
+    // The hint is on the Objectives tab too, under the current objective, and changes nothing else.
+    const checklist = screen.getByRole("list", { name: "Hints for this objective" });
+    expect(within(checklist).getAllByRole("listitem")).toHaveLength(1);
+    expect(screen.getByText("0 of 2 objectives done")).toBeTruthy();
+  });
+
+  it("shows the newest team message in the Now strip, and the whole chat on demand", async () => {
+    const user = await startCase(storageOver(new Map()));
+    await run(user, "cat cases/practice/letter.txt");
+    const now = screen.getByRole("region", { name: "Now" });
+    const open = within(now).getByRole("button", { name: /earlier message|Open the team chat/ });
+    await user.click(open);
+    const chat = await screen.findByRole("dialog", { name: "Team chat" });
+    expect(within(chat).getAllByRole("listitem").length).toBe(
+      open.textContent === "Open the team chat" ? 1 : Number.parseInt(open.textContent ?? "0") + 1,
+    );
+  });
+
+  it("collapses done objectives to their tick, keeping the newest one's success line open", async () => {
+    const user = await startCase(storageOver(new Map()));
+    await run(user, "cat cases/practice/letter.txt");
+    await user.click(tab("Objectives"));
+    const toggle = await screen.findByRole("button", { name: "Hide what you found" }, CHUNK);
+    expect(toggle.getAttribute("aria-expanded")).toBe("true");
+    await user.click(toggle);
+    expect(
+      screen.getByRole("button", { name: "What you found" }).getAttribute("aria-expanded"),
+    ).toBe("false");
+    // The next objective is now the current one.
+    expect(screen.getByRole("region", { name: "Now" }).textContent).toContain(
+      PRACTICE_CASE.objectives[1]!.description.replaceAll("`", ""),
+    );
+  });
+
+  it("counts the Board's pins on its tab, and marks it until it is opened", async () => {
+    const user = await startCase(storageOver(new Map()));
+    await run(user, "logq --id 4624");
+    await run(user, "pin");
+    const board = tab("Board");
+    expect(board.textContent).toContain("1");
+    expect(board.getAttribute("aria-describedby")).toBeTruthy();
+    const news = document.getElementById(board.getAttribute("aria-describedby") ?? "");
+    expect(news?.textContent).toBe("1 pinned, new since you last looked");
+    await user.click(board);
+    expect(document.getElementById(board.getAttribute("aria-describedby") ?? "")?.textContent).toBe(
+      "1 pinned",
+    );
   });
 });
 

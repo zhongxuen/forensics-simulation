@@ -11,10 +11,23 @@ import { activate, horizontalOverflow, seriousViolations, showView, type } from 
  * that cites nothing, sees "Needs evidence", cites the pin and submits again
  * (docs/plan/10-case-board-report-custody.md).
  *
- * It runs twice: on a desktop, and on a 360 px phone, where the workspace shows one view at a time.
- * axe checks every screen the case goes through on the way: briefing, the workspace with each pane
- * open (the Board and the chain of custody included), the report and the debrief.
+ * It runs twice: on a desktop, and on a 360 px phone, where the workspace shows one view at a time
+ * with a tab bar along the bottom. axe checks every screen the case goes through on the way:
+ * briefing, the workspace with each pane open (the Board and the chain of custody included), the
+ * report and the debrief. After the commands, the current objective, the prompt and the tabs are
+ * all on screen, and the page itself hasn't scrolled (UIUX.md §2.5).
  */
+
+/** The workspace fits the screen: "Now", the prompt and the view tabs, with no page scroll. */
+async function expectWorkspaceInView(page: Page) {
+  await expect(page.getByRole("region", { name: "Now" })).toBeInViewport();
+  await expect(prompt(page)).toBeInViewport();
+  await expect(page.getByRole("tablist", { name: "Workspace views" })).toBeInViewport();
+  const scroll = await page.evaluate(
+    () => document.documentElement.scrollHeight - document.documentElement.clientHeight,
+  );
+  expect(scroll).toBeLessThanOrEqual(1);
+}
 
 /** Ticks the pinned note's record in one answer's Supporting evidence, with the keyboard. */
 async function cite(page: Page, picker: Locator) {
@@ -40,11 +53,20 @@ async function playCaseOne(page: Page) {
   await expect(page.getByRole("heading", { level: 1, name: "The clean copy" })).toBeVisible();
   // The cold open: two lines, each naming its speaker, before the first objective.
   await expect(page.getByText(/Idris Fenwick, investigations/)).toBeVisible();
+  // The written permission is a signed letter, with what it covers and what it doesn't.
+  const letter = page.getByRole("region", { name: "Your written permission" });
+  await expect(letter.getByRole("list", { name: "You may examine" })).toContainText("qf-lt-03");
+  await expect(letter.getByRole("list", { name: "Out of scope" })).toBeVisible();
+  // Start case is on screen before the player has scrolled anywhere.
+  await expect(page.getByRole("button", { name: "Start case" })).toBeInViewport();
   expect(await seriousViolations(page)).toEqual([]);
 
   // A phone opens the workspace on its Objectives tab, and `type` moves to the Terminal tab.
   await activate(page.getByRole("button", { name: "Start case" }));
   await expect(page.getByText("0 of 5 objectives done")).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByRole("region", { name: "Now" })).toContainText(
+    "Read the letter and the handover form",
+  );
 
   // The paperwork, and the fingerprint the form was signed with.
   await type(page, "cat letter.txt");
@@ -67,6 +89,12 @@ async function playCaseOne(page: Page) {
     "2026-04-11T19:44:37Z",
   );
   await expect(await type(page, "pin")).toContainText("pinned to the case board");
+  await expectWorkspaceInView(page);
+  // The Board counts its pin, and the Now strip says the report is next.
+  await expect(page.getByRole("tab", { name: "Board", exact: true })).toContainText("1");
+  await expect(page.getByRole("region", { name: "Now" })).toContainText(
+    "Every main objective is done",
+  );
 
   // Every pane, open, passes axe.
   await showView(page, "Evidence");
@@ -179,6 +207,64 @@ test("/cases lists all three cases, in chapter order, and the practice case", as
     );
   expect(order).toEqual([0, 1, 2]);
   expect(await seriousViolations(page)).toEqual([]);
+});
+
+test("Focus pane, the terminal drawer, the split handle and the Case menu, keyboard only", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/cases/case-01");
+  await activate(page.getByRole("button", { name: "Start case" }));
+  await expect(prompt(page)).toBeVisible({ timeout: 30_000 });
+  await expectWorkspaceInView(page);
+
+  // The handle between the terminal and the panes moves with the arrow keys.
+  const handle = page.getByRole("separator", { name: "Resize the terminal and the case views" });
+  await handle.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(handle).toHaveAttribute("aria-valuenow", "55");
+  await page.keyboard.press("Enter");
+  await expect(handle).toHaveAttribute("aria-valuenow", "50");
+
+  // Focus pane: the pane gets the width, and the terminal waits in a drawer.
+  const focus = page.getByRole("button", { name: "Focus pane" });
+  await activate(focus);
+  await expect(focus).toHaveAttribute("aria-pressed", "true");
+  await expect(prompt(page)).toBeHidden();
+  await expect(handle).toBeHidden();
+  const opener = page.getByRole("button", { name: "Terminal", exact: true });
+  await activate(opener);
+  const drawer = page.getByRole("dialog", { name: "Terminal" });
+  await expect(drawer).toBeVisible();
+  await expect(prompt(page)).toBeFocused();
+  // axe waits for animations to settle, and a focused prompt's cursor blinks for ever: check the
+  // drawer with focus on its Close button, then go back to the prompt.
+  await drawer.getByRole("button", { name: "Close the terminal" }).focus();
+  expect(await seriousViolations(page)).toEqual([]);
+  await prompt(page).focus();
+  // A command typed in the drawer runs in the same terminal.
+  await page.keyboard.type("blocker");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("region", { name: "Command: blocker" })).toContainText("qf-lt-03");
+  // Esc closes it, and focus goes back to the button that opened it.
+  await page.keyboard.press("Escape");
+  await expect(drawer).toBeHidden();
+  await expect(opener).toBeFocused();
+  await activate(focus);
+  await expect(focus).toHaveAttribute("aria-pressed", "false");
+  await expect(prompt(page)).toBeVisible();
+
+  // Start the case again is in the "⋯ Case" menu, behind its confirm dialog.
+  const menu = page.getByRole("button", { name: "Case", exact: true });
+  await activate(menu);
+  await expect(page.getByRole("menuitem", { name: "Start the case again" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  const confirm = page.getByRole("dialog", { name: "Start this case again?" });
+  await expect(confirm).toBeVisible();
+  expect(await seriousViolations(page)).toEqual([]);
+  await activate(confirm.getByRole("button", { name: "Keep going" }));
+  await expect(confirm).toBeHidden();
+  await expect(menu).toBeFocused();
 });
 
 test("reduced motion: Case 1 opens and plays with motion turned off", async ({ page }) => {
