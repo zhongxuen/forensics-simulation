@@ -1,6 +1,13 @@
 "use client";
 
-import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import {
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 import { cx } from "@/lib/cx";
 import { FOCUS_RING } from "./focus-ring";
 
@@ -27,9 +34,23 @@ type TabsProps = TabsSelection & {
 
 const firstEnabled = (tabs: readonly TabItem[]) => tabs.find((tab) => !tab.disabled)?.id;
 
+/** Where the selected tab's underline sits, measured from the tab list's top left corner. */
+interface IndicatorBox {
+  readonly left: number;
+  /** Tabs can wrap onto a second row, so the bar moves down as well as across. */
+  readonly top: number;
+  readonly width: number;
+  /** False for the first placement, so the bar appears in place instead of sliding in. */
+  readonly slide: boolean;
+}
+
 /**
  * Tabs that switch between views in place. Keyboard: Tab reaches the selected tab, arrow keys move
  * between tabs (skipping unavailable ones) and select as they go, Home and End jump to the ends.
+ *
+ * The selected tab's underline slides to the tab you pick (fx-slide: instant under reduced
+ * motion). Until the tabs are measured (the server render, and before hydration), each tab draws
+ * its own bar, so the selection is always marked.
  */
 export function Tabs({
   label,
@@ -47,6 +68,34 @@ export function Tabs({
   const current = tabs.some((tab) => tab.id === wanted && !tab.disabled)
     ? wanted
     : firstEnabled(tabs);
+
+  const listRef = useRef<HTMLDivElement>(null);
+  const [indicator, setIndicator] = useState<IndicatorBox | undefined>(undefined);
+
+  // Measure the selected tab, now and whenever the tab list changes size (a label wraps, the
+  // window narrows).
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    if (!list || current === undefined) return;
+    const place = () => {
+      const tab = tabRefs.current.get(current);
+      if (!tab) return;
+      // Where the per-tab bar it replaces sits: inset 8px each side, along the tab's bottom 2px.
+      const left = tab.offsetLeft + 8;
+      const top = tab.offsetTop + tab.offsetHeight - 2;
+      const width = Math.max(0, tab.offsetWidth - 16);
+      setIndicator((previous) =>
+        previous?.left === left && previous.top === top && previous.width === width
+          ? previous
+          : { left, top, width, slide: previous !== undefined },
+      );
+    };
+    place();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(place);
+    observer.observe(list);
+    return () => observer.disconnect();
+  }, [current]);
 
   const select = (id: string) => {
     if (selectedId === undefined) setInternalId(id);
@@ -72,10 +121,12 @@ export function Tabs({
   return (
     <div className={className}>
       <div
+        ref={listRef}
         role="tablist"
         aria-label={label}
         onKeyDown={onKeyDown}
-        className="flex flex-wrap gap-1 border-b border-subtle"
+        data-indicator={indicator === undefined ? undefined : "ready"}
+        className="group/tabs relative flex flex-wrap gap-1 border-b border-subtle"
       >
         {tabs.map((tab) => {
           const selected = tab.id === current;
@@ -101,6 +152,8 @@ export function Tabs({
                 // The bar marks the selected tab without relying on colour alone.
                 "after:absolute after:inset-x-2 after:bottom-0 after:h-0.5 after:rounded-full",
                 "aria-selected:text-primary aria-selected:after:bg-accent",
+                // Once measured, the one sliding bar below takes over.
+                "group-data-[indicator=ready]/tabs:after:bg-transparent",
                 FOCUS_RING,
               )}
             >
@@ -108,6 +161,16 @@ export function Tabs({
             </button>
           );
         })}
+        {indicator !== undefined && (
+          <span
+            aria-hidden="true"
+            className={cx(
+              "pointer-events-none absolute top-0 left-0 h-0.5 rounded-full bg-accent",
+              indicator.slide && "fx-slide",
+            )}
+            style={{ translate: `${indicator.left}px ${indicator.top}px`, width: indicator.width }}
+          />
+        )}
       </div>
 
       {tabs.map((tab) => (

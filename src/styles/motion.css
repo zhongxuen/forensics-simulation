@@ -113,6 +113,28 @@
      own style. */
   --animate-typing-dot: typing-dot calc(var(--duration-loop) * 1.2 * var(--motion-scale))
     var(--ease-standard) calc(var(--typing-delay, 0ms) * var(--motion-scale)) infinite;
+
+  /* UIUX.md §5, the primitives' share. */
+
+  /* A count or dot on a tab pops once when it changes ("something landed here"). Rests on the
+     badge's own size. */
+  --animate-badge-pop: badge-pop calc(var(--duration-celebrate) * var(--motion-scale))
+    var(--ease-spring) both;
+  /* A line that was just pinned flashes amber, then settles on its own background. Links the
+     action to where it went. */
+  --animate-line-flash: line-flash calc(var(--duration-celebrate) * var(--motion-scale))
+    var(--ease-standard) both;
+  /* A rubber stamp lands: it drops in large, overshoots and settles on its own rotation (the
+     Stamp component rests at -4deg), so reduced motion shows it already stamped. */
+  --animate-stamp: stamp calc(var(--duration-celebrate) * var(--motion-scale)) var(--ease-spring)
+    both;
+  /* One pass of light across a line, left to right (the MATCH line). Pair with fx-sweep, which
+     draws the band and parks it off the element at rest. */
+  --animate-sweep: sweep calc(var(--duration-celebrate-long) * var(--motion-scale))
+    var(--ease-standard) both;
+  /* Skeleton rows while a pane loads. Pair with fx-skeleton. A loading indicator, so it loops;
+     motion scale 0 holds it still. */
+  --animate-shimmer: shimmer calc(var(--duration-loop) * 1.6 * var(--motion-scale)) linear infinite;
 }
 
 /*
@@ -227,6 +249,53 @@
   }
 }
 
+/* Rests on the badge's own scale. */
+@keyframes badge-pop {
+  40% {
+    scale: 1.3;
+  }
+}
+
+/* Rests on the line's own background. */
+@keyframes line-flash {
+  0%,
+  30% {
+    background-color: color-mix(in srgb, var(--accent) 28%, transparent);
+  }
+}
+
+/* Rests on the stamp's own rotation and scale. */
+@keyframes stamp {
+  0% {
+    opacity: 0;
+    scale: 1.8;
+    rotate: 0deg;
+  }
+  60% {
+    opacity: 1;
+    scale: 0.94;
+  }
+}
+
+/* The band starts and ends off the element (see fx-sweep), so the still state shows nothing. */
+@keyframes sweep {
+  from {
+    background-position: -100% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
 @keyframes indeterminate {
   from {
     transform: translateX(-100%);
@@ -254,6 +323,52 @@
 @utility fx-duration-slow {
   --tw-duration: calc(var(--duration-slow) * var(--motion-scale));
   transition-duration: calc(var(--duration-slow) * var(--motion-scale));
+}
+
+/*
+ * The workspace tabs' selected underline slides to the tab you picked (Tabs), and a split pane's
+ * width eases when it snaps (SplitPane). Transitions, not keyframes, so they follow the element.
+ */
+@utility fx-slide {
+  transition-property: translate, width, flex-basis;
+  transition-timing-function: var(--ease-standard);
+  --tw-duration: calc(var(--duration-base) * var(--motion-scale));
+  transition-duration: calc(var(--duration-base) * var(--motion-scale));
+}
+
+/*
+ * The band animate-sweep carries across a line. At rest it's parked off the element's left edge,
+ * so the still state (and reduced motion) shows the line alone. --sweep-colour picks the light:
+ * the accent by default, a status colour for a status line. Text on it stays its own colour: the
+ * tint is translucent and gone within a second.
+ */
+@utility fx-sweep {
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--sweep-colour, var(--accent)) 30%, transparent),
+    transparent
+  );
+  background-repeat: no-repeat;
+  background-size: 40% 100%;
+  background-position: -100% 0;
+}
+
+/*
+ * A skeleton row: an overlay-coloured bar with a soft highlight that animate-shimmer moves across.
+ * At rest the highlight sits off the bar, so under reduced motion it's a plain, still bar.
+ */
+@utility fx-skeleton {
+  background-color: var(--surface-overlay);
+  background-image: linear-gradient(
+    90deg,
+    transparent 35%,
+    color-mix(in srgb, var(--text-primary) 7%, transparent) 50%,
+    transparent 65%
+  );
+  background-repeat: no-repeat;
+  background-size: 300% 100%;
+  background-position: 100% 0;
 }
 
 /* Faint horizontal lines, the old-monitor look. Decorative: gone under reduced motion. */

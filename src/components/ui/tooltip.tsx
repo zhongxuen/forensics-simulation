@@ -2,6 +2,7 @@
 
 import {
   cloneElement,
+  isValidElement,
   useEffect,
   useId,
   useRef,
@@ -85,7 +86,21 @@ export function Tooltip({
     };
   }, [open, shown]);
 
-  const describedBy = [children.props["aria-describedby"], id].filter(Boolean).join(" ");
+  // A trigger written in a server component can arrive as a lazy reference rather than an element
+  // (React sends parts of a large page in chunks), which has no props to read or clone. It renders
+  // as it is, and gets its description once it's on the page.
+  const element = isValidElement(children);
+  const describedBy = element
+    ? [children.props["aria-describedby"], id].filter(Boolean).join(" ")
+    : id;
+
+  useEffect(() => {
+    if (element) return;
+    const trigger = rootRef.current?.firstElementChild;
+    if (!trigger || trigger.getAttribute("aria-describedby")?.split(" ").includes(id)) return;
+    const own = trigger.getAttribute("aria-describedby");
+    trigger.setAttribute("aria-describedby", own ? `${own} ${id}` : id);
+  }, [element, id]);
 
   return (
     <span
@@ -108,7 +123,7 @@ export function Tooltip({
         setDismissed(false);
       }}
     >
-      {cloneElement(children, { "aria-describedby": describedBy })}
+      {element ? cloneElement(children, { "aria-describedby": describedBy }) : children}
       <span
         className={cx(
           "absolute z-50 w-max max-w-[min(18rem,calc(100vw-2rem))]",

@@ -6,6 +6,7 @@ import { FOCUS_RING } from "@/components/ui/focus-ring";
 import { auditContrast } from "@/lib/contrast-audit";
 import { customPropertiesIn } from "@/lib/css-custom-properties";
 import { cx } from "@/lib/cx";
+import { CasePiecesSection, MotionSection, TypeRolesSection } from "./case-pieces-section";
 import { CelebrationsSection } from "./celebrations-section";
 import { ContrastSection } from "./contrast-section";
 import { LessonComponentsSection } from "./lesson-components-section";
@@ -23,10 +24,13 @@ export const metadata: Metadata = {
 
 const SECTIONS = [
   { id: "primitives", label: "Primitives" },
+  { id: "case-pieces", label: "Case pieces" },
+  { id: "motion", label: "Motion" },
   { id: "celebrations", label: "Beginner and celebration" },
   { id: "shell", label: "App shell" },
   { id: "lesson", label: "Lesson content" },
   { id: "lesson-components", label: "Lesson components" },
+  { id: "type-roles", label: "Type roles" },
   { id: "type-scale", label: "Type scale" },
   { id: "spacing-scale", label: "Spacing scale" },
   { id: "contrast", label: "Contrast audit" },
@@ -106,10 +110,13 @@ export default function StyleguidePage() {
 
       <main className="mx-auto max-w-6xl space-y-20 px-4 py-12 sm:px-6 lg:px-10">
         <PrimitivesSection id="primitives" />
+        <CasePiecesSection id="case-pieces" />
+        <MotionSection id="motion" />
         <CelebrationsSection id="celebrations" />
         <ShellSection id="shell" />
         <LessonSection id="lesson" />
         <LessonComponentsSection id="lesson-components" />
+        <TypeRolesSection id="type-roles" />
         <TypeScaleSection id="type-scale" theme={tailwindTheme} />
         <SpacingScaleSection id="spacing-scale" theme={tailwindTheme} />
         <ContrastSection id="contrast" groups={audit} />

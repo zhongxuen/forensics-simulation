@@ -6,6 +6,7 @@ import { useId } from "react";
 import { APP_SECTIONS, sectionForPathname, type AppSection } from "@/lib/app-sections";
 import { cx } from "@/lib/cx";
 import type { NextStep } from "@/lib/next-step";
+import { CandleMark } from "@/components/ui/candle-mark";
 import { CloseIcon } from "@/components/ui/icons";
 import { ChevronsLeftIcon, SECTION_ICONS, ShieldIcon } from "./icons";
 import { FOCUS_RING, RAIL_TOOLTIP } from "./shell-styles";
@@ -97,13 +98,12 @@ function Brand({ onNavigate }: { onNavigate: (() => void) | undefined }) {
         FOCUS_RING,
       )}
     >
-      {/* A prompt and a block cursor: the one place the terminal look shows up in the shell. */}
+      {/* Candlewright's candle: the lamp the evidence room works by (UIUX.md §3.1). */}
       <span
         aria-hidden="true"
-        className="flex size-9 shrink-0 items-center justify-center gap-0.5 rounded-md border border-accent/40 bg-accent-subtle font-mono text-base font-semibold text-accent"
+        className="flex size-9 shrink-0 items-center justify-center rounded-md border border-accent/40 bg-accent-subtle text-accent"
       >
-        &gt;
-        <span className="h-4 w-1.5 bg-accent" />
+        <CandleMark className="size-5" />
       </span>
       <span className={cx("truncate font-semibold tracking-tight", RAIL_TOOLTIP)}>
         Candlewright: Incident Room
