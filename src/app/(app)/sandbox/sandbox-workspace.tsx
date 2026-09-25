@@ -1,9 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { use, useMemo } from "react";
 import { Callout } from "@/components/ui/callout";
+import { FOCUS_RING } from "@/components/ui/focus-ring";
 import { CommandCheatSheet, Terminal, useTerminalSession } from "@/features/terminal";
 import { attachEvidence } from "@/sim";
+import { cx } from "@/lib/cx";
 import type { EvidenceSet, ScenarioSpec } from "@/sim/types";
 
 export interface SandboxWorkspaceProps {
@@ -13,6 +16,12 @@ export interface SandboxWorkspaceProps {
   /** When the kit was handed over: the workstation's clock, and the evidence's `now`. */
   readonly startsAt: number;
   readonly tryThis: readonly { readonly command: string; readonly why: string }[];
+  /** Lessons whose practice terminals carry evidence, one per track, for a guided start. */
+  readonly guided: readonly {
+    readonly track: string;
+    readonly title: string;
+    readonly href: string;
+  }[];
 }
 
 let pending: Promise<EvidenceSet> | undefined;
@@ -39,7 +48,13 @@ function sandboxEvidence(): Promise<EvidenceSet> {
  * `/dev/evidence`, every write-blocker on, and no objectives. Reset machine attaches it again, as
  * it arrived. Nothing is kept between visits.
  */
-export function SandboxWorkspace({ scenario, seed, startsAt, tryThis }: SandboxWorkspaceProps) {
+export function SandboxWorkspace({
+  scenario,
+  seed,
+  startsAt,
+  tryThis,
+  guided,
+}: SandboxWorkspaceProps) {
   const evidence = use(sandboxEvidence());
   const setup = useMemo(
     () => (sim: Parameters<typeof attachEvidence>[0]) =>
@@ -65,18 +80,45 @@ export function SandboxWorkspace({ scenario, seed, startsAt, tryThis }: SandboxW
           aria-labelledby="try-this-title"
           className="rounded-xl border border-subtle bg-surface-raised p-4"
         >
-          <h2 id="try-this-title" className="text-sm font-semibold tracking-wide">
+          <h2 id="try-this-title" className="type-eyebrow">
             Try this first
           </h2>
           <ul className="mt-3 space-y-3">
             {tryThis.map((idea) => (
               <li key={idea.command}>
-                <code className="font-mono text-sm break-words text-accent">{idea.command}</code>
-                <p className="text-sm leading-6 text-secondary">{idea.why}</p>
+                <code className="type-data break-words text-accent">{idea.command}</code>
+                <p className="mt-1 type-small text-secondary">{idea.why}</p>
               </li>
             ))}
           </ul>
         </section>
+        {guided.length > 0 && (
+          <section
+            aria-labelledby="guided-title"
+            className="rounded-xl border border-subtle bg-surface-raised p-4"
+          >
+            <h2 id="guided-title" className="type-eyebrow">
+              Want a guide?
+            </h2>
+            <p className="mt-2 type-small text-secondary">
+              These lessons walk you through the same tools, step by step, on practice evidence of
+              their own.
+            </p>
+            <ul className="mt-3 space-y-2">
+              {guided.map((lesson) => (
+                <li key={lesson.href} className="type-small">
+                  <span className="block text-muted">{lesson.track}</span>
+                  <Link
+                    href={lesson.href}
+                    className={cx("rounded-sm font-medium text-accent hover:underline", FOCUS_RING)}
+                  >
+                    {lesson.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
         <CommandCheatSheet leadWith="Investigate" />
       </aside>
     </div>

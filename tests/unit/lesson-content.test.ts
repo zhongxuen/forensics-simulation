@@ -10,10 +10,16 @@ import {
   type MiniTerminalScenario,
 } from "@/content/mini-terminals";
 import { PRACTICE_STORY_IDS } from "@/content/practice/stories";
+import { isReleased } from "@/content/cases/chapter";
 import { TRACKS } from "@/content/tracks";
 import { findBannedWords } from "@/content/voice";
 import { practiceEvidence, practiceSetup } from "@/features/learning";
-import { compileLessonBody, loadLessonCatalog, type Lesson } from "@/features/learning/server";
+import {
+  compileLessonBody,
+  inPracticeCaseId,
+  loadLessonCatalog,
+  type Lesson,
+} from "@/features/learning/server";
 import { createTerminalSession, submitLine } from "@/features/terminal";
 import { utf8Bytes } from "@/sim/evidence";
 import { hashHex } from "@/sim/evidence/hash";
@@ -191,6 +197,12 @@ describe.each(eachLesson)("lesson %s", (_id, lesson: Lesson) => {
 
   it("names the case where the player meets it", () => {
     expect(section(lesson.body, /^In practice$/)).toMatch(/\]\(\/cases\/case-0\d\)/);
+  });
+
+  it("ends with a Try it in Case N button for a released case", () => {
+    const id = inPracticeCaseId(lesson.body);
+    expect(id).toBeDefined();
+    expect(isReleased(id ?? "")).toBe(true);
   });
 
   it("defines its glossary words with <Term> in the body", async () => {

@@ -6,8 +6,14 @@
  */
 export { compileLessonBody, type CompiledLesson } from "./lessons/compile";
 export { LESSON_CODE_LANGUAGES } from "./lessons/highlight";
+export { inPracticeCaseId } from "./lessons/in-practice";
 export { LessonSourceError, parseLessonSource, type LessonSource } from "./lessons/frontmatter";
-export { LessonArticle, type LessonTrackPosition } from "./lessons/lesson-article";
+export {
+  LessonArticle,
+  LevelLabel,
+  type LessonPracticeCase,
+  type LessonTrackPosition,
+} from "./lessons/lesson-article";
 export {
   getLesson,
   getLessonCatalog,

@@ -17,7 +17,7 @@ export default function GlossaryPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <p className="text-sm text-secondary">
+      <p className="type-small text-secondary">
         <Link
           href="/learn"
           className={cx("rounded-sm font-medium text-accent hover:underline", FOCUS_RING)}
@@ -27,10 +27,8 @@ export default function GlossaryPage() {
         <span aria-hidden="true"> / </span>
         Glossary
       </p>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-        Every word, in plain language
-      </h1>
-      <p className="mt-4 text-lg leading-8 text-secondary">
+      <h1 className="mt-3 type-page-title">Every word, in plain language</h1>
+      <p className="mt-4 max-w-prose text-lg leading-8 text-secondary">
         Investigations have a lot of jargon. Each word here gets one sentence you can read without
         knowing any other jargon, then a little more detail. Wherever you see a word with a dotted
         underline, hover over it or tap it to see its definition without leaving the page.

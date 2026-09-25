@@ -11,10 +11,9 @@ export const metadata: Metadata = { title: getAppSection("settings").label };
 export default function SettingsPage() {
   return (
     <div className="max-w-3xl">
-      <h1 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-        Make the app work your way
-      </h1>
-      <p className="mt-4 text-lg leading-8 text-secondary">
+      <p className="type-eyebrow">Settings</p>
+      <h1 className="mt-2 type-page-title">Make the app work your way</h1>
+      <p className="mt-4 max-w-prose text-lg leading-8 text-secondary">
         Changes apply straight away. Your settings are saved in this browser only.{" "}
         <Link
           href="/privacy"
@@ -23,7 +22,7 @@ export default function SettingsPage() {
           See what we store
         </Link>
       </p>
-      <div className="mt-8">
+      <div className="mt-10">
         <SettingsForm>
           <TerminalLookSettings />
         </SettingsForm>

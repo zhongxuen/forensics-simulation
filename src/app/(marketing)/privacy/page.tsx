@@ -15,20 +15,19 @@ const KEY = "font-mono text-base text-primary";
  */
 export default function PrivacyPage() {
   return (
-    <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-16">
-      <h1 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-        What we store
-      </h1>
-      <p className="mt-6 text-lg leading-8 text-secondary">
+    <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-12 sm:py-16">
+      <p className="type-eyebrow">Privacy</p>
+      <h1 className="mt-2 type-page-title">What we store</h1>
+      <p className="mt-4 text-lg leading-8 text-secondary">
         Two things, both saved in this browser only. There are no accounts, no cookies and no
         database.
       </p>
 
       <section aria-labelledby="stored-settings" className="mt-10">
-        <h2 id="stored-settings" className="text-xl font-semibold text-primary">
+        <h2 id="stored-settings" className="type-section-title text-primary">
           Your settings
         </h2>
-        <p className="mt-2 leading-7 text-secondary">
+        <p className="mt-3 type-body text-secondary">
           Under <code className={KEY}>incident-room:settings</code>: things like beginner mode, your
           terminal&apos;s colours and how much moves on screen. Change them in{" "}
           <Link href="/settings" className={LINK}>
@@ -38,11 +37,11 @@ export default function PrivacyPage() {
         </p>
       </section>
 
-      <section aria-labelledby="stored-cases" className="mt-8">
-        <h2 id="stored-cases" className="text-xl font-semibold text-primary">
+      <section aria-labelledby="stored-cases" className="mt-10">
+        <h2 id="stored-cases" className="type-section-title text-primary">
           Your cases
         </h2>
-        <p className="mt-2 leading-7 text-secondary">
+        <p className="mt-3 type-body text-secondary">
           Under <code className={KEY}>incident-room:cases:v1</code>: for each case you&apos;ve
           opened, the commands you typed and the drives you opened in the Evidence Browser (so the
           case can be rebuilt when you come back), the findings you pinned, your notes, your report
@@ -52,11 +51,11 @@ export default function PrivacyPage() {
         </p>
       </section>
 
-      <section aria-labelledby="stored-leaves" className="mt-8">
-        <h2 id="stored-leaves" className="text-xl font-semibold text-primary">
+      <section aria-labelledby="stored-leaves" className="mt-10">
+        <h2 id="stored-leaves" className="type-section-title text-primary">
           What leaves your browser
         </h2>
-        <div className="mt-2 space-y-4 leading-7 text-secondary">
+        <div className="mt-3 space-y-4 type-body text-secondary">
           <p>
             Nothing you type, with one exception: when you ask the mentor something, your question
             and what the mentor needs to answer it are sent to get you an answer.
@@ -73,10 +72,10 @@ export default function PrivacyPage() {
       </section>
 
       <section aria-labelledby="stored-controls" className="mt-10">
-        <h2 id="stored-controls" className="text-xl font-semibold text-primary">
+        <h2 id="stored-controls" className="type-section-title text-primary">
           Take it with you, or clear it
         </h2>
-        <p className="mt-2 mb-4 leading-7 text-secondary">
+        <p className="mt-3 mb-6 type-body text-secondary">
           Export your cases to a file to move them to another browser, then import that file there.
           An import is checked before it&apos;s kept, and nothing in it runs until you open the
           case.
