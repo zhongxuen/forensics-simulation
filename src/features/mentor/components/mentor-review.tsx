@@ -89,7 +89,7 @@ export function MentorReviewCard({ state, facts, lessonTitle, onRequest }: Mento
             </CharacterMessage>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <Button variant="secondary" icon={<LightbulbIcon />} onClick={onRequest}>
-                Ask {MENTOR_FIRST_NAME} to look back at my case
+                Ask {MENTOR_FIRST_NAME} to look back
               </Button>
               <p className="text-sm leading-6 text-muted">
                 {MENTOR_FIRST_NAME} reads the commands you ran in this case to write it. She never

@@ -329,3 +329,41 @@ describe("applySettingsToElement", () => {
     ).toEqual({ other: "kept" });
   });
 });
+
+describe("the page's settings store", () => {
+  it("follows the device between light and dark while the theme is System", async () => {
+    let onSchemeChange = () => {};
+    const scheme = {
+      matches: false,
+      addEventListener: (_type: string, listener: () => void) => {
+        onSchemeChange = listener;
+      },
+    };
+    const html = { dataset: {} as DOMStringMap };
+    vi.stubGlobal("window", {
+      localStorage: new MemoryStorage(),
+      document: { documentElement: html },
+      matchMedia: () => scheme,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    });
+    vi.resetModules();
+    try {
+      const { updateSettings } = await import("@/lib/settings/store");
+
+      updateSettings({ appTheme: "system" });
+      expect(html.dataset.theme).toBeUndefined();
+      scheme.matches = true;
+      onSchemeChange();
+      expect(html.dataset.theme).toBe("light");
+
+      // Dark or Light chosen by hand: the device's switch changes nothing.
+      updateSettings({ appTheme: "dark" });
+      onSchemeChange();
+      expect(html.dataset.theme).toBeUndefined();
+    } finally {
+      vi.unstubAllGlobals();
+      vi.resetModules();
+    }
+  });
+});

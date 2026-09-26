@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import {
@@ -177,7 +177,10 @@ describe("the Case Board", () => {
     const toast = screen
       .getAllByRole("status")
       .find((element) => element.textContent?.includes("Taken off the board")) as HTMLElement;
-    expect(document.activeElement).toBe(within(toast).getByRole("button", { name: "Undo" }));
+    // Focus moves on the next frame, once the toast is on screen.
+    await waitFor(() =>
+      expect(document.activeElement).toBe(within(toast).getByRole("button", { name: "Undo" })),
+    );
     await user.click(within(toast).getByRole("button", { name: "Undo" }));
     const back = await screen.findByRole("article", { name: /invoice-viewer\.exe/ });
     expect(back.className).toContain("animate-rise-in");
