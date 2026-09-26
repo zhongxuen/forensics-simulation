@@ -14,7 +14,7 @@ interface BreadcrumbProps {
  * The top bar's "where am I": `Cases / The clean copy` (UIUX.md G4). On a page inside a section,
  * the section is a link back up to it; on the section's own page, it's the one crumb. The sidebar
  * already highlights the section and the page's H1 names the page, so this is the way back up
- * rather than a third label for the same thing.
+ * rather than a third label for the same thing. On a phone only the page's title shows.
  */
 export function Breadcrumb({ section, title }: BreadcrumbProps) {
   if (!section) return <div className="min-w-0 flex-1" />;
@@ -28,7 +28,9 @@ export function Breadcrumb({ section, title }: BreadcrumbProps) {
           </li>
         ) : (
           <>
-            <li className="shrink-0">
+            {/* Below 480 px the section crumb gives way so the page's title fits (the sidebar's
+                menu is the way back up there). */}
+            <li className="hidden shrink-0 min-[480px]:block">
               <Link
                 href={section.href}
                 className={cx(
@@ -39,7 +41,7 @@ export function Breadcrumb({ section, title }: BreadcrumbProps) {
                 {section.label}
               </Link>
             </li>
-            <li aria-hidden="true" className="shrink-0 text-muted">
+            <li aria-hidden="true" className="hidden shrink-0 text-muted min-[480px]:block">
               /
             </li>
             <li className="min-w-0 truncate font-semibold text-primary" aria-current="page">

@@ -110,7 +110,7 @@ export function ImageDetail({ node, evidence, onOpen, showOpen = true }: ImageDe
             </p>
           )}
           {showOpen && (
-            <Button variant="primary" onClick={onOpen}>
+            <Button variant="secondary" onClick={onOpen}>
               {node.stale ? "Open it again" : `Open ${image.id}`}
             </Button>
           )}

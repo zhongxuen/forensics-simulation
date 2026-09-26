@@ -174,7 +174,7 @@ interface LatestMessageProps {
 }
 
 /**
- * The team's newest line, one or two lines tall. A message that arrives while the workspace is
+ * The team's newest line: one line on a phone, two or three from `sm` up. A message that arrives while the workspace is
  * open slides in (motion-scaled); the one already there when it opened just shows.
  */
 function LatestMessage({ story, onOpenChat }: LatestMessageProps) {
@@ -185,11 +185,12 @@ function LatestMessage({ story, onOpenChat }: LatestMessageProps) {
   const earlier = story.length - 1;
   return (
     <div className="mt-2 flex flex-wrap items-start gap-x-3 gap-y-1 border-t border-accent/20 pt-2">
-      <div aria-live="polite" className="min-w-0 flex-1 basis-56">
+      {/* On a phone the message is one line beside its button, so the view below keeps its room. */}
+      <div aria-live="polite" className="min-w-0 flex-1 basis-0 sm:basis-56">
         <p
           key={latest.id}
           className={cx(
-            "line-clamp-3 type-small text-secondary lg:line-clamp-2",
+            "line-clamp-1 type-small text-secondary sm:line-clamp-3 lg:line-clamp-2",
             latest.id !== firstSeen && "animate-rise-in",
           )}
         >

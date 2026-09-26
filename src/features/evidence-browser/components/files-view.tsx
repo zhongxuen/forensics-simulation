@@ -396,7 +396,7 @@ export function FilesView({
         Arrow keys move; Right or Enter opens a drive or folder; P pins a folder.
       </p>
       {drill && view && listsRecords(node) && node && (
-        <Button size="sm" variant="primary" onClick={() => goTo("records")}>
+        <Button size="sm" variant="secondary" onClick={() => goTo("records")}>
           Show the files in {nodeLabel(node)}
         </Button>
       )}
@@ -414,7 +414,8 @@ export function FilesView({
           : `You haven't opened a drive yet. This opens your working copy, so the original stays as it arrived.`
       }
       action={
-        <Button variant="primary" onClick={() => openImage(starter.image.path)}>
+        // Secondary: in the workspace the Now strip carries the screen's one primary (UIUX §3.3).
+        <Button variant="secondary" onClick={() => openImage(starter.image.path)}>
           Open {starter.image.id}
         </Button>
       }

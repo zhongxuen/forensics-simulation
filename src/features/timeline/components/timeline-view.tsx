@@ -407,8 +407,9 @@ function Toggle<T extends string>({
             className={cx(
               "rounded px-2.5 py-1 text-sm font-medium",
               "focus-visible:outline-2 focus-visible:outline-focus-ring",
+              // A state, not an action (UIUX §3.3): a tint with an amber edge, never a solid fill.
               value === id
-                ? "bg-accent text-surface-base"
+                ? "bg-accent-subtle text-primary ring-1 ring-accent ring-inset"
                 : "text-secondary hover:bg-surface-overlay hover:text-primary",
             )}
           >
