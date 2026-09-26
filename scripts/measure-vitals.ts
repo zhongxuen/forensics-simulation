@@ -91,12 +91,19 @@ async function measureOnce(
   let jsBytes = 0;
   const cdp = await context.newCDPSession(page);
   await cdp.send("Network.enable");
-  const scriptRequests = new Set<string>();
+  // The compressed bodies only: a response's headers (about 1 KB each, some 17 KB over the case
+  // page's 15 chunks) are received before `responseReceived`, so they're taken off here. That
+  // makes this the same set of bytes `pnpm bundle:check` counts, give or take the server's gzip
+  // level (UIUX.md §2.9, O6).
+  const scriptHeaders = new Map<string, number>();
   cdp.on("Network.responseReceived", (event) => {
-    if (event.type === "Script") scriptRequests.add(event.requestId);
+    if (event.type === "Script") {
+      scriptHeaders.set(event.requestId, event.response.encodedDataLength);
+    }
   });
   cdp.on("Network.loadingFinished", (event) => {
-    if (scriptRequests.has(event.requestId)) jsBytes += event.encodedDataLength;
+    const headers = scriptHeaders.get(event.requestId);
+    if (headers !== undefined) jsBytes += event.encodedDataLength - headers;
   });
   if (THROTTLE) {
     await cdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
@@ -131,7 +138,7 @@ async function main() {
     `Measuring ${BASE} (${THROTTLE ? "mobile: 4x CPU, 150 ms, 1.6 Mbps" : "desktop, no throttling"}), median of ${RUNS} runs.\n`,
   );
   console.log(
-    `${"Page".padEnd(20)} ${"LCP".padStart(9)} ${"INP".padStart(8)} ${"CLS".padStart(7)} ${"JS (wire)".padStart(11)}`,
+    `${"Page".padEnd(20)} ${"LCP".padStart(9)} ${"INP".padStart(8)} ${"CLS".padStart(7)} ${"JS (gzip)".padStart(11)}`,
   );
   const results: Record<string, Vitals> = {};
   for (const { route, interact } of PAGES) {

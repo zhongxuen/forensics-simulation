@@ -4,6 +4,7 @@
  */
 export type {
   CaseBeat,
+  CaseLesson,
   CaseBriefing,
   CaseClient,
   CaseDebriefSpec,
@@ -17,11 +18,29 @@ export type {
 export {
   gradeQuestion,
   gradeReport,
+  isCorrect,
   parseAnswerTime,
+  reportAnswers,
   supportedCount,
-  type QuestionGrade,
+  type Finding,
+  type FindingReason,
+  type CitedAnswer,
+  type GradableQuestion,
   type ReportVerdict,
-} from "./run/report";
+} from "./grading";
+export {
+  CUSTODY_LABELS,
+  custodyLog,
+  custodyRuleHolds,
+  custodyText,
+  describeCustody,
+  hashedBeforeAnalysing,
+  isAnalysis,
+  type CustodyEntry,
+  type CustodyKind,
+  type CustodyRecordHeader,
+  type CustodyRule,
+} from "./custody";
 export {
   caseRunReducer,
   createCaseRun,
@@ -43,14 +62,17 @@ export {
   type ObjectiveEvaluator,
   type RunBoard,
 } from "./run/evaluate";
+export { objectiveSuggestions } from "./run/suggestions";
 export {
   CASE_LISTINGS,
   CHAPTER,
   RELEASED_CASE_LISTINGS,
+  caseSummaries,
   findCaseListing,
   type CaseListing,
   type CaseStatus,
 } from "./run/catalog";
+export { caseState, type CaseState, type CaseSummary, type SummarySource } from "./run/case-state";
 export { hasCaseEvidence, loadCaseEvidence } from "./run/evidence";
 export { PRACTICE_CASE } from "./run/practice-case";
 export { replayLog } from "./run/replay";
@@ -61,7 +83,10 @@ export {
   PANE_LABELS,
   PANE_ORDER,
   WORKSPACE_PANES,
+  type PaneExplainRow,
   type PaneId,
+  type PaneReveal,
+  type PaneWorkstation,
   type WorkspacePane,
   type WorkspacePaneProps,
 } from "./workspace-panes";

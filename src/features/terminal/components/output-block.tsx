@@ -21,6 +21,7 @@ import {
 } from "../beginner/explain-request";
 import { explainBlock } from "../beginner/what-happened";
 import type { TerminalBlock, TerminalLine } from "../session/terminal-session";
+import { HexValue, splitHexValues } from "./hex-value";
 import { PromptLabel } from "./prompt-label";
 import { AnsiText, CopyText } from "./styled-text";
 
@@ -28,6 +29,11 @@ import { AnsiText, CopyText } from "./styled-text";
 const CHOICE_CHARS = 90;
 
 const isErrorLine = (line: TerminalLine) => line.error !== undefined || line.stream === "stderr";
+
+const BLOCK_ACTION = cx(
+  "shrink-0 rounded px-1.5 font-sans text-xs leading-6 text-term-dim hover:text-term-fg",
+  FOCUS_RING,
+);
 
 const CHOICE = cx(
   "block max-w-full rounded px-1.5 text-left break-words text-term-fg underline-offset-4 hover:text-term-cyan hover:underline",
@@ -43,13 +49,28 @@ function indentStyle(text: string): CSSProperties | undefined {
   return indent > 0 ? { paddingLeft: `${indent}ch`, textIndent: `-${indent}ch` } : undefined;
 }
 
+/** A line's styled text, with each hex value (a hash) on a line of its own and a Copy button. */
+function LineText({ line }: { line: TerminalLine }) {
+  if (line.spans.length === 0) return " ";
+  return splitHexValues(line.text, line.spans).map((piece, i) =>
+    piece.kind === "hex" ? (
+      <HexValue key={i} value={piece.value} />
+    ) : (
+      <AnsiText key={i} spans={piece.spans} />
+    ),
+  );
+}
+
 const TerminalLineView = memo(function TerminalLineView({
   line,
   onExplain,
+  flash,
 }: {
   line: TerminalLine;
   /** Explain this line (a pointer shortcut; the block's "Explain this" button is the keyboard way). */
   onExplain?: (lineId: number) => void;
+  /** The line just landed on the board: it flashes amber once (UIUX.md §5). */
+  flash?: boolean;
 }) {
   if (line.kind === "explain") {
     return (
@@ -75,10 +96,14 @@ const TerminalLineView = memo(function TerminalLineView({
   const explainable = onExplain !== undefined && line.text.trim() !== "";
   return (
     <div
-      className={cx(line.error && "text-term-red", explainable && "group/line relative")}
+      className={cx(
+        line.error && "text-term-red",
+        explainable && "group/line relative",
+        flash && "animate-line-flash rounded-sm",
+      )}
       style={indentStyle(line.text)}
     >
-      {line.spans.length === 0 ? " " : <AnsiText spans={line.spans} />}
+      <LineText line={line} />
       {explainable && (
         // A shortcut for the pointer, shown on hover. It stays out of the tab order and the
         // accessibility tree so the output reads as plain lines; the block's "Explain this" button
@@ -102,7 +127,7 @@ interface OutputBlockProps {
   beginnerMode: boolean;
   /** How the prompt before the command is drawn. */
   promptStyle?: PromptStyleId;
-  /** The newest block keeps its "What just happened?" button in view. */
+  /** The newest block keeps its "What just happened?" and "Explain this" buttons in view. */
   latest: boolean;
   /**
    * Let the browser skip laying out this block while it's off screen. Off for the newest blocks,
@@ -140,6 +165,11 @@ export const OutputBlock = memo(function OutputBlock({
   const canExplain = block.kind === "command" && block.input.trim() !== "";
   const askable = onExplain !== undefined && canExplainBlock(block);
   const choices = askable ? explainableLines(block) : [];
+  // A pin that worked: its output flashes as it lands, linking the command to the board.
+  const pinned = latest && block.events.some((event) => event.type === "board.pinned");
+  // Older blocks keep their buttons out of the way until the block is hovered or focused; an
+  // open panel or chooser keeps them in the flow, above it.
+  const tucked = !latest && !explaining && !choosing;
 
   const explainLine = useCallback(
     (lineId?: number) => {
@@ -167,7 +197,7 @@ export const OutputBlock = memo(function OutputBlock({
       aria-label={
         block.kind === "command" ? `Command: ${block.input || "(empty line)"}` : "Terminal note"
       }
-      className="group relative"
+      className="group relative border-l border-term-dim/30 pl-3"
       style={
         virtualize
           ? { contentVisibility: "auto", containIntrinsicSize: `auto ${rows * 1.5}rem` }
@@ -175,23 +205,35 @@ export const OutputBlock = memo(function OutputBlock({
       }
     >
       {block.kind === "command" && (
-        <div className="flex items-start gap-2">
-          <p className="min-w-0 flex-1 break-words whitespace-pre-wrap">
-            <PromptLabel prompt={block.prompt} style={promptStyle} /> {block.input}
-          </p>
+        <p className="break-words whitespace-pre-wrap">
+          <PromptLabel prompt={block.prompt} style={promptStyle} /> {block.input}
+        </p>
+      )}
+      {lines.map((line) => (
+        <TerminalLineView
+          key={line.id}
+          line={line}
+          flash={pinned && line.kind === "output"}
+          {...(askable && { onExplain: explainLine })}
+        />
+      ))}
+      {(canExplain || askable) && (
+        // At the end of the block, so the command line never wraps around them. Always in the tab
+        // order: focusing one shows them both.
+        <div
+          className={cx(
+            "flex justify-end gap-1",
+            tucked &&
+              "absolute right-0 bottom-0 bg-term-bg opacity-0 group-focus-within:opacity-100 group-hover:opacity-100",
+          )}
+        >
           {canExplain && (
             <button
               type="button"
               aria-expanded={explaining}
               aria-controls={panelId}
               onClick={() => setExplaining((open) => !open)}
-              className={cx(
-                "shrink-0 rounded px-1.5 font-sans text-xs leading-6 text-term-dim hover:text-term-fg",
-                !latest &&
-                  !explaining &&
-                  "opacity-0 group-focus-within:opacity-100 group-hover:opacity-100",
-                FOCUS_RING,
-              )}
+              className={BLOCK_ACTION}
             >
               {explaining ? "Hide explanation" : "What just happened?"}
             </button>
@@ -207,22 +249,13 @@ export const OutputBlock = memo(function OutputBlock({
                 // explainer as the fallback). None: the command itself.
                 choices.length > 1 ? setChoosing((open) => !open) : explainLine(choices[0]?.id)
               }
-              className={cx(
-                "shrink-0 rounded px-1.5 font-sans text-xs leading-6 text-term-dim hover:text-term-fg",
-                !latest &&
-                  !choosing &&
-                  "opacity-0 group-focus-within:opacity-100 group-hover:opacity-100",
-                FOCUS_RING,
-              )}
+              className={BLOCK_ACTION}
             >
               Explain this
             </button>
           )}
         </div>
       )}
-      {lines.map((line) => (
-        <TerminalLineView key={line.id} line={line} {...(askable && { onExplain: explainLine })} />
-      ))}
       {askable && choosing && (
         <div
           ref={chooserRef}

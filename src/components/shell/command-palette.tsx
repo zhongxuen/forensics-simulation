@@ -18,7 +18,7 @@ import { searchCommands, type SearchableCommand } from "@/lib/command-search";
 import { cx } from "@/lib/cx";
 import { searchIndex, SEARCH_KIND_LABELS, type SearchKind } from "@/lib/search";
 import { useGuardedNavigate } from "./leave-guard";
-import type { NextStep } from "@/lib/next-step";
+import { START_HERE_LABEL, type NextStep } from "@/lib/next-step";
 import { SECTION_ICONS } from "./icons";
 import { FOCUS_RING } from "./shell-styles";
 
@@ -52,7 +52,7 @@ function buildCommands(nextStep: NextStep): PaletteCommand[] {
     {
       id: "start-here",
       group: "Start",
-      label: `Start here: ${nextStep.title}`,
+      label: `${nextStep.label ?? START_HERE_LABEL}: ${nextStep.title}`,
       description: nextStep.detail,
       keywords: ["begin", "first mission", "continue"],
       href: nextStep.href,

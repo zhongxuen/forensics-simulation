@@ -14,15 +14,33 @@ const animations = customPropertiesIn(motionCss, "@theme inline");
 const CELEBRATION_BUDGET_MS = 1500;
 /**
  * Loading indicators loop until the work is done (the mentor's typing dots are one: they show while
- * a reply is being written, md-files/10-ai-mentor.md), and the terminal cursor blinks while you can
- * type (md-files/05-terminal-module.md). Nothing else may loop.
+ * a reply is being written, md-files/10-ai-mentor.md; the skeleton's shimmer is another), and the
+ * terminal cursor blinks while you can type (md-files/05-terminal-module.md). Nothing else may loop.
  */
 const MAY_LOOP = new Set([
   "animate-spin",
   "animate-indeterminate",
   "animate-typing-dot",
   "animate-cursor-blink",
+  "animate-shimmer",
 ]);
+
+/**
+ * The motion UIUX.md §5 gives the primitives (prompt UX.1): the badge pop on a tab's count, the
+ * line flash for `pin`, the Case closed stamp, the MATCH sweep and the skeleton shimmer. The
+ * sliding tab underline is a transition (fx-slide), checked with the transition utilities.
+ */
+const UIUX_ANIMATIONS = [
+  "animate-badge-pop",
+  "animate-line-flash",
+  "animate-stamp",
+  "animate-sweep",
+  "animate-shimmer",
+  // The landing page's loop strip (prompt UX.2).
+  "animate-light-up",
+  // A case board card on its way off the board (prompt UX.5).
+  "animate-fade-out",
+];
 
 /** `250ms` → 250, `1.2s` → 1200. */
 function toMs(value: string | undefined): number {
@@ -100,6 +118,23 @@ describe("animations", () => {
     }
   });
 
+  it("include the primitives' motion from UIUX.md §5", () => {
+    const names = entries.map(([name]) => name);
+    for (const name of UIUX_ANIMATIONS) expect(names, name).toContain(name);
+  });
+
+  it("only use keyframes that exist", () => {
+    // `spin` is Tailwind's own; every other keyframe is written in motion.css.
+    const keyframes = new Set([
+      "spin",
+      ...[...motionCss.matchAll(/@keyframes ([\w-]+)/g)].map((m) => m[1]),
+    ]);
+    for (const [name, value] of entries) {
+      const keyframe = /^([\w-]+)\s/.exec(value.trim())?.[1];
+      expect(keyframes.has(keyframe), `${name} uses @keyframes ${keyframe}`).toBe(true);
+    }
+  });
+
   it("only loop for loading indicators", () => {
     const looping = entries.filter(([, value]) => parseAnimation(value).repeats === Infinity);
     expect(looping.map(([name]) => name).sort()).toEqual([...MAY_LOOP].sort());
@@ -107,13 +142,30 @@ describe("animations", () => {
 });
 
 describe("transition utilities", () => {
+  const utilities = [...motionCss.matchAll(/@utility (fx-[\w-]+) \{([^}]*)\}/g)];
+  const transitions = utilities.filter(([, , body]) => /transition-duration/.test(body ?? ""));
+
   it("scale their duration by --motion-scale", () => {
-    const utilities = [...motionCss.matchAll(/@utility (fx-duration-[\w-]+) \{([^}]*)\}/g)];
-    expect(utilities.length).toBeGreaterThan(0);
-    for (const [, name, body] of utilities) {
+    expect(transitions.map(([, name]) => name)).toEqual(
+      expect.arrayContaining(["fx-duration-fast", "fx-duration-base", "fx-duration-slow"]),
+    );
+    for (const [, name, body] of transitions) {
       expect(body, name).toMatch(
         /transition-duration: calc\(var\(--duration-[\w-]+\) \* var\(--motion-scale\)\)/,
       );
     }
+  });
+
+  it("include the tab underline's slide (UIUX.md §5)", () => {
+    const slide = transitions.find(([, name]) => name === "fx-slide");
+    expect(slide?.[2]).toMatch(/transition-property: translate, width/);
+  });
+});
+
+describe("rest states", () => {
+  it("park the sweep and the shimmer's highlight off the element, so still motion shows none", () => {
+    const body = (name: string) => motionCss.split(`@utility ${name} {`)[1]?.split("\n}")[0] ?? "";
+    expect(body("fx-sweep")).toMatch(/background-position: -100% 0;/);
+    expect(body("fx-skeleton")).toMatch(/background-position: 100% 0;/);
   });
 });

@@ -13,6 +13,8 @@ import { loadEvidence } from "../loader/evidence";
 const LOADERS: Readonly<Record<string, () => Promise<EvidenceSet>>> = {
   practice: () => import("./practice-evidence").then((module) => module.PRACTICE_EVIDENCE),
   "case-01": () => loadEvidence("case-01"),
+  "case-02": () => loadEvidence("case-02"),
+  "case-03": () => loadEvidence("case-03"),
 };
 
 /** The case's evidence, or undefined for a case that has none yet. */

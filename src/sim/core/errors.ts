@@ -43,6 +43,9 @@ export const SIM_ERROR_CODES = [
   "RECORD_NOT_FOUND", // no file record with that number in the image
   "CLUSTERS_REUSED", // a deleted file's clusters hold something else now
   "NOTHING_TO_PIN", // that output line names no artefact (see `reason`)
+  // Memory (docs/plan/08-memory-tools.md).
+  "MEMORY_NOT_FOUND", // no memory image with that name is attached to this case
+  "PROCESS_NOT_FOUND", // no process with that pid in the memory image
 ] as const;
 
 export type FsErrorCode = (typeof FS_ERROR_CODES)[number];
@@ -113,7 +116,9 @@ export type SimError =
       readonly reason: NothingToPinReason;
       /** The line number asked for, when one was. */
       readonly line?: number;
-    };
+    }
+  | { readonly code: "MEMORY_NOT_FOUND"; readonly name: string }
+  | { readonly code: "PROCESS_NOT_FOUND"; readonly image: string; readonly pid: number };
 
 const FS_MESSAGES: Record<FsErrorCode, string> = {
   ENOENT: "No such file or directory",
@@ -194,6 +199,10 @@ export function formatError(tool: string, error: SimError): string {
       return error.reason === "no-output"
         ? `${tool}: nothing has been printed yet to pin`
         : `${tool}: line ${error.line ?? 0} has nothing to pin`;
+    case "MEMORY_NOT_FOUND":
+      return `${tool}: ${error.name}: no memory image by that name`;
+    case "PROCESS_NOT_FOUND":
+      return `${tool}: ${error.image}: no process with pid ${error.pid}`;
     default:
       return formatFsError(tool, error);
   }

@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { PlayIcon } from "@/components/ui/icons";
 import { cx } from "@/lib/cx";
-import type { NextStep } from "@/lib/next-step";
+import { START_HERE_LABEL, type NextStep } from "@/lib/next-step";
 import { FOCUS_RING, RAIL_TOOLTIP } from "./shell-styles";
 
 interface StartHereLinkProps {
   step: NextStep;
   /**
    * `sidebar`: the card at the top of the sidebar; shrinks to a play button in the icon rail.
-   * `bar`: a full-width button for the bar pinned to the bottom of small screens.
+   * `bar`: a full-width card for the bar pinned to the bottom of small screens.
    * `inline`: an outlined button inside page content.
    */
   variant: "sidebar" | "bar" | "inline";
@@ -17,13 +17,29 @@ interface StartHereLinkProps {
   onNavigate?: () => void;
 }
 
-const LABEL = "Start here";
+/** The amber play icon every variant leads with. */
+function StepIcon({ className }: { className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cx(
+        "grid shrink-0 place-items-center rounded-md border border-accent/40 bg-accent-subtle text-accent",
+        className,
+      )}
+    >
+      <PlayIcon className="size-4" />
+    </span>
+  );
+}
 
 /**
- * The "Start here" entry point: one click to the first mission, so a beginner never has to decide
- * where to go. It's the one accent-filled control in the shell.
+ * The next step: one click to the first case, or back to the case in progress ("Continue Case 1 ·
+ * 1 of 5"), so a beginner never has to decide where to go. A raised card with an amber icon rather
+ * than a filled slab (UIUX.md G2), so it never outshouts a page's own main button. The shell hides
+ * it inside a case, where it would point at where you already are.
  */
 export function StartHereLink({ step, variant, current = false, onNavigate }: StartHereLinkProps) {
+  const label = step.label ?? START_HERE_LABEL;
   const shared = {
     href: step.href,
     onClick: onNavigate,
@@ -35,22 +51,19 @@ export function StartHereLink({ step, variant, current = false, onNavigate }: St
       <Link
         {...shared}
         className={cx(
-          "flex items-center gap-3 rounded-lg bg-accent px-3 py-2 text-surface-base hover:bg-accent-hover",
+          "flex items-center gap-3 rounded-lg border border-subtle bg-surface-raised px-3 py-2 hover:border-accent",
           FOCUS_RING,
         )}
       >
-        <span className="grid size-8 shrink-0 place-items-center rounded-md bg-surface-base text-accent">
-          <PlayIcon className="size-4" />
-        </span>
+        <StepIcon className="size-8" />
         <span className="min-w-0">
-          <span className="block leading-5 font-semibold">{LABEL}</span>
-          <span className="block truncate text-sm leading-5 font-medium">{step.title}</span>
+          <span className="block type-eyebrow">{label}</span>
+          <span className="block truncate leading-5 font-semibold text-primary">{step.title}</span>
         </span>
       </Link>
     );
   }
 
-  // Outlined, so the sidebar card stays the one filled Start here on screen.
   if (variant === "inline") {
     return (
       <Link
@@ -60,11 +73,9 @@ export function StartHereLink({ step, variant, current = false, onNavigate }: St
           FOCUS_RING,
         )}
       >
-        <span className="grid size-8 shrink-0 place-items-center rounded-md bg-accent text-surface-base">
-          <PlayIcon className="size-4" />
-        </span>
+        <StepIcon className="size-8" />
         <span>
-          <span className="block leading-5 font-semibold">{LABEL}</span>
+          <span className="block leading-5 font-semibold">{label}</span>
           <span className="block text-sm leading-5 text-secondary">{step.title}</span>
         </span>
       </Link>
@@ -75,18 +86,16 @@ export function StartHereLink({ step, variant, current = false, onNavigate }: St
     <Link
       {...shared}
       className={cx(
-        "group relative flex items-center gap-3 rounded-lg bg-accent p-3 text-surface-base shadow-[0_10px_28px_-14px_var(--accent)] hover:bg-accent-hover",
-        "rail:mx-auto rail:size-11 rail:justify-center rail:p-0",
+        "group relative flex items-center gap-3 rounded-lg border border-subtle bg-surface-overlay p-3 shadow-sm hover:border-accent",
+        "rail:mx-auto rail:size-11 rail:justify-center rail:border-transparent rail:bg-transparent rail:p-0 rail:shadow-none",
         FOCUS_RING,
       )}
     >
-      <span className="grid size-9 shrink-0 place-items-center rounded-md bg-surface-base text-accent rail:bg-transparent rail:text-surface-base">
-        <PlayIcon className="size-4.5" />
-      </span>
+      <StepIcon className="size-9" />
       <span className={cx("min-w-0", RAIL_TOOLTIP)}>
-        <span className="block leading-5 font-semibold">{LABEL}</span>
-        <span className="block text-sm leading-5 font-medium">{step.title}</span>
-        <span className="mt-0.5 block text-xs leading-4 rail:text-muted">{step.detail}</span>
+        <span className="block type-eyebrow">{label}</span>
+        <span className="mt-0.5 block leading-5 font-semibold text-primary">{step.title}</span>
+        <span className="mt-0.5 block text-xs leading-4 text-muted">{step.detail}</span>
       </span>
     </Link>
   );

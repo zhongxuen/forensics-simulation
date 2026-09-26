@@ -1,0 +1,5527 @@
+{
+  "caseId": "case-02",
+  "disks": [
+    {
+      "clusterSize": 4096,
+      "device": {
+        "model": "Pellmoor 256 GB solid-state drive",
+        "serial": "PM-2937-5908"
+      },
+      "id": "qf-lt-07",
+      "partitions": [
+        {
+          "fs": "NTFS-like",
+          "index": 0,
+          "label": "System reserved",
+          "sectors": 1048576,
+          "startSector": 2048
+        },
+        {
+          "fs": "NTFS-like",
+          "index": 1,
+          "label": "Windows",
+          "sectors": 499067568,
+          "startSector": 1050624
+        }
+      ],
+      "records": [
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\",
+          "record": 5,
+          "size": 0,
+          "times": {
+            "a": 1739169092000,
+            "b": 1739169092000,
+            "c": 1739169092000,
+            "m": 1739169092000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows",
+          "record": 6,
+          "size": 0,
+          "times": {
+            "a": 1739172509000,
+            "b": 1739172509000,
+            "c": 1739172509000,
+            "m": 1739172509000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32",
+          "record": 7,
+          "size": 0,
+          "times": {
+            "a": 1739166934000,
+            "b": 1739166934000,
+            "c": 1739166934000,
+            "m": 1739166934000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\drivers",
+          "record": 8,
+          "size": 0,
+          "times": {
+            "a": 1739170163000,
+            "b": 1739170163000,
+            "c": 1739170163000,
+            "m": 1739170163000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\drivers\\etc",
+          "record": 9,
+          "size": 0,
+          "times": {
+            "a": 1739170163000,
+            "b": 1739170163000,
+            "c": 1739170163000,
+            "m": 1739170163000
+          }
+        },
+        {
+          "clusters": [
+            1000
+          ],
+          "contentB64": "IyBMb2NhbCBuYW1lIGxvb2t1cHMgYXJlIGNoZWNrZWQgaGVyZSBiZWZvcmUgdGhlIG5ldHdvcmsgaXMgYXNrZWQuCjEyNy4wLjAuMSBsb2NhbGhvc3QK",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\drivers\\etc\\hosts",
+          "record": 10,
+          "size": 87,
+          "times": {
+            "a": 1739170163000,
+            "b": 1739170163000,
+            "c": 1739170163000,
+            "m": 1739170163000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Users",
+          "record": 11,
+          "size": 0,
+          "times": {
+            "a": 1739168294000,
+            "b": 1739168294000,
+            "c": 1739168294000,
+            "m": 1739168294000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Users\\Public",
+          "record": 12,
+          "size": 0,
+          "times": {
+            "a": 1739171962000,
+            "b": 1739171962000,
+            "c": 1739171962000,
+            "m": 1739171962000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Users\\Public\\Downloads",
+          "record": 13,
+          "size": 0,
+          "times": {
+            "a": 1739171101000,
+            "b": 1739171101000,
+            "c": 1739171101000,
+            "m": 1739171101000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Program Files",
+          "record": 14,
+          "size": 0,
+          "times": {
+            "a": 1739172555000,
+            "b": 1739172555000,
+            "c": 1739172555000,
+            "m": 1739172555000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\ProgramData",
+          "record": 15,
+          "size": 0,
+          "times": {
+            "a": 1739166921000,
+            "b": 1739166921000,
+            "c": 1739166921000,
+            "m": 1739166921000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\ProgramData\\Quillfen",
+          "record": 16,
+          "size": 0,
+          "times": {
+            "a": 1759043511000,
+            "b": 1759043511000,
+            "c": 1759043511000,
+            "m": 1759043511000
+          }
+        },
+        {
+          "clusters": [
+            1001
+          ],
+          "contentB64": "UXVpbGxmZW4gRnJlaWdodCAtIHlhcmQgaGFuZGJvb2sgKGV4dHJhY3QpCgoxLiBFdmVyeSBwYWxsZXQgZ2V0cyBhIGRvY2tldCBiZWZvcmUgaXQgbGVhdmVzIHRoZSBnYXRlLgoyLiBUaGUgb2ZmaWNlIGxhcHRvcCBzdGF5cyBpbiB0aGUgb2ZmaWNlLiBJZiB5b3UgbmVlZCBpdCBpbiB0aGUgeWFyZCwgc2lnbiBpdCBvdXQuCjMuIElmIGEgc2NyZWVuIGFza3MgZm9yIGEgcGFzc3dvcmQgdHdpY2UsIHN0b3AgYW5kIHRlbGwgdGhlIG9mZmljZS4K",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\ProgramData\\Quillfen\\yard-handbook.txt",
+          "record": 17,
+          "size": 252,
+          "times": {
+            "a": 1759043511000,
+            "b": 1759043511000,
+            "c": 1759043511000,
+            "m": 1759043511000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator",
+          "record": 18,
+          "size": 0,
+          "times": {
+            "a": 1749537926000,
+            "b": 1749537926000,
+            "c": 1749537926000,
+            "m": 1749537926000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\Desktop",
+          "record": 19,
+          "size": 0,
+          "times": {
+            "a": 1749536816000,
+            "b": 1749536816000,
+            "c": 1749536816000,
+            "m": 1749536816000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\Documents",
+          "record": 20,
+          "size": 0,
+          "times": {
+            "a": 1749538805000,
+            "b": 1749538805000,
+            "c": 1749538805000,
+            "m": 1749538805000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\Downloads",
+          "record": 21,
+          "size": 0,
+          "times": {
+            "a": 1749541560000,
+            "b": 1749541560000,
+            "c": 1749541560000,
+            "m": 1749541560000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\AppData",
+          "record": 22,
+          "size": 0,
+          "times": {
+            "a": 1749536428000,
+            "b": 1749536428000,
+            "c": 1749536428000,
+            "m": 1749536428000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\AppData\\Local",
+          "record": 23,
+          "size": 0,
+          "times": {
+            "a": 1749539262000,
+            "b": 1749539262000,
+            "c": 1749539262000,
+            "m": 1749539262000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\AppData\\Local\\Web",
+          "record": 24,
+          "size": 0,
+          "times": {
+            "a": 1749539880000,
+            "b": 1749539880000,
+            "c": 1749539880000,
+            "m": 1749539880000
+          }
+        },
+        {
+          "clusters": [
+            1002
+          ],
+          "contentB64": "IyBPbmUgbGluZSBwZXIgcGFnZSBvcGVuZWQ6IGxvY2FsIHRpbWUsIHRoZW4gdGhlIGFkZHJlc3MuCg==",
+          "deleted": false,
+          "kind": "file",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\AppData\\Local\\Web\\history.log",
+          "record": 25,
+          "size": 58,
+          "times": {
+            "a": 1772866539000,
+            "b": 1772866539000,
+            "c": 1772866539000,
+            "m": 1772866539000
+          }
+        },
+        {
+          "clusters": [
+            1003
+          ],
+          "contentB64": "UGFsbGV0IHdyYXAgc3VwcGxpZXJzClRyYWlsZXIgaW5zcGVjdGlvbiBkYXRlcwpOaWdodCBnYXRlIHJvdGEK",
+          "deleted": false,
+          "kind": "file",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\Documents\\reading-list.txt",
+          "record": 26,
+          "size": 63,
+          "times": {
+            "a": 1771656203000,
+            "b": 1771656203000,
+            "c": 1771656203000,
+            "m": 1771656203000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "jory",
+          "path": "C:\\Users\\jory",
+          "record": 27,
+          "size": 0,
+          "times": {
+            "a": 1749535134000,
+            "b": 1749535134000,
+            "c": 1749535134000,
+            "m": 1749535134000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Desktop",
+          "record": 28,
+          "size": 0,
+          "times": {
+            "a": 1749538895000,
+            "b": 1749538895000,
+            "c": 1749538895000,
+            "m": 1749538895000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Documents",
+          "record": 29,
+          "size": 0,
+          "times": {
+            "a": 1749541046000,
+            "b": 1749541046000,
+            "c": 1749541046000,
+            "m": 1749541046000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Downloads",
+          "record": 30,
+          "size": 0,
+          "times": {
+            "a": 1749538504000,
+            "b": 1749538504000,
+            "c": 1749538504000,
+            "m": 1749538504000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\AppData",
+          "record": 31,
+          "size": 0,
+          "times": {
+            "a": 1749540922000,
+            "b": 1749540922000,
+            "c": 1749540922000,
+            "m": 1749540922000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\AppData\\Local",
+          "record": 32,
+          "size": 0,
+          "times": {
+            "a": 1749535372000,
+            "b": 1749535372000,
+            "c": 1749535372000,
+            "m": 1749535372000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\AppData\\Local\\Web",
+          "record": 33,
+          "size": 0,
+          "times": {
+            "a": 1749536635000,
+            "b": 1749536635000,
+            "c": 1749536635000,
+            "m": 1749536635000
+          }
+        },
+        {
+          "clusters": [
+            1004
+          ],
+          "contentB64": "IyBPbmUgbGluZSBwZXIgcGFnZSBvcGVuZWQ6IGxvY2FsIHRpbWUsIHRoZW4gdGhlIGFkZHJlc3MuCjIwMjYtMDQtMDYgMDk6NTU6NTYgKzAxOjAwIGh0dHBzOi8vdXBkYXRlcy5leGFtcGxlLwoyMDI2LTA0LTA2IDEwOjA4OjA1ICswMTowMCBodHRwczovL3BhcnRzLmV4YW1wbGUvCjIwMjYtMDQtMDYgMTI6NDE6MTkgKzAxOjAwIGh0dHBzOi8vbWFpbC5leGFtcGxlLwoyMDI2LTA0LTA2IDEzOjU4OjM2ICswMTowMCBodHRwczovL3BhcnRzLmV4YW1wbGUvCjIwMjYtMDQtMDYgMTc6NDQ6NTIgKzAxOjAwIGh0dHBzOi8vcGFydHMuZXhhbXBsZS8KMjAyNi0wNC0wNyAwODoxOToyOSArMDE6MDAgaHR0cHM6Ly9tYXBzLmV4YW1wbGUvCjIwMjYtMDQtMDcgMDk6MzM6MTggKzAxOjAwIGh0dHBzOi8vdXBkYXRlcy5leGFtcGxlLwoyMDI2LTA0LTA3IDA5OjUyOjM5ICswMTowMCBodHRwczovL21haWwuZXhhbXBsZS8KMjAyNi0wNC0wNyAxMjoyODoxNiArMDE6MDAgaHR0cHM6Ly91cGRhdGVzLmV4YW1wbGUvCjIwMjYtMDQtMDcgMTM6NTQ6MTkgKzAxOjAwIGh0dHBzOi8vbWFpbC5leGFtcGxlLwoyMDI2LTA0LTA3IDE1OjE4OjU5ICswMTowMCBodHRwczovL3BhcnRzLmV4YW1wbGUvCjIwMjYtMDQtMDcgMTc6NDg6MzIgKzAxOjAwIGh0dHBzOi8vbWFwcy5leGFtcGxlLwoyMDI2LTA0LTA4IDA5OjE5OjQ5ICswMTowMCBodHRwczovL3BhcnRzLmV4YW1wbGUvCjIwMjYtMDQtMDggMTU6MTc6MzggKzAxOjAwIGh0dHBzOi8vcGFydHMuZXhhbXBsZS8KMjAyNi0wNC0wOCAxNTozMDoxNiArMDE6MDAgaHR0cHM6Ly9wYXJ0cy5leGFtcGxlLwoyMDI2LTA0LTA5IDA5OjE2OjQxICswMTowMCBodHRwczovL3BhcnRzLmV4YW1wbGUvCjIwMjYtMDQtMDkgMTM6MTA6MjcgKzAxOjAwIGh0dHBzOi8vbWFwcy5leGFtcGxlLwoyMDI2LTA0LTEwIDA4OjA1OjU0ICswMTowMCBodHRwczovL3BhcnRzLmV4YW1wbGUvCjIwMjYtMDQtMTAgMDk6MzA6NDMgKzAxOjAwIGh0dHBzOi8vbWFwcy5leGFtcGxlLwoyMDI2LTA0LTEwIDExOjA4OjE1ICswMTowMCBodHRwczovL3VwZGF0ZXMuZXhhbXBsZS8KMjAyNi0wNC0xMCAxMjo0Mjo1MyArMDE6MDAgaHR0cHM6Ly9wYXJ0cy5leGFtcGxlLwoyMDI2LTA0LTEwIDE3OjExOjE3ICswMTowMCBodHRwczovL3BhcnRzLmV4YW1wbGUvCjIwMjYtMDQtMTMgMDg6MjQ6NDcgKzAxOjAwIGh0dHBzOi8vdXBkYXRlcy5leGFtcGxlLwoyMDI2LTA0LTEzIDEwOjQxOjIxICswMTowMCBodHRwczovL3VwZGF0ZXMuZXhhbXBsZS8K",
+          "deleted": false,
+          "kind": "file",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\AppData\\Local\\Web\\history.log",
+          "record": 34,
+          "size": 1263,
+          "times": {
+            "a": 1776073281000,
+            "b": 1772867881000,
+            "c": 1776073281000,
+            "m": 1776073281000
+          }
+        },
+        {
+          "clusters": [
+            1005
+          ],
+          "contentB64": "UGFsbGV0IHdyYXAgc3VwcGxpZXJzClRyYWlsZXIgaW5zcGVjdGlvbiBkYXRlcwpOaWdodCBnYXRlIHJvdGEK",
+          "deleted": false,
+          "kind": "file",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Documents\\reading-list.txt",
+          "record": 35,
+          "size": 63,
+          "times": {
+            "a": 1771657966000,
+            "b": 1771657966000,
+            "c": 1771657966000,
+            "m": 1771657966000
+          }
+        },
+        {
+          "clusters": [
+            1006
+          ],
+          "contentB64": "MjEgY291bnRlZCwgMCBzdGlsbCB0byBjaGVjay4K",
+          "deleted": false,
+          "kind": "file",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Documents\\week-notes.txt",
+          "record": 36,
+          "size": 30,
+          "times": {
+            "a": 1775833158000,
+            "b": 1775459568000,
+            "c": 1775833158000,
+            "m": 1775833158000
+          }
+        },
+        {
+          "clusters": [
+            1007
+          ],
+          "contentB64": "TVoAAFRoaXMgcHJvZ3JhbSBjYW5ub3QgYmUgcnVuIGluIERPUyBtb2RlLgBleHBsb3Jlci5leGUA",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\explorer.exe",
+          "record": 37,
+          "size": 57,
+          "times": {
+            "a": 1775462120000,
+            "b": 1775462120000,
+            "c": 1775462120000,
+            "m": 1775462120000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Documents\\Price lists",
+          "record": 38,
+          "size": 0,
+          "times": {
+            "a": 1775467200000,
+            "b": 1775467200000,
+            "c": 1775467200000,
+            "m": 1775467200000
+          }
+        },
+        {
+          "clusters": [
+            1008
+          ],
+          "contentB64": "UXVpbGxmZW4gRnJlaWdodDogY29udHJhY3QgY3VzdG9tZXIgcmF0ZXMsIGZyb20gQXByaWwgMjAyNiAoY29uZmlkZW50aWFsKQoKQ3VzdG9tZXIgICAgICAgICAgICAgICAgIFBlciBwYWxsZXQgICBGdWxsIGxvYWQgICBOb3RlcwpDb2JiZW5oYWxlIEJ1aWxkZXJzICAgIEdCUCAzMS41MCAgICBHQlAgNTIwICAgICB3ZWVrbHksIG5vcnRoIGdhdGUKU2VkZ2V3aGlzdGxlIFBhY2thZ2luZyAgICAgICAgICAgR0JQIDI5LjAwICAgIEdCUCA0OTUgICAgIHR3byBydW5zIGEgd2VlawpCcmFja2Vuc2V0dCBKb2luZXJ5ICAgICAgIEdCUCAzOC4wMCAgICBHQlAgNjEwICAgICBhcyBuZWVkZWQK",
+          "deleted": false,
+          "kind": "file",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Documents\\Price lists\\rates-2026-contract.txt",
+          "record": 39,
+          "size": 333,
+          "times": {
+            "a": 1775936465000,
+            "b": 1775467200000,
+            "c": 1775467200000,
+            "m": 1775467200000
+          }
+        },
+        {
+          "clusters": [
+            1009
+          ],
+          "contentB64": "UXVpbGxmZW4gRnJlaWdodDogZ2VuZXJhbCByYXRlcywgZnJvbSBBcHJpbCAyMDI2CgpQZXIgcGFsbGV0ICAgICAgICAgIEdCUCA0MC4wMApGdWxsIGxvYWQgICAgICAgICAgIEdCUCA2NDAuMDAKU2FtZS1kYXkgc3VyY2hhcmdlICBHQlAgNzUuMDAK",
+          "deleted": false,
+          "kind": "file",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Documents\\Price lists\\rates-2026-general.txt",
+          "record": 40,
+          "size": 141,
+          "times": {
+            "a": 1775936469000,
+            "b": 1775467440000,
+            "c": 1775467440000,
+            "m": 1775467440000
+          }
+        },
+        {
+          "clusters": [
+            1010
+          ],
+          "contentB64": "TVoAAFRoaXMgcHJvZ3JhbSBjYW5ub3QgYmUgcnVuIGluIERPUyBtb2RlLgBub3RlcGFkLmV4ZQA=",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\notepad.exe",
+          "record": 41,
+          "size": 56,
+          "times": {
+            "a": 1775471651000,
+            "b": 1775471651000,
+            "c": 1775471651000,
+            "m": 1775471651000
+          }
+        },
+        {
+          "clusters": [
+            1011
+          ],
+          "contentB64": "MzIgY291bnRlZCwgMCBzdGlsbCB0byBjaGVjay4K",
+          "deleted": false,
+          "kind": "file",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Documents\\gate-rota.txt",
+          "record": 42,
+          "size": 30,
+          "times": {
+            "a": 1775644638000,
+            "b": 1775485207000,
+            "c": 1775644638000,
+            "m": 1775644638000
+          }
+        },
+        {
+          "clusters": [
+            1012
+          ],
+          "contentB64": "TVoAAFRoaXMgcHJvZ3JhbSBjYW5ub3QgYmUgcnVuIGluIERPUyBtb2RlLgBjYWxjLmV4ZQA=",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\calc.exe",
+          "record": 43,
+          "size": 53,
+          "times": {
+            "a": 1775491094000,
+            "b": 1775491094000,
+            "c": 1775491094000,
+            "m": 1775491094000
+          }
+        },
+        {
+          "clusters": [
+            1013
+          ],
+          "contentB64": "MTEgY291bnRlZCwgMCBzdGlsbCB0byBjaGVjay4K",
+          "deleted": false,
+          "kind": "file",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Documents\\fuel-log.txt",
+          "record": 44,
+          "size": 30,
+          "times": {
+            "a": 1775824486000,
+            "b": 1775491293000,
+            "c": 1775824486000,
+            "m": 1775824486000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Program Files\\YardBackup",
+          "record": 45,
+          "size": 0,
+          "times": {
+            "a": 1775504700000,
+            "b": 1775504700000,
+            "c": 1775504700000,
+            "m": 1775504700000
+          }
+        },
+        {
+          "clusters": [
+            1014
+          ],
+          "contentB64": "TVoAAFRoaXMgcHJvZ3JhbSBjYW5ub3QgYmUgcnVuIGluIERPUyBtb2RlLgB5YXJkLWJhY2t1cC5leGUA",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+          "record": 46,
+          "size": 60,
+          "times": {
+            "a": 1775504700000,
+            "b": 1775504700000,
+            "c": 1775504700000,
+            "m": 1775504700000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Documents\\Invoices",
+          "record": 47,
+          "size": 0,
+          "times": {
+            "a": 1775570700000,
+            "b": 1775570700000,
+            "c": 1775570700000,
+            "m": 1775570700000
+          }
+        },
+        {
+          "clusters": [
+            1015
+          ],
+          "contentB64": "JVBERi0xLjQKMSAwIG9iaiA8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4gZW5kb2JqCjIgMCBvYmogPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4gZW5kb2JqCjMgMCBvYmogPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvQ29udGVudHMgNCAwIFIgPj4gZW5kb2JqCjQgMCBvYmogPDwgL0xlbmd0aCAyMTIgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiA1NiA3ODAgVGQgKFF1aWxsZmVuIEZyZWlnaHQgLSBJbnZvaWNlIFFGLUlOVi0wNDA3KSBUaiBUKgooQmlsbCB0bzogQ29iYmVuaGFsZSBCdWlsZGVycykgVGogVCoKKDIwMjYtMDQtMDYgIDEyIHBhbGxldHMsIG5vcnRoIGdhdGUgIEdCUCAzNzguMDApIFRqIFQqCihUb3RhbCBkdWUgIEdCUCAzNzguMDApIFRqIEVUCmVuZHN0cmVhbSBlbmRvYmoKdHJhaWxlciA8PCAvUm9vdCAxIDAgUiA+PgolJUVPRgo=",
+          "deleted": true,
+          "kind": "file",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Documents\\Invoices\\inv-0407.pdf",
+          "record": 48,
+          "size": 452,
+          "times": {
+            "a": 1775570700000,
+            "b": 1775570700000,
+            "c": 1775936523000,
+            "m": 1775570700000
+          }
+        },
+        {
+          "clusters": [
+            1016
+          ],
+          "contentB64": "TVoAAFRoaXMgcHJvZ3JhbSBjYW5ub3QgYmUgcnVuIGluIERPUyBtb2RlLgBiYWNrdXAtY2hlY2suZXhlAA==",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\backup-check.exe",
+          "record": 49,
+          "size": 61,
+          "times": {
+            "a": 1775632019000,
+            "b": 1775632019000,
+            "c": 1775632019000,
+            "m": 1775632019000
+          }
+        },
+        {
+          "clusters": [
+            1017
+          ],
+          "contentB64": "MTUgY291bnRlZCwgMCBzdGlsbCB0byBjaGVjay4K",
+          "deleted": false,
+          "kind": "file",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Documents\\trailer-checks.txt",
+          "record": 50,
+          "size": 30,
+          "times": {
+            "a": 1775733748000,
+            "b": 1775638220000,
+            "c": 1775733748000,
+            "m": 1775733748000
+          }
+        },
+        {
+          "clusters": [
+            1018
+          ],
+          "contentB64": "MjEgY291bnRlZCwgMSBzdGlsbCB0byBjaGVjay4K",
+          "deleted": false,
+          "kind": "file",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Documents\\tyre-order.txt",
+          "record": 51,
+          "size": 30,
+          "times": {
+            "a": 1775829699000,
+            "b": 1775642466000,
+            "c": 1775829699000,
+            "m": 1775829699000
+          }
+        },
+        {
+          "clusters": [
+            1019
+          ],
+          "contentB64": "JVBERi0xLjQKMSAwIG9iaiA8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4gZW5kb2JqCjIgMCBvYmogPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4gZW5kb2JqCjMgMCBvYmogPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvQ29udGVudHMgNCAwIFIgPj4gZW5kb2JqCjQgMCBvYmogPDwgL0xlbmd0aCAxOTggPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiA1NiA3ODAgVGQgKFF1aWxsZmVuIEZyZWlnaHQgLSBJbnZvaWNlIFFGLUlOVi0wNDA5KSBUaiBUKgooQmlsbCB0bzogU2VkZ2V3aGlzdGxlIFBhY2thZ2luZykgVGogVCoKKDIwMjYtMDQtMDggIGZ1bGwgbG9hZCwgc291dGggZ2F0ZSAgR0JQIDQ5NS4wMCkgVGogVCoKKFRvdGFsIGR1ZSAgR0JQIDQ5NS4wMCkgVGogRVQKZW5kc3RyZWFtIGVuZG9iagp0cmFpbGVyIDw8IC9Sb290IDEgMCBSID4+CiUlRU9GCg==",
+          "deleted": true,
+          "kind": "file",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Documents\\Invoices\\inv-0409.pdf",
+          "record": 52,
+          "size": 454,
+          "times": {
+            "a": 1775749200000,
+            "b": 1775749200000,
+            "c": 1775936525000,
+            "m": 1775749200000
+          }
+        },
+        {
+          "clusters": [
+            1020
+          ],
+          "contentB64": "MzYgY291bnRlZCwgNCBzdGlsbCB0byBjaGVjay4K",
+          "deleted": false,
+          "kind": "file",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Documents\\pallet-counts.txt",
+          "record": 53,
+          "size": 30,
+          "times": {
+            "a": 1775825382000,
+            "b": 1775751305000,
+            "c": 1775825382000,
+            "m": 1775825382000
+          }
+        },
+        {
+          "clusters": [
+            1021,
+            1022
+          ],
+          "contentB64": "JVBERi0xLjQKMSAwIG9iaiA8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4gZW5kb2JqCjIgMCBvYmogPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4gZW5kb2JqCjMgMCBvYmogPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvQ29udGVudHMgNCAwIFIgPj4gZW5kb2JqCjQgMCBvYmogPDwgL0xlbmd0aCA1MTAyID4+CnN0cmVhbQpCVCAvRjEgMTIgVGYgNTYgNzgwIFRkIChRdWlsbGZlbiBGcmVpZ2h0IC0gU3RhdGVtZW50IFFGLUlOVi0wNDEwKSBUaiBUKgooQmlsbCB0bzogQnJhY2tlbnNldHQgSm9pbmVyeSwgcnVucyBmcm9tIDIwMjYtMDMtMDIgdG8gMjAyNi0wNC0xMCkgVGogVCoKKERhdGUgICAgICAgIFJ1biAgICAgIFJvdXRlICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBQYWxsZXRzICAgQW1vdW50KSBUaiBUKgooMjAyNi0wMy0wMiAgQkotMDAxICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAxMSAgICAgICAgR0JQIDQxOC4wMCkgVGogVCoKKDIwMjYtMDMtMDIgIEJKLTAwMiAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gICA5ICAgICAgICBHQlAgMzQyLjAwKSBUaiBUKgooMjAyNi0wMy0wMyAgQkotMDAzICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgICA3ICAgICAgICBHQlAgMjY2LjAwKSBUaiBUKgooMjAyNi0wMy0wNCAgQkotMDA0ICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAgNSAgICAgICAgR0JQIDE5MC4wMCkgVGogVCoKKDIwMjYtMDMtMDUgIEJKLTAwNSAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gIDEyICAgICAgICBHQlAgNDU2LjAwKSBUaiBUKgooMjAyNi0wMy0wNSAgQkotMDA2ICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgIDEwICAgICAgICBHQlAgMzgwLjAwKSBUaiBUKgooMjAyNi0wMy0wNiAgQkotMDA3ICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAgOCAgICAgICAgR0JQIDMwNC4wMCkgVGogVCoKKDIwMjYtMDMtMDkgIEJKLTAwOCAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gICA2ICAgICAgICBHQlAgMjI4LjAwKSBUaiBUKgooMjAyNi0wMy0wOSAgQkotMDA5ICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgICA0ICAgICAgICBHQlAgMTUyLjAwKSBUaiBUKgooMjAyNi0wMy0xMCAgQkotMDEwICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAxMSAgICAgICAgR0JQIDQxOC4wMCkgVGogVCoKKDIwMjYtMDMtMTEgIEJKLTAxMSAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gICA5ICAgICAgICBHQlAgMzQyLjAwKSBUaiBUKgooMjAyNi0wMy0xMiAgQkotMDEyICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgICA3ICAgICAgICBHQlAgMjY2LjAwKSBUaiBUKgooMjAyNi0wMy0xMiAgQkotMDEzICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAgNSAgICAgICAgR0JQIDE5MC4wMCkgVGogVCoKKDIwMjYtMDMtMTMgIEJKLTAxNCAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gIDEyICAgICAgICBHQlAgNDU2LjAwKSBUaiBUKgooMjAyNi0wMy0xNiAgQkotMDE1ICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgIDEwICAgICAgICBHQlAgMzgwLjAwKSBUaiBUKgooMjAyNi0wMy0xNiAgQkotMDE2ICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAgOCAgICAgICAgR0JQIDMwNC4wMCkgVGogVCoKKDIwMjYtMDMtMTcgIEJKLTAxNyAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gICA2ICAgICAgICBHQlAgMjI4LjAwKSBUaiBUKgooMjAyNi0wMy0xOCAgQkotMDE4ICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgICA0ICAgICAgICBHQlAgMTUyLjAwKSBUaiBUKgooMjAyNi0wMy0xOSAgQkotMDE5ICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAxMSAgICAgICAgR0JQIDQxOC4wMCkgVGogVCoKKDIwMjYtMDMtMTkgIEJKLTAyMCAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gICA5ICAgICAgICBHQlAgMzQyLjAwKSBUaiBUKgooMjAyNi0wMy0yMCAgQkotMDIxICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgICA3ICAgICAgICBHQlAgMjY2LjAwKSBUaiBUKgooMjAyNi0wMy0yMyAgQkotMDIyICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAgNSAgICAgICAgR0JQIDE5MC4wMCkgVGogVCoKKDIwMjYtMDMtMjMgIEJKLTAyMyAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gIDEyICAgICAgICBHQlAgNDU2LjAwKSBUaiBUKgooMjAyNi0wMy0yNCAgQkotMDI0ICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgIDEwICAgICAgICBHQlAgMzgwLjAwKSBUaiBUKgooMjAyNi0wMy0yNSAgQkotMDI1ICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAgOCAgICAgICAgR0JQIDMwNC4wMCkgVGogVCoKKDIwMjYtMDMtMjYgIEJKLTAyNiAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gICA2ICAgICAgICBHQlAgMjI4LjAwKSBUaiBUKgooMjAyNi0wMy0yNiAgQkotMDI3ICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgICA0ICAgICAgICBHQlAgMTUyLjAwKSBUaiBUKgooMjAyNi0wMy0yNyAgQkotMDI4ICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAxMSAgICAgICAgR0JQIDQxOC4wMCkgVGogVCoKKDIwMjYtMDMtMzAgIEJKLTAyOSAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gICA5ICAgICAgICBHQlAgMzQyLjAwKSBUaiBUKgooMjAyNi0wMy0zMCAgQkotMDMwICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgICA3ICAgICAgICBHQlAgMjY2LjAwKSBUaiBUKgooMjAyNi0wMy0zMSAgQkotMDMxICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAgNSAgICAgICAgR0JQIDE5MC4wMCkgVGogVCoKKDIwMjYtMDQtMDEgIEJKLTAzMiAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gIDEyICAgICAgICBHQlAgNDU2LjAwKSBUaiBUKgooMjAyNi0wNC0wMiAgQkotMDMzICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgIDEwICAgICAgICBHQlAgMzgwLjAwKSBUaiBUKgooMjAyNi0wNC0wMiAgQkotMDM0ICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAgOCAgICAgICAgR0JQIDMwNC4wMCkgVGogVCoKKDIwMjYtMDQtMDMgIEJKLTAzNSAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gICA2ICAgICAgICBHQlAgMjI4LjAwKSBUaiBUKgooMjAyNi0wNC0wNiAgQkotMDM2ICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgICA0ICAgICAgICBHQlAgMTUyLjAwKSBUaiBUKgooMjAyNi0wNC0wNiAgQkotMDM3ICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAxMSAgICAgICAgR0JQIDQxOC4wMCkgVGogVCoKKDIwMjYtMDQtMDcgIEJKLTAzOCAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gICA5ICAgICAgICBHQlAgMzQyLjAwKSBUaiBUKgooMjAyNi0wNC0wOCAgQkotMDM5ICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgICA3ICAgICAgICBHQlAgMjY2LjAwKSBUaiBUKgooMjAyNi0wNC0wOSAgQkotMDQwICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAgNSAgICAgICAgR0JQIDE5MC4wMCkgVGogVCoKKDIwMjYtMDQtMDkgIEJKLTA0MSAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gIDEyICAgICAgICBHQlAgNDU2LjAwKSBUaiBUKgooMjAyNi0wNC0xMCAgQkotMDQyICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgIDEwICAgICAgICBHQlAgMzgwLjAwKSBUaiBUKgooVG90YWwgZHVlICBHQlAgMTIsOTk2LjAwKSBUaiBFVAplbmRzdHJlYW0gZW5kb2JqCnRyYWlsZXIgPDwgL1Jvb3QgMSAwIFIgPj4KJSVFT0YK",
+          "deleted": true,
+          "kind": "file",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Documents\\Invoices\\inv-0410.pdf",
+          "record": 54,
+          "size": 4641,
+          "times": {
+            "a": 1775820600000,
+            "b": 1775820600000,
+            "c": 1775936527000,
+            "m": 1775820600000
+          }
+        },
+        {
+          "clusters": [
+            1023
+          ],
+          "contentB64": "TWFyY2ggcmVjb25jaWxpYXRpb24KCkludm9pY2VzIHJhaXNlZCAgICAgIDQxClBhaWQgYnkgMzEgTWFyY2ggICAgIDM2ClN0aWxsIHRvIGNoYXNlICAgICAgICA1ICh0aGUgQnJhY2tlbnNldHQgc3RhdGVtZW50IGdvZXMgb3V0IG9uIE1vbmRheSkK",
+          "deleted": false,
+          "kind": "file",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Documents\\march-reconciliation.txt",
+          "record": 55,
+          "size": 141,
+          "times": {
+            "a": 1775917200000,
+            "b": 1775917200000,
+            "c": 1775917200000,
+            "m": 1775917200000
+          }
+        },
+        {
+          "clusters": [
+            1022
+          ],
+          "contentB64": "UEsDBBQAAAAIAHJhdGVzLTIwMjYtY29udHJhY3QudHh0Li4uLi4uLi5QSwMEFAAAAAgAcmF0ZXMtMjAyNi1nZW5lcmFsLnR4dC4uLi4uLi4uUEsBAhQAcmF0ZXMtMjAyNi1jb250cmFjdC50eHRQSwECFAByYXRlcy0yMDI2LWdlbmVyYWwudHh0UEsFBgAAAAACAAIAbgAAAMKcAAAAAAA=",
+          "deleted": false,
+          "kind": "file",
+          "owner": "jory",
+          "path": "C:\\Users\\jory\\Documents\\price-lists.zip",
+          "record": 56,
+          "size": 161,
+          "times": {
+            "a": 1775936551000,
+            "b": 1775936551000,
+            "c": 1775936551000,
+            "m": 1775936551000
+          }
+        },
+        {
+          "clusters": [
+            1025
+          ],
+          "contentB64": "TVoAAFRoaXMgcHJvZ3JhbSBjYW5ub3QgYmUgcnVuIGluIERPUyBtb2RlLgBwcmludHNwb29sLmV4ZQA=",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\printspool.exe",
+          "record": 57,
+          "size": 59,
+          "times": {
+            "a": 1776071389000,
+            "b": 1776071389000,
+            "c": 1776071389000,
+            "m": 1776071389000
+          }
+        }
+      ],
+      "sectorSize": 512,
+      "sectors": 500118192,
+      "unallocatedB64": "JVBERi0xLjQKMSAwIG9iaiA8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4gZW5kb2JqCjIgMCBvYmogPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4gZW5kb2JqCjMgMCBvYmogPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvQ29udGVudHMgNCAwIFIgPj4gZW5kb2JqCjQgMCBvYmogPDwgL0xlbmd0aCAyMTIgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiA1NiA3ODAgVGQgKFF1aWxsZmVuIEZyZWlnaHQgLSBJbnZvaWNlIFFGLUlOVi0wNDA3KSBUaiBUKgooQmlsbCB0bzogQ29iYmVuaGFsZSBCdWlsZGVycykgVGogVCoKKDIwMjYtMDQtMDYgIDEyIHBhbGxldHMsIG5vcnRoIGdhdGUgIEdCUCAzNzguMDApIFRqIFQqCihUb3RhbCBkdWUgIEdCUCAzNzguMDApIFRqIEVUCmVuZHN0cmVhbSBlbmRvYmoKdHJhaWxlciA8PCAvUm9vdCAxIDAgUiA+PgolJUVPRgolUERGLTEuNAoxIDAgb2JqIDw8IC9UeXBlIC9DYXRhbG9nIC9QYWdlcyAyIDAgUiA+PiBlbmRvYmoKMiAwIG9iaiA8PCAvVHlwZSAvUGFnZXMgL0tpZHMgWzMgMCBSXSAvQ291bnQgMSA+PiBlbmRvYmoKMyAwIG9iaiA8PCAvVHlwZSAvUGFnZSAvUGFyZW50IDIgMCBSIC9Db250ZW50cyA0IDAgUiA+PiBlbmRvYmoKNCAwIG9iaiA8PCAvTGVuZ3RoIDE5OCA+PgpzdHJlYW0KQlQgL0YxIDEyIFRmIDU2IDc4MCBUZCAoUXVpbGxmZW4gRnJlaWdodCAtIEludm9pY2UgUUYtSU5WLTA0MDkpIFRqIFQqCihCaWxsIHRvOiBTZWRnZXdoaXN0bGUgUGFja2FnaW5nKSBUaiBUKgooMjAyNi0wNC0wOCAgZnVsbCBsb2FkLCBzb3V0aCBnYXRlICBHQlAgNDk1LjAwKSBUaiBUKgooVG90YWwgZHVlICBHQlAgNDk1LjAwKSBUaiBFVAplbmRzdHJlYW0gZW5kb2JqCnRyYWlsZXIgPDwgL1Jvb3QgMSAwIFIgPj4KJSVFT0YKJVBERi0xLjQKMSAwIG9iaiA8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4gZW5kb2JqCjIgMCBvYmogPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4gZW5kb2JqCjMgMCBvYmogPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvQ29udGVudHMgNCAwIFIgPj4gZW5kb2JqCjQgMCBvYmogPDwgL0xlbmd0aCA1MTAyID4+CnN0cmVhbQpCVCAvRjEgMTIgVGYgNTYgNzgwIFRkIChRdWlsbGZlbiBGcmVpZ2h0IC0gU3RhdGVtZW50IFFGLUlOVi0wNDEwKSBUaiBUKgooQmlsbCB0bzogQnJhY2tlbnNldHQgSm9pbmVyeSwgcnVucyBmcm9tIDIwMjYtMDMtMDIgdG8gMjAyNi0wNC0xMCkgVGogVCoKKERhdGUgICAgICAgIFJ1biAgICAgIFJvdXRlICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBQYWxsZXRzICAgQW1vdW50KSBUaiBUKgooMjAyNi0wMy0wMiAgQkotMDAxICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAxMSAgICAgICAgR0JQIDQxOC4wMCkgVGogVCoKKDIwMjYtMDMtMDIgIEJKLTAwMiAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gICA5ICAgICAgICBHQlAgMzQyLjAwKSBUaiBUKgooMjAyNi0wMy0wMyAgQkotMDAzICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgICA3ICAgICAgICBHQlAgMjY2LjAwKSBUaiBUKgooMjAyNi0wMy0wNCAgQkotMDA0ICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAgNSAgICAgICAgR0JQIDE5MC4wMCkgVGogVCoKKDIwMjYtMDMtMDUgIEJKLTAwNSAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gIDEyICAgICAgICBHQlAgNDU2LjAwKSBUaiBUKgooMjAyNi0wMy0wNSAgQkotMDA2ICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgIDEwICAgICAgICBHQlAgMzgwLjAwKSBUaiBUKgooMjAyNi0wMy0wNiAgQkotMDA3ICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAgOCAgICAgICAgR0JQIDMwNC4wMCkgVGogVCoKKDIwMjYtMDMtMDkgIEJKLTAwOCAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gICA2ICAgICAgICBHQlAgMjI4LjAwKSBUaiBUKgooMjAyNi0wMy0wOSAgQkotMDA5ICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgICA0ICAgICAgICBHQlAgMTUyLjAwKSBUaiBUKgooMjAyNi0wMy0xMCAgQkotMDEwICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAxMSAgICAgICAgR0JQIDQxOC4wMCkgVGogVCoKKDIwMjYtMDMtMTEgIEJKLTAxMSAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gICA5ICAgICAgICBHQlAgMzQyLjAwKSBUaiBUKgooMjAyNi0wMy0xMiAgQkotMDEyICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgICA3ICAgICAgICBHQlAgMjY2LjAwKSBUaiBUKgooMjAyNi0wMy0xMiAgQkotMDEzICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAgNSAgICAgICAgR0JQIDE5MC4wMCkgVGogVCoKKDIwMjYtMDMtMTMgIEJKLTAxNCAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gIDEyICAgICAgICBHQlAgNDU2LjAwKSBUaiBUKgooMjAyNi0wMy0xNiAgQkotMDE1ICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgIDEwICAgICAgICBHQlAgMzgwLjAwKSBUaiBUKgooMjAyNi0wMy0xNiAgQkotMDE2ICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAgOCAgICAgICAgR0JQIDMwNC4wMCkgVGogVCoKKDIwMjYtMDMtMTcgIEJKLTAxNyAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gICA2ICAgICAgICBHQlAgMjI4LjAwKSBUaiBUKgooMjAyNi0wMy0xOCAgQkotMDE4ICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgICA0ICAgICAgICBHQlAgMTUyLjAwKSBUaiBUKgooMjAyNi0wMy0xOSAgQkotMDE5ICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAxMSAgICAgICAgR0JQIDQxOC4wMCkgVGogVCoKKDIwMjYtMDMtMTkgIEJKLTAyMCAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gICA5ICAgICAgICBHQlAgMzQyLjAwKSBUaiBUKgooMjAyNi0wMy0yMCAgQkotMDIxICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgICA3ICAgICAgICBHQlAgMjY2LjAwKSBUaiBUKgooMjAyNi0wMy0yMyAgQkotMDIyICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAgNSAgICAgICAgR0JQIDE5MC4wMCkgVGogVCoKKDIwMjYtMDMtMjMgIEJKLTAyMyAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gIDEyICAgICAgICBHQlAgNDU2LjAwKSBUaiBUKgooMjAyNi0wMy0yNCAgQkotMDI0ICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgIDEwICAgICAgICBHQlAgMzgwLjAwKSBUaiBUKgooMjAyNi0wMy0yNSAgQkotMDI1ICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAgOCAgICAgICAgR0JQIDMwNC4wMCkgVGogVCoKKDIwMjYtMDMtMjYgIEJKLTAyNiAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gICA2ICAgICAgICBHQlAgMjI4LjAwKSBUaiBUKgooMjAyNi0wMy0yNiAgQkotMDI3ICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgICA0ICAgICAgICBHQlAgMTUyLjAwKSBUaiBUKgooMjAyNi0wMy0yNyAgQkotMDI4ICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAxMSAgICAgICAgR0JQIDQxOC4wMCkgVGogVCoKKDIwMjYtMDMtMzAgIEJKLTAyOSAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gICA5ICAgICAgICBHQlAgMzQyLjAwKSBUaiBUKgooMjAyNi0wMy0zMCAgQkotMDMwICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgICA3ICAgICAgICBHQlAgMjY2LjAwKSBUaiBUKgooMjAyNi0wMy0zMSAgQkotMDMxICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAgNSAgICAgICAgR0JQIDE5MC4wMCkgVGogVCoKKDIwMjYtMDQtMDEgIEJKLTAzMiAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gIDEyICAgICAgICBHQlAgNDU2LjAwKSBUaiBUKgooMjAyNi0wNC0wMiAgQkotMDMzICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgIDEwICAgICAgICBHQlAgMzgwLjAwKSBUaiBUKgooMjAyNi0wNC0wMiAgQkotMDM0ICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAgOCAgICAgICAgR0JQIDMwNC4wMCkgVGogVCoKKDIwMjYtMDQtMDMgIEJKLTAzNSAgIFF1aWxsZmVuIHlhcmQgdG8gQnJhY2tlbnNldHQgSm9pbmVyeSwgc2hvd3Jvb20gICA2ICAgICAgICBHQlAgMjI4LjAwKSBUaiBUKgooMjAyNi0wNC0wNiAgQkotMDM2ICAgUXVpbGxmZW4geWFyZCB0byBCcmFja2Vuc2V0dCBKb2luZXJ5LCBtaWxsIHNpdGUgICA0ICAgICAgICBHQlAgMTUyLjAwKSBUaiBUKgooMjAyNi0wNC0wNiAgQkotMDM3ICAgQnJhY2tlbnNldHQgSm9pbmVyeSB0byBDb2JiZW5oYWxlIHNpdGUgICAgICAgICAxMSAgICAgICAgR0JQIDQxOC4wMCkgVGogVCoKKDIwMjYtMDQtMDcgIEJKLTAzOCAgIFF1aWxsZgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    }
+  ],
+  "handover": [
+    {
+      "by": "Gus Thimblegate, IT contractor to Quillfen Freight",
+      "hashes": {
+        "md5": "3d33f940b2bdd15f8346c8686609cd9e",
+        "sha256": "8d234352c4ab62a205dcddf93140115bf6947c1c15881cc50461d46ce9e8e351"
+      },
+      "item": "qf-lt-07",
+      "receivedAt": 1776074700000
+    }
+  ],
+  "logs": [
+    {
+      "at": 1775459460000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "NewProcessId": "0x3fc",
+        "NewProcessName": "C:\\Windows\\System32\\notepad.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 1,
+      "source": "security"
+    },
+    {
+      "at": 1775459460000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1020",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 1,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775459568000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\explorer.exe",
+        "ProcessId": "1016",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\week-notes.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 2,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775461083000,
+      "fields": {
+        "answer": "198.51.100.211",
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 1,
+      "source": "dns"
+    },
+    {
+      "at": 1775462100000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x301d3",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 2,
+      "source": "security"
+    },
+    {
+      "at": 1775462120000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\explorer.exe",
+        "NewProcessId": "0x3fc",
+        "NewProcessName": "C:\\Windows\\explorer.exe",
+        "ParentProcessName": "-",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 3,
+      "source": "security"
+    },
+    {
+      "at": 1775462120000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\explorer.exe",
+        "Image": "C:\\Windows\\explorer.exe",
+        "ParentImage": "-",
+        "ParentProcessId": "0",
+        "ProcessId": "1020",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 3,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775462301000,
+      "fields": {
+        "answer": "198.51.100.166",
+        "client": "10.60.0.21",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 2,
+      "source": "dns"
+    },
+    {
+      "at": 1775463210000,
+      "fields": {
+        "answer": "198.51.100.16",
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 3,
+      "source": "dns"
+    },
+    {
+      "at": 1775463300000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1020",
+        "TargetFilename": "C:\\Users\\Public\\Documents\\office-logins.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 4,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775464768000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1020",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\trailer-checks.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 5,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775465756000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 4,
+      "source": "dns"
+    },
+    {
+      "at": 1775465919000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x301d3",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 4,
+      "source": "security"
+    },
+    {
+      "at": 1775466484000,
+      "fields": {
+        "answer": "198.51.100.195",
+        "client": "10.60.0.21",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 5,
+      "source": "dns"
+    },
+    {
+      "at": 1775466485000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 6,
+      "source": "dns"
+    },
+    {
+      "at": 1775467142000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "NewProcessId": "0x400",
+        "NewProcessName": "C:\\Windows\\System32\\printspool.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 5,
+      "source": "security"
+    },
+    {
+      "at": 1775467142000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1024",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 6,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775467200000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\explorer.exe",
+        "ProcessId": "1020",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\Price lists\\rates-2026-contract.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 7,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775467440000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\explorer.exe",
+        "ProcessId": "1020",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\Price lists\\rates-2026-general.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 8,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775468836000,
+      "fields": {
+        "answer": "198.51.100.214",
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 7,
+      "source": "dns"
+    },
+    {
+      "at": 1775471651000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "NewProcessId": "0x400",
+        "NewProcessName": "C:\\Windows\\System32\\notepad.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 6,
+      "source": "security"
+    },
+    {
+      "at": 1775471651000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1020",
+        "ProcessId": "1024",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 9,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775471684000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ProcessId": "1024",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\gate-rota.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 10,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775472370000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x303a6",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 7,
+      "source": "security"
+    },
+    {
+      "at": 1775472986000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "NewProcessId": "0x404",
+        "NewProcessName": "C:\\Windows\\System32\\calc.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 8,
+      "source": "security"
+    },
+    {
+      "at": 1775472986000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1028",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 11,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775473336000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ProcessId": "1028",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\gate-rota.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 12,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775473571000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "NewProcessId": "0x408",
+        "NewProcessName": "C:\\Windows\\System32\\calc.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 9,
+      "source": "security"
+    },
+    {
+      "at": 1775473571000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1032",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 13,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775475361000,
+      "fields": {
+        "answer": "198.51.100.159",
+        "client": "10.60.0.27",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 8,
+      "source": "dns"
+    },
+    {
+      "at": 1775475679000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 9,
+      "source": "dns"
+    },
+    {
+      "at": 1775477545000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "NewProcessId": "0x40c",
+        "NewProcessName": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 10,
+      "source": "security"
+    },
+    {
+      "at": 1775477545000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1036",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 14,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775478595000,
+      "fields": {
+        "answer": "198.51.100.224",
+        "client": "10.60.0.21",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 10,
+      "source": "dns"
+    },
+    {
+      "at": 1775480089000,
+      "fields": {
+        "answer": "198.51.100.124",
+        "client": "10.60.0.27",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 11,
+      "source": "dns"
+    },
+    {
+      "at": 1775480316000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 12,
+      "source": "dns"
+    },
+    {
+      "at": 1775481173000,
+      "fields": {
+        "answer": "198.51.100.192",
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 13,
+      "source": "dns"
+    },
+    {
+      "at": 1775481238000,
+      "fields": {
+        "answer": "198.51.100.29",
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 14,
+      "source": "dns"
+    },
+    {
+      "at": 1775481671000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x303a6",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 11,
+      "source": "security"
+    },
+    {
+      "at": 1775482609000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ProcessId": "1036",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\trailer-checks.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 15,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775484949000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x30579",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 12,
+      "source": "security"
+    },
+    {
+      "at": 1775485207000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1024",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\gate-rota.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 16,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775485436000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x30579",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 13,
+      "source": "security"
+    },
+    {
+      "at": 1775485858000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ProcessId": "1036",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\fuel-log.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 17,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775487959000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1024",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\gate-rota.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 18,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775489189000,
+      "fields": {
+        "answer": "198.51.100.230",
+        "client": "10.60.0.21",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 15,
+      "source": "dns"
+    },
+    {
+      "at": 1775491010000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "NewProcessId": "0x410",
+        "NewProcessName": "C:\\Windows\\System32\\printspool.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 14,
+      "source": "security"
+    },
+    {
+      "at": 1775491010000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1040",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 19,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775491094000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "NewProcessId": "0x404",
+        "NewProcessName": "C:\\Windows\\System32\\calc.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 15,
+      "source": "security"
+    },
+    {
+      "at": 1775491094000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1020",
+        "ProcessId": "1028",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 20,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775491293000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ProcessId": "1028",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\fuel-log.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 21,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775492290000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 16,
+      "source": "dns"
+    },
+    {
+      "at": 1775493892000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 17,
+      "source": "dns"
+    },
+    {
+      "at": 1775494166000,
+      "fields": {
+        "answer": "198.51.100.99",
+        "client": "10.60.0.21",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 18,
+      "source": "dns"
+    },
+    {
+      "at": 1775504700000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "\"C:\\Program Files\\YardBackup\\yard-backup.exe\" --job nightly-2045 --to \\\\qf-srv-01\\backups\\qf-lt-07",
+        "NewProcessId": "0x408",
+        "NewProcessName": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ParentProcessName": "C:\\Windows\\System32\\svchost.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "SYSTEM",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 16,
+      "source": "security"
+    },
+    {
+      "at": 1775504700000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "\"C:\\Program Files\\YardBackup\\yard-backup.exe\" --job nightly-2045 --to \\\\qf-srv-01\\backups\\qf-lt-07",
+        "Image": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ParentImage": "C:\\Windows\\System32\\svchost.exe",
+        "ParentProcessId": "1012",
+        "ProcessId": "1032",
+        "User": "SYSTEM"
+      },
+      "host": "qf-lt-07",
+      "seq": 22,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775504703000,
+      "fields": {
+        "action": "allow",
+        "bytes": "47455310",
+        "dpt": "445",
+        "dst": "10.60.1.10",
+        "proto": "tcp",
+        "rule": "office-to-servers",
+        "spt": "49894",
+        "src": "10.60.0.27"
+      },
+      "host": "qf-lt-07",
+      "seq": 1,
+      "source": "firewall"
+    },
+    {
+      "at": 1775545665000,
+      "fields": {
+        "answer": "198.51.100.28",
+        "client": "10.60.0.21",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 19,
+      "source": "dns"
+    },
+    {
+      "at": 1775546196000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ProcessId": "1032",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\week-notes.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 23,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775546369000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 20,
+      "source": "dns"
+    },
+    {
+      "at": 1775547527000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ProcessId": "1040",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\pallet-counts.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 24,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775549249000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "NewProcessId": "0x414",
+        "NewProcessName": "C:\\Windows\\System32\\calc.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 17,
+      "source": "security"
+    },
+    {
+      "at": 1775549249000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1044",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 25,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775549868000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "NewProcessId": "0x418",
+        "NewProcessName": "C:\\Windows\\System32\\printspool.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 18,
+      "source": "security"
+    },
+    {
+      "at": 1775549868000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1048",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 26,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775550798000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 21,
+      "source": "dns"
+    },
+    {
+      "at": 1775551959000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 22,
+      "source": "dns"
+    },
+    {
+      "at": 1775552773000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "NewProcessId": "0x41c",
+        "NewProcessName": "C:\\Windows\\System32\\notepad.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 19,
+      "source": "security"
+    },
+    {
+      "at": 1775552773000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1052",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 27,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775552937000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ProcessId": "1032",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\fuel-log.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 28,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775553538000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 23,
+      "source": "dns"
+    },
+    {
+      "at": 1775555876000,
+      "fields": {
+        "answer": "198.51.100.59",
+        "client": "10.60.0.27",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 24,
+      "source": "dns"
+    },
+    {
+      "at": 1775556269000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 25,
+      "source": "dns"
+    },
+    {
+      "at": 1775558245000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 26,
+      "source": "dns"
+    },
+    {
+      "at": 1775559098000,
+      "fields": {
+        "answer": "198.51.100.71",
+        "client": "10.60.0.27",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 27,
+      "source": "dns"
+    },
+    {
+      "at": 1775559478000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "NewProcessId": "0x40c",
+        "NewProcessName": "C:\\Windows\\System32\\calc.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 20,
+      "source": "security"
+    },
+    {
+      "at": 1775559478000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1020",
+        "ProcessId": "1036",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 29,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775559858000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x3074c",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 21,
+      "source": "security"
+    },
+    {
+      "at": 1775560079000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1052",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\pallet-counts.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 30,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775561296000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 28,
+      "source": "dns"
+    },
+    {
+      "at": 1775563059000,
+      "fields": {
+        "answer": "198.51.100.72",
+        "client": "10.60.0.21",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 29,
+      "source": "dns"
+    },
+    {
+      "at": 1775564637000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1052",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\trailer-checks.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 31,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775565220000,
+      "fields": {
+        "answer": "198.51.100.211",
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 30,
+      "source": "dns"
+    },
+    {
+      "at": 1775565911000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x3074c",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 22,
+      "source": "security"
+    },
+    {
+      "at": 1775566459000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 31,
+      "source": "dns"
+    },
+    {
+      "at": 1775567215000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "NewProcessId": "0x420",
+        "NewProcessName": "C:\\Windows\\System32\\calc.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 23,
+      "source": "security"
+    },
+    {
+      "at": 1775567215000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1056",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 32,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775568213000,
+      "fields": {
+        "answer": "198.51.100.34",
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 32,
+      "source": "dns"
+    },
+    {
+      "at": 1775568571000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ProcessId": "1036",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\fuel-log.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 33,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775570373000,
+      "fields": {
+        "answer": "198.51.100.101",
+        "client": "10.60.0.21",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 33,
+      "source": "dns"
+    },
+    {
+      "at": 1775570700000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ProcessId": "1036",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\Invoices\\inv-0407.pdf"
+      },
+      "host": "qf-lt-07",
+      "seq": 34,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775571539000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 34,
+      "source": "dns"
+    },
+    {
+      "at": 1775572029000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ProcessId": "1056",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\gate-rota.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 35,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775572772000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ProcessId": "1056",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\pallet-counts.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 36,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775573546000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x3091f",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 24,
+      "source": "security"
+    },
+    {
+      "at": 1775574169000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ProcessId": "1056",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\week-notes.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 37,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775575744000,
+      "fields": {
+        "answer": "198.51.100.240",
+        "client": "10.60.0.27",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 35,
+      "source": "dns"
+    },
+    {
+      "at": 1775575915000,
+      "fields": {
+        "answer": "198.51.100.225",
+        "client": "10.60.0.27",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 36,
+      "source": "dns"
+    },
+    {
+      "at": 1775576256000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 37,
+      "source": "dns"
+    },
+    {
+      "at": 1775577808000,
+      "fields": {
+        "answer": "198.51.100.13",
+        "client": "10.60.0.27",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 38,
+      "source": "dns"
+    },
+    {
+      "at": 1775578118000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "NewProcessId": "0x424",
+        "NewProcessName": "C:\\Windows\\System32\\calc.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 25,
+      "source": "security"
+    },
+    {
+      "at": 1775578118000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1060",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 38,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775579971000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 39,
+      "source": "dns"
+    },
+    {
+      "at": 1775580512000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 40,
+      "source": "dns"
+    },
+    {
+      "at": 1775591100000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "\"C:\\Program Files\\YardBackup\\yard-backup.exe\" --job nightly-2045 --to \\\\qf-srv-01\\backups\\qf-lt-07",
+        "NewProcessId": "0x410",
+        "NewProcessName": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ParentProcessName": "C:\\Windows\\System32\\svchost.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "SYSTEM",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 26,
+      "source": "security"
+    },
+    {
+      "at": 1775591100000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "\"C:\\Program Files\\YardBackup\\yard-backup.exe\" --job nightly-2045 --to \\\\qf-srv-01\\backups\\qf-lt-07",
+        "Image": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ParentImage": "C:\\Windows\\System32\\svchost.exe",
+        "ParentProcessId": "1012",
+        "ProcessId": "1040",
+        "User": "SYSTEM"
+      },
+      "host": "qf-lt-07",
+      "seq": 39,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775591105000,
+      "fields": {
+        "action": "allow",
+        "bytes": "47520977",
+        "dpt": "445",
+        "dst": "10.60.1.10",
+        "proto": "tcp",
+        "rule": "office-to-servers",
+        "spt": "56442",
+        "src": "10.60.0.27"
+      },
+      "host": "qf-lt-07",
+      "seq": 2,
+      "source": "firewall"
+    },
+    {
+      "at": 1775631757000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 41,
+      "source": "dns"
+    },
+    {
+      "at": 1775632019000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "NewProcessId": "0x414",
+        "NewProcessName": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 27,
+      "source": "security"
+    },
+    {
+      "at": 1775632019000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1020",
+        "ProcessId": "1044",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 40,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775634103000,
+      "fields": {
+        "answer": "198.51.100.114",
+        "client": "10.60.0.27",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 42,
+      "source": "dns"
+    },
+    {
+      "at": 1775634107000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ProcessId": "1060",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\tyre-order.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 41,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775635355000,
+      "fields": {
+        "answer": "198.51.100.156",
+        "client": "10.60.0.21",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 43,
+      "source": "dns"
+    },
+    {
+      "at": 1775635960000,
+      "fields": {
+        "action": "allow",
+        "bytes": "182340",
+        "dpt": "443",
+        "dst": "198.51.100.40",
+        "proto": "tcp",
+        "rule": "office-outbound",
+        "spt": "58189",
+        "src": "10.60.0.27"
+      },
+      "host": "qf-lt-07",
+      "seq": 3,
+      "source": "firewall"
+    },
+    {
+      "at": 1775636091000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 44,
+      "source": "dns"
+    },
+    {
+      "at": 1775636389000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 45,
+      "source": "dns"
+    },
+    {
+      "at": 1775638220000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ProcessId": "1044",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\trailer-checks.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 42,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775638913000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "NewProcessId": "0x428",
+        "NewProcessName": "C:\\Windows\\System32\\notepad.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 28,
+      "source": "security"
+    },
+    {
+      "at": 1775638913000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1064",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 43,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775639112000,
+      "fields": {
+        "action": "allow",
+        "bytes": "176902",
+        "dpt": "443",
+        "dst": "198.51.100.40",
+        "proto": "tcp",
+        "rule": "office-outbound",
+        "spt": "55962",
+        "src": "10.60.0.21"
+      },
+      "host": "qf-lt-03",
+      "seq": 4,
+      "source": "firewall"
+    },
+    {
+      "at": 1775639276000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 46,
+      "source": "dns"
+    },
+    {
+      "at": 1775641256000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x30af2",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 29,
+      "source": "security"
+    },
+    {
+      "at": 1775642035000,
+      "fields": {
+        "answer": "198.51.100.130",
+        "client": "10.60.0.27",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 47,
+      "source": "dns"
+    },
+    {
+      "at": 1775642466000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ProcessId": "1044",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\tyre-order.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 44,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775642978000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 48,
+      "source": "dns"
+    },
+    {
+      "at": 1775643046000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1064",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\week-notes.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 45,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775644638000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ProcessId": "1044",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\gate-rota.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 46,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775646287000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "NewProcessId": "0x418",
+        "NewProcessName": "C:\\Windows\\System32\\notepad.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 30,
+      "source": "security"
+    },
+    {
+      "at": 1775646287000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1020",
+        "ProcessId": "1048",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 47,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775646310000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1064",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\tyre-order.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 48,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775648316000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x3091f",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 31,
+      "source": "security"
+    },
+    {
+      "at": 1775648465000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x30cc5",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 32,
+      "source": "security"
+    },
+    {
+      "at": 1775650517000,
+      "fields": {
+        "answer": "198.51.100.80",
+        "client": "10.60.0.21",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 49,
+      "source": "dns"
+    },
+    {
+      "at": 1775652076000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "NewProcessId": "0x41c",
+        "NewProcessName": "C:\\Windows\\System32\\notepad.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 33,
+      "source": "security"
+    },
+    {
+      "at": 1775652076000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1020",
+        "ProcessId": "1052",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 49,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775652591000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "NewProcessId": "0x420",
+        "NewProcessName": "C:\\Windows\\System32\\calc.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 34,
+      "source": "security"
+    },
+    {
+      "at": 1775652591000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1020",
+        "ProcessId": "1056",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 50,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775653041000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1064",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\pallet-counts.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 51,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775654958000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "NewProcessId": "0x42c",
+        "NewProcessName": "C:\\Windows\\System32\\printspool.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 35,
+      "source": "security"
+    },
+    {
+      "at": 1775654958000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1068",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 52,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775655035000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "NewProcessId": "0x430",
+        "NewProcessName": "C:\\Windows\\System32\\calc.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 36,
+      "source": "security"
+    },
+    {
+      "at": 1775655035000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1072",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 53,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775655384000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ProcessId": "1056",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\trailer-checks.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 54,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775656541000,
+      "fields": {
+        "answer": "198.51.100.210",
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 50,
+      "source": "dns"
+    },
+    {
+      "at": 1775657858000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 51,
+      "source": "dns"
+    },
+    {
+      "at": 1775658616000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 52,
+      "source": "dns"
+    },
+    {
+      "at": 1775658965000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ProcessId": "1072",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\pallet-counts.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 55,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775659241000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 53,
+      "source": "dns"
+    },
+    {
+      "at": 1775660716000,
+      "fields": {
+        "answer": "198.51.100.151",
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 54,
+      "source": "dns"
+    },
+    {
+      "at": 1775662276000,
+      "fields": {
+        "answer": "198.51.100.197",
+        "client": "10.60.0.21",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 55,
+      "source": "dns"
+    },
+    {
+      "at": 1775662791000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "NewProcessId": "0x434",
+        "NewProcessName": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 37,
+      "source": "security"
+    },
+    {
+      "at": 1775662791000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1076",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 56,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775663015000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x30e98",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 38,
+      "source": "security"
+    },
+    {
+      "at": 1775664893000,
+      "fields": {
+        "answer": "198.51.100.163",
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 56,
+      "source": "dns"
+    },
+    {
+      "at": 1775666370000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "NewProcessId": "0x424",
+        "NewProcessName": "C:\\Windows\\System32\\notepad.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 39,
+      "source": "security"
+    },
+    {
+      "at": 1775666370000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1020",
+        "ProcessId": "1060",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 57,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775666702000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 57,
+      "source": "dns"
+    },
+    {
+      "at": 1775667251000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "NewProcessId": "0x438",
+        "NewProcessName": "C:\\Windows\\System32\\notepad.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 40,
+      "source": "security"
+    },
+    {
+      "at": 1775667251000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1080",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 58,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775677500000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "\"C:\\Program Files\\YardBackup\\yard-backup.exe\" --job nightly-2045 --to \\\\qf-srv-01\\backups\\qf-lt-07",
+        "NewProcessId": "0x428",
+        "NewProcessName": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ParentProcessName": "C:\\Windows\\System32\\svchost.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "SYSTEM",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 41,
+      "source": "security"
+    },
+    {
+      "at": 1775677500000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "\"C:\\Program Files\\YardBackup\\yard-backup.exe\" --job nightly-2045 --to \\\\qf-srv-01\\backups\\qf-lt-07",
+        "Image": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ParentImage": "C:\\Windows\\System32\\svchost.exe",
+        "ParentProcessId": "1012",
+        "ProcessId": "1064",
+        "User": "SYSTEM"
+      },
+      "host": "qf-lt-07",
+      "seq": 59,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775677504000,
+      "fields": {
+        "action": "allow",
+        "bytes": "47689142",
+        "dpt": "445",
+        "dst": "10.60.1.10",
+        "proto": "tcp",
+        "rule": "office-to-servers",
+        "spt": "59126",
+        "src": "10.60.0.27"
+      },
+      "host": "qf-lt-07",
+      "seq": 5,
+      "source": "firewall"
+    },
+    {
+      "at": 1775718761000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x30af2",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 42,
+      "source": "security"
+    },
+    {
+      "at": 1775719470000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "NewProcessId": "0x43c",
+        "NewProcessName": "C:\\Windows\\System32\\notepad.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 43,
+      "source": "security"
+    },
+    {
+      "at": 1775719470000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1084",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 60,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775720998000,
+      "fields": {
+        "answer": "198.51.100.83",
+        "client": "10.60.0.27",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 58,
+      "source": "dns"
+    },
+    {
+      "at": 1775721414000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ProcessId": "1064",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\tyre-order.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 61,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775722235000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 59,
+      "source": "dns"
+    },
+    {
+      "at": 1775722601000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 60,
+      "source": "dns"
+    },
+    {
+      "at": 1775723181000,
+      "fields": {
+        "answer": "198.51.100.111",
+        "client": "10.60.0.21",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 61,
+      "source": "dns"
+    },
+    {
+      "at": 1775723822000,
+      "fields": {
+        "answer": "198.51.100.32",
+        "client": "10.60.0.27",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 62,
+      "source": "dns"
+    },
+    {
+      "at": 1775725768000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "NewProcessId": "0x440",
+        "NewProcessName": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 44,
+      "source": "security"
+    },
+    {
+      "at": 1775725768000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1088",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 62,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775726785000,
+      "fields": {
+        "answer": "198.51.100.17",
+        "client": "10.60.0.27",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 63,
+      "source": "dns"
+    },
+    {
+      "at": 1775727068000,
+      "fields": {
+        "answer": "198.51.100.149",
+        "client": "10.60.0.27",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 64,
+      "source": "dns"
+    },
+    {
+      "at": 1775727859000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x30cc5",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 45,
+      "source": "security"
+    },
+    {
+      "at": 1775728878000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ProcessId": "1088",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\fuel-log.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 63,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775730641000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "NewProcessId": "0x444",
+        "NewProcessName": "C:\\Windows\\System32\\printspool.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 46,
+      "source": "security"
+    },
+    {
+      "at": 1775730641000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1092",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 64,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775730991000,
+      "fields": {
+        "answer": "198.51.100.217",
+        "client": "10.60.0.27",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 65,
+      "source": "dns"
+    },
+    {
+      "at": 1775731800000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x3106b",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 47,
+      "source": "security"
+    },
+    {
+      "at": 1775732680000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x30e98",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 48,
+      "source": "security"
+    },
+    {
+      "at": 1775733748000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ProcessId": "1064",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\trailer-checks.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 65,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775734631000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 66,
+      "source": "dns"
+    },
+    {
+      "at": 1775735986000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ProcessId": "1064",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\week-notes.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 66,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775736533000,
+      "fields": {
+        "answer": "198.51.100.168",
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 67,
+      "source": "dns"
+    },
+    {
+      "at": 1775736627000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 68,
+      "source": "dns"
+    },
+    {
+      "at": 1775736631000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x3106b",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 49,
+      "source": "security"
+    },
+    {
+      "at": 1775738287000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x3123e",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 50,
+      "source": "security"
+    },
+    {
+      "at": 1775740228000,
+      "fields": {
+        "answer": "198.51.100.150",
+        "client": "10.60.0.21",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 69,
+      "source": "dns"
+    },
+    {
+      "at": 1775741274000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "NewProcessId": "0x42c",
+        "NewProcessName": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 51,
+      "source": "security"
+    },
+    {
+      "at": 1775741274000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1020",
+        "ProcessId": "1068",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 67,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775742352000,
+      "fields": {
+        "answer": "198.51.100.53",
+        "client": "10.60.0.21",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 70,
+      "source": "dns"
+    },
+    {
+      "at": 1775742451000,
+      "fields": {
+        "action": "allow",
+        "bytes": "20417",
+        "dpt": "443",
+        "dst": "198.51.100.77",
+        "proto": "tcp",
+        "rule": "office-outbound",
+        "spt": "62379",
+        "src": "10.60.0.27"
+      },
+      "host": "qf-lt-07",
+      "seq": 6,
+      "source": "firewall"
+    },
+    {
+      "at": 1775742867000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x3123e",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 52,
+      "source": "security"
+    },
+    {
+      "at": 1775744537000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x31411",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 53,
+      "source": "security"
+    },
+    {
+      "at": 1775745242000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 71,
+      "source": "dns"
+    },
+    {
+      "at": 1775746010000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "NewProcessId": "0x430",
+        "NewProcessName": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 54,
+      "source": "security"
+    },
+    {
+      "at": 1775746010000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1020",
+        "ProcessId": "1072",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 68,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775746733000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "NewProcessId": "0x448",
+        "NewProcessName": "C:\\Windows\\System32\\printspool.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 55,
+      "source": "security"
+    },
+    {
+      "at": 1775746733000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1096",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 69,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775748077000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "NewProcessId": "0x44c",
+        "NewProcessName": "C:\\Windows\\System32\\notepad.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 56,
+      "source": "security"
+    },
+    {
+      "at": 1775748077000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1100",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 70,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775748780000,
+      "fields": {
+        "answer": "198.51.100.216",
+        "client": "10.60.0.27",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 72,
+      "source": "dns"
+    },
+    {
+      "at": 1775749200000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ProcessId": "1072",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\Invoices\\inv-0409.pdf"
+      },
+      "host": "qf-lt-07",
+      "seq": 71,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775749529000,
+      "fields": {
+        "answer": "198.51.100.55",
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 73,
+      "source": "dns"
+    },
+    {
+      "at": 1775749790000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1100",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\trailer-checks.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 72,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775750951000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ProcessId": "1072",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\tyre-order.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 73,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775751305000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ProcessId": "1072",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\pallet-counts.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 74,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775752893000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "NewProcessId": "0x450",
+        "NewProcessName": "C:\\Windows\\System32\\calc.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 57,
+      "source": "security"
+    },
+    {
+      "at": 1775752893000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1104",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 75,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775753807000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x31411",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 58,
+      "source": "security"
+    },
+    {
+      "at": 1775763900000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "\"C:\\Program Files\\YardBackup\\yard-backup.exe\" --job nightly-2045 --to \\\\qf-srv-01\\backups\\qf-lt-07",
+        "NewProcessId": "0x434",
+        "NewProcessName": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ParentProcessName": "C:\\Windows\\System32\\svchost.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "SYSTEM",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 59,
+      "source": "security"
+    },
+    {
+      "at": 1775763900000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "\"C:\\Program Files\\YardBackup\\yard-backup.exe\" --job nightly-2045 --to \\\\qf-srv-01\\backups\\qf-lt-07",
+        "Image": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ParentImage": "C:\\Windows\\System32\\svchost.exe",
+        "ParentProcessId": "1012",
+        "ProcessId": "1076",
+        "User": "SYSTEM"
+      },
+      "host": "qf-lt-07",
+      "seq": 76,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775763904000,
+      "fields": {
+        "action": "allow",
+        "bytes": "47802211",
+        "dpt": "445",
+        "dst": "10.60.1.10",
+        "proto": "tcp",
+        "rule": "office-to-servers",
+        "spt": "52302",
+        "src": "10.60.0.27"
+      },
+      "host": "qf-lt-07",
+      "seq": 7,
+      "source": "firewall"
+    },
+    {
+      "at": 1775804504000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x315e4",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 60,
+      "source": "security"
+    },
+    {
+      "at": 1775804754000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 74,
+      "source": "dns"
+    },
+    {
+      "at": 1775806022000,
+      "fields": {
+        "answer": "198.51.100.61",
+        "client": "10.60.0.27",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 75,
+      "source": "dns"
+    },
+    {
+      "at": 1775806945000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x317b7",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 61,
+      "source": "security"
+    },
+    {
+      "at": 1775807700000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x315e4",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 62,
+      "source": "security"
+    },
+    {
+      "at": 1775809143000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ProcessId": "1104",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\week-notes.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 77,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775809633000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "NewProcessId": "0x438",
+        "NewProcessName": "C:\\Windows\\System32\\notepad.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 63,
+      "source": "security"
+    },
+    {
+      "at": 1775809633000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1020",
+        "ProcessId": "1080",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 78,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775809843000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 76,
+      "source": "dns"
+    },
+    {
+      "at": 1775810446000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ProcessId": "1104",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\gate-rota.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 79,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775813102000,
+      "fields": {
+        "answer": "198.51.100.169",
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 77,
+      "source": "dns"
+    },
+    {
+      "at": 1775814710000,
+      "fields": {
+        "answer": "198.51.100.78",
+        "client": "10.60.0.21",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 78,
+      "source": "dns"
+    },
+    {
+      "at": 1775814909000,
+      "fields": {
+        "answer": "198.51.100.32",
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 79,
+      "source": "dns"
+    },
+    {
+      "at": 1775815160000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ProcessId": "1104",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\tyre-order.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 80,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775815695000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 80,
+      "source": "dns"
+    },
+    {
+      "at": 1775815943000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ProcessId": "1104",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\tyre-order.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 81,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775816529000,
+      "fields": {
+        "action": "allow",
+        "bytes": "18833",
+        "dpt": "443",
+        "dst": "198.51.100.77",
+        "proto": "tcp",
+        "rule": "office-outbound",
+        "spt": "56031",
+        "src": "10.60.0.21"
+      },
+      "host": "qf-lt-03",
+      "seq": 8,
+      "source": "firewall"
+    },
+    {
+      "at": 1775817624000,
+      "fields": {
+        "answer": "198.51.100.26",
+        "client": "10.60.0.27",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 81,
+      "source": "dns"
+    },
+    {
+      "at": 1775818487000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 82,
+      "source": "dns"
+    },
+    {
+      "at": 1775819074000,
+      "fields": {
+        "answer": "198.51.100.197",
+        "client": "10.60.0.21",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 83,
+      "source": "dns"
+    },
+    {
+      "at": 1775820600000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1080",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\Invoices\\inv-0410.pdf"
+      },
+      "host": "qf-lt-07",
+      "seq": 82,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775821373000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 84,
+      "source": "dns"
+    },
+    {
+      "at": 1775821618000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "NewProcessId": "0x454",
+        "NewProcessName": "C:\\Windows\\System32\\printspool.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 64,
+      "source": "security"
+    },
+    {
+      "at": 1775821618000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1108",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 83,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775821664000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1080",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\tyre-order.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 84,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775822666000,
+      "fields": {
+        "answer": "198.51.100.185",
+        "client": "10.60.0.21",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 85,
+      "source": "dns"
+    },
+    {
+      "at": 1775824344000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x3198a",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 65,
+      "source": "security"
+    },
+    {
+      "at": 1775824486000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1080",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\fuel-log.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 85,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775825382000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1080",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\pallet-counts.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 86,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775826487000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ProcessId": "1108",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\tyre-order.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 87,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775827550000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x317b7",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 66,
+      "source": "security"
+    },
+    {
+      "at": 1775828030000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x3198a",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 67,
+      "source": "security"
+    },
+    {
+      "at": 1775828819000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 86,
+      "source": "dns"
+    },
+    {
+      "at": 1775829699000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1080",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\tyre-order.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 88,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775830622000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "NewProcessId": "0x458",
+        "NewProcessName": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 68,
+      "source": "security"
+    },
+    {
+      "at": 1775830622000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1112",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 89,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775832990000,
+      "fields": {
+        "answer": "198.51.100.236",
+        "client": "10.60.0.21",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 87,
+      "source": "dns"
+    },
+    {
+      "at": 1775833158000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1080",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\week-notes.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 90,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775833268000,
+      "fields": {
+        "answer": "198.51.100.37",
+        "client": "10.60.0.27",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 88,
+      "source": "dns"
+    },
+    {
+      "at": 1775833269000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x31b5d",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 69,
+      "source": "security"
+    },
+    {
+      "at": 1775833365000,
+      "fields": {
+        "action": "allow",
+        "bytes": "25106",
+        "dpt": "443",
+        "dst": "198.51.100.77",
+        "proto": "tcp",
+        "rule": "office-outbound",
+        "spt": "51224",
+        "src": "10.60.0.27"
+      },
+      "host": "qf-lt-07",
+      "seq": 9,
+      "source": "firewall"
+    },
+    {
+      "at": 1775835022000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "NewProcessId": "0x45c",
+        "NewProcessName": "C:\\Windows\\System32\\printspool.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 70,
+      "source": "security"
+    },
+    {
+      "at": 1775835022000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1116",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 91,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775836262000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ProcessId": "1116",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\fuel-log.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 92,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775837477000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 89,
+      "source": "dns"
+    },
+    {
+      "at": 1775838243000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "NewProcessId": "0x460",
+        "NewProcessName": "C:\\Windows\\System32\\calc.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 71,
+      "source": "security"
+    },
+    {
+      "at": 1775838243000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1120",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 93,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775838974000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 90,
+      "source": "dns"
+    },
+    {
+      "at": 1775839200000,
+      "eventId": 4634,
+      "fields": {
+        "LogonType": "2",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x31b5d",
+        "TargetUserName": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 72,
+      "source": "security"
+    },
+    {
+      "at": 1775839789000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "NewProcessId": "0x43c",
+        "NewProcessName": "C:\\Windows\\System32\\calc.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 73,
+      "source": "security"
+    },
+    {
+      "at": 1775839789000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\calc.exe",
+        "Image": "C:\\Windows\\System32\\calc.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1020",
+        "ProcessId": "1084",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 94,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775850300000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "\"C:\\Program Files\\YardBackup\\yard-backup.exe\" --job nightly-2045 --to \\\\qf-srv-01\\backups\\qf-lt-07",
+        "NewProcessId": "0x440",
+        "NewProcessName": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ParentProcessName": "C:\\Windows\\System32\\svchost.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "SYSTEM",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 74,
+      "source": "security"
+    },
+    {
+      "at": 1775850300000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "\"C:\\Program Files\\YardBackup\\yard-backup.exe\" --job nightly-2045 --to \\\\qf-srv-01\\backups\\qf-lt-07",
+        "Image": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ParentImage": "C:\\Windows\\System32\\svchost.exe",
+        "ParentProcessId": "1012",
+        "ProcessId": "1088",
+        "User": "SYSTEM"
+      },
+      "host": "qf-lt-07",
+      "seq": 95,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775850306000,
+      "fields": {
+        "action": "allow",
+        "bytes": "48213904",
+        "dpt": "445",
+        "dst": "10.60.1.10",
+        "proto": "tcp",
+        "rule": "office-to-servers",
+        "spt": "60580",
+        "src": "10.60.0.27"
+      },
+      "host": "qf-lt-07",
+      "seq": 10,
+      "source": "firewall"
+    },
+    {
+      "at": 1775909100000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x31d30",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 75,
+      "source": "security"
+    },
+    {
+      "at": 1775917120000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "notepad.exe",
+        "NewProcessId": "0x444",
+        "NewProcessName": "C:\\Windows\\System32\\notepad.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 76,
+      "source": "security"
+    },
+    {
+      "at": 1775917120000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "notepad.exe",
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1020",
+        "ProcessId": "1092",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 96,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775917200000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1092",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\march-reconciliation.txt"
+      },
+      "host": "qf-lt-07",
+      "seq": 97,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775921478000,
+      "fields": {
+        "action": "allow",
+        "bytes": "22950",
+        "dpt": "443",
+        "dst": "198.51.100.77",
+        "proto": "tcp",
+        "rule": "office-outbound",
+        "spt": "64178",
+        "src": "10.60.0.27"
+      },
+      "host": "qf-lt-07",
+      "seq": 11,
+      "source": "firewall"
+    },
+    {
+      "at": 1775928660000,
+      "eventId": 4634,
+      "fields": {
+        "LogonType": "2",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x31d30",
+        "TargetUserName": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 77,
+      "source": "security"
+    },
+    {
+      "at": 1775936395000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "mstsc.exe /v:qf-lt-07",
+        "NewProcessId": "0x464",
+        "NewProcessName": "C:\\Windows\\System32\\mstsc.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 78,
+      "source": "security"
+    },
+    {
+      "at": 1775936395000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "mstsc.exe /v:qf-lt-07",
+        "Image": "C:\\Windows\\System32\\mstsc.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1124",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 98,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775936412000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "10.60.0.21",
+        "IpPort": "50058",
+        "LogonProcessName": "User32",
+        "LogonType": "10",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "-",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x31f03",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-07",
+      "seq": 79,
+      "source": "security"
+    },
+    {
+      "at": 1775936420000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\explorer.exe",
+        "NewProcessId": "0x448",
+        "NewProcessName": "C:\\Windows\\explorer.exe",
+        "ParentProcessName": "-",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 80,
+      "source": "security"
+    },
+    {
+      "at": 1775936420000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\explorer.exe",
+        "Image": "C:\\Windows\\explorer.exe",
+        "ParentImage": "-",
+        "ParentProcessId": "0",
+        "ProcessId": "1096",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 99,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775936523000,
+      "eventId": 23,
+      "fields": {
+        "Image": "C:\\Windows\\explorer.exe",
+        "ProcessId": "1096",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\Invoices\\inv-0407.pdf",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 100,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775936525000,
+      "eventId": 23,
+      "fields": {
+        "Image": "C:\\Windows\\explorer.exe",
+        "ProcessId": "1096",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\Invoices\\inv-0409.pdf",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 101,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775936527000,
+      "eventId": 23,
+      "fields": {
+        "Image": "C:\\Windows\\explorer.exe",
+        "ProcessId": "1096",
+        "TargetFilename": "C:\\Users\\jory\\Documents\\Invoices\\inv-0410.pdf",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 102,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775936566000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "explorer.exe \\\\qf-lt-07\\Users\\jory\\Documents",
+        "NewProcessId": "0x468",
+        "NewProcessName": "C:\\Windows\\explorer.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 81,
+      "source": "security"
+    },
+    {
+      "at": 1775936566000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "explorer.exe \\\\qf-lt-07\\Users\\jory\\Documents",
+        "Image": "C:\\Windows\\explorer.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1016",
+        "ProcessId": "1128",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 103,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775936570000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "NTLM",
+        "IpAddress": "10.60.0.21",
+        "IpPort": "53097",
+        "LogonProcessName": "NtLmSsp",
+        "LogonType": "3",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "-",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x320d6",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-07",
+      "seq": 82,
+      "source": "security"
+    },
+    {
+      "at": 1775936572000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\explorer.exe",
+        "ProcessId": "1128",
+        "TargetFilename": "C:\\Users\\mara\\Downloads\\price-lists.zip"
+      },
+      "host": "qf-lt-03",
+      "seq": 104,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775936590000,
+      "fields": {
+        "answer": "203.0.113.80",
+        "client": "10.60.0.21",
+        "query": "parcel-drop.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 91,
+      "source": "dns"
+    },
+    {
+      "at": 1775936594000,
+      "fields": {
+        "action": "allow",
+        "bytes": "3190",
+        "dpt": "443",
+        "dst": "203.0.113.80",
+        "proto": "tcp",
+        "rule": "office-outbound",
+        "spt": "52656",
+        "src": "10.60.0.21"
+      },
+      "host": "qf-lt-03",
+      "seq": 12,
+      "source": "firewall"
+    },
+    {
+      "at": 1775936620000,
+      "eventId": 4634,
+      "fields": {
+        "LogonType": "3",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x320d6",
+        "TargetUserName": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 83,
+      "source": "security"
+    },
+    {
+      "at": 1775936677000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\explorer.exe",
+        "ProcessId": "1128",
+        "TargetFilename": "C:\\Users\\mara\\Desktop\\the-door-was-open.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 105,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775936700000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "\"C:\\Program Files\\YardBackup\\yard-backup.exe\" --job nightly-2045 --to \\\\qf-srv-01\\backups\\qf-lt-07",
+        "NewProcessId": "0x44c",
+        "NewProcessName": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ParentProcessName": "C:\\Windows\\System32\\svchost.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "SYSTEM",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 84,
+      "source": "security"
+    },
+    {
+      "at": 1775936700000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "\"C:\\Program Files\\YardBackup\\yard-backup.exe\" --job nightly-2045 --to \\\\qf-srv-01\\backups\\qf-lt-07",
+        "Image": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ParentImage": "C:\\Windows\\System32\\svchost.exe",
+        "ParentProcessId": "1012",
+        "ProcessId": "1100",
+        "User": "SYSTEM"
+      },
+      "host": "qf-lt-07",
+      "seq": 106,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1775936705000,
+      "fields": {
+        "action": "allow",
+        "bytes": "47986120",
+        "dpt": "445",
+        "dst": "10.60.1.10",
+        "proto": "tcp",
+        "rule": "office-to-servers",
+        "spt": "49317",
+        "src": "10.60.0.27"
+      },
+      "host": "qf-lt-07",
+      "seq": 13,
+      "source": "firewall"
+    },
+    {
+      "at": 1776023100000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "\"C:\\Program Files\\YardBackup\\yard-backup.exe\" --job nightly-2045 --to \\\\qf-srv-01\\backups\\qf-lt-07",
+        "NewProcessId": "0x450",
+        "NewProcessName": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ParentProcessName": "C:\\Windows\\System32\\svchost.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "SYSTEM",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 85,
+      "source": "security"
+    },
+    {
+      "at": 1776023100000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "\"C:\\Program Files\\YardBackup\\yard-backup.exe\" --job nightly-2045 --to \\\\qf-srv-01\\backups\\qf-lt-07",
+        "Image": "C:\\Program Files\\YardBackup\\yard-backup.exe",
+        "ParentImage": "C:\\Windows\\System32\\svchost.exe",
+        "ParentProcessId": "1012",
+        "ProcessId": "1104",
+        "User": "SYSTEM"
+      },
+      "host": "qf-lt-07",
+      "seq": 107,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1776023104000,
+      "fields": {
+        "action": "allow",
+        "bytes": "47990388",
+        "dpt": "445",
+        "dst": "10.60.1.10",
+        "proto": "tcp",
+        "rule": "office-to-servers",
+        "spt": "62433",
+        "src": "10.60.0.27"
+      },
+      "host": "qf-lt-07",
+      "seq": 14,
+      "source": "firewall"
+    },
+    {
+      "at": 1776064537000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "NewProcessId": "0x46c",
+        "NewProcessName": "C:\\Windows\\System32\\notepad.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 86,
+      "source": "security"
+    },
+    {
+      "at": 1776064537000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1128",
+        "ProcessId": "1132",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 108,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1776064957000,
+      "fields": {
+        "answer": "198.51.100.17",
+        "client": "10.60.0.21",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 92,
+      "source": "dns"
+    },
+    {
+      "at": 1776065087000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 93,
+      "source": "dns"
+    },
+    {
+      "at": 1776065267000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x322a9",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 87,
+      "source": "security"
+    },
+    {
+      "at": 1776067576000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x31b5d",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 88,
+      "source": "security"
+    },
+    {
+      "at": 1776067699000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TargetDomainName": "QF-LT-07",
+        "TargetLogonId": "0x3247c",
+        "TargetUserName": "jory",
+        "WorkstationName": "QF-LT-07"
+      },
+      "host": "qf-lt-07",
+      "seq": 89,
+      "source": "security"
+    },
+    {
+      "at": 1776069320000,
+      "fields": {
+        "answer": "198.51.100.91",
+        "client": "10.60.0.21",
+        "query": "maps.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 94,
+      "source": "dns"
+    },
+    {
+      "at": 1776069988000,
+      "fields": {
+        "answer": "198.51.100.92",
+        "client": "10.60.0.27",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 95,
+      "source": "dns"
+    },
+    {
+      "at": 1776070823000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1132",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\gate-rota.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 109,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1776071389000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "NewProcessId": "0x454",
+        "NewProcessName": "C:\\Windows\\System32\\printspool.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-07",
+        "SubjectUserName": "jory",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-07",
+      "seq": 90,
+      "source": "security"
+    },
+    {
+      "at": 1776071389000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1096",
+        "ProcessId": "1108",
+        "User": "jory"
+      },
+      "host": "qf-lt-07",
+      "seq": 110,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1776073281000,
+      "fields": {
+        "client": "10.60.0.27",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-07",
+      "seq": 96,
+      "source": "dns"
+    },
+    {
+      "at": 1776073843000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x31d30",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 91,
+      "source": "security"
+    },
+    {
+      "at": 1776074698000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "NewProcessId": "0x470",
+        "NewProcessName": "C:\\Windows\\System32\\notepad.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "qf-lt-03",
+      "seq": 92,
+      "source": "security"
+    },
+    {
+      "at": 1776074698000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\notepad.exe",
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1128",
+        "ProcessId": "1136",
+        "User": "mara"
+      },
+      "host": "qf-lt-03",
+      "seq": 111,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1776075021000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Windows\\System32\\notepad.exe",
+        "ProcessId": "1136",
+        "TargetFilename": "C:\\Users\\mara\\Documents\\week-notes.txt"
+      },
+      "host": "qf-lt-03",
+      "seq": 112,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1776078857000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "QF-LT-03",
+        "SubjectUserName": "mara",
+        "TargetDomainName": "QF-LT-03",
+        "TargetLogonId": "0x31f03",
+        "TargetUserName": "mara",
+        "WorkstationName": "QF-LT-03"
+      },
+      "host": "qf-lt-03",
+      "seq": 93,
+      "source": "security"
+    },
+    {
+      "at": 1776079399000,
+      "fields": {
+        "client": "10.60.0.21",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "qf-lt-03",
+      "seq": 97,
+      "source": "dns"
+    }
+  ],
+  "memory": [],
+  "seed": 20260414,
+  "zones": {
+    "disk": "Europe/London",
+    "security": "Europe/London"
+  }
+}

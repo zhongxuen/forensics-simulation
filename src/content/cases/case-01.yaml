@@ -13,8 +13,9 @@
 #   something in memory (src/sim/evidence/refs.ts); there is no ref for "this image's hash", so a
 #   MATCH line cannot be pinned. All three answers point at the note's record instead, which is the
 #   one thing this case produces — and the `explain` text says why a record out of a verified copy
-#   is worth quoting. When file 10 builds the custody log, its entries are the artefact these two
-#   questions really want.
+#   is worth quoting. The custody log (file 10) now records the MATCH in the player's own chain of
+#   custody, on the Objectives tab and the debrief, but it is a record of the run rather than a
+#   piece of evidence, so it still has no ref to cite.
 id: case-01
 version: 1
 title: The clean copy
@@ -221,8 +222,9 @@ objectives:
     success: MATCH. Your copy and the drive the yard handed over are the same, byte for byte.
     check:
       kind: commandRun
-      # Verifying the original device is worth doing, and is the "Both Ends" bonus below. This
-      # objective is about the copy, so a --verify aimed at /dev/evidence does not tick it.
+      # Verifying the original device before anything opens it is worth doing, and is the
+      # "Fingerprint First" bonus below. This objective is about the copy, so a --verify aimed at
+      # /dev/evidence does not tick it.
       pattern: "^\\s*hashsum\\b(?=.*--verify)(?!.*/dev/evidence/)"
 
   - id: find-the-note
@@ -235,20 +237,19 @@ objectives:
         - { kind: commandRun, pattern: "^\\s*lsfs\\b" }
         - { kind: pinned, evidence: "disk:qf-lt-03:mft/*door-was-open*" }
 
-  # 06 §Objectives asks for a bonus that notices hashing before anything is opened. Nothing in the
-  # schema can look at the order events happened in, so this asks for the same care in a way a
-  # check can see: hashing the original as well as the copy, so both ends of the copy are in the
-  # player's own transcript. It says nothing about the two agreeing, because a player who takes
-  # the wrong turn hashes the original too, and finds out there that they no longer do.
-  - id: hash-the-original
-    name: Both Ends
-    description: Hash the original drive as well as your copy.
-    why: A report stands up better when you hashed both ends of the copy yourself, rather than one of them.
-    success: Both ends hashed. The drive's own fingerprint is in your transcript now, taken by you.
+  # 06 §Objectives: "hashed before opening anything", read off the order of the player's chain of
+  # custody (file 10). It holds when a hash that matched (or wasn't checked) comes before any read
+  # of the original, examination, recovery or pin. Hashing the original through its blocker counts,
+  # and so does hashing the copy before listing it.
+  - id: hash-before-opening
+    name: Fingerprint First
+    description: Check a hash before anything opens the drive.
+    why: A hash taken before anything is read shows the evidence was as it arrived when you started.
+    success: Fingerprint first. Your chain of custody shows a matching hash before anything opened the drive.
     optional: true
     check:
-      kind: commandRun
-      pattern: "^\\s*hashsum\\b.*/dev/evidence/qf-lt-03"
+      kind: custody
+      rule: hashed-before-analysing
 
   - id: md5-as-well
     name: Belt And Braces
@@ -281,10 +282,10 @@ hints:
     - The owner saw a message on the screen. Whatever it was, it is somewhere in that account's desktop folder on your copy.
     - "Listing your image shows every record on it: a folder at a time, or the whole drive with one option. Opening a single record shows its times and gives you something to pin."
     - "List the folder with `lsfs images/qf-lt-03.img 'C:\\Users\\mara\\Desktop' -l`, open the record it shows with `inode`, then `pin` it."
-  hash-the-original:
-    - You hashed your copy. There is a second thing on this desk with a hash worth taking.
-    - Reading the original through a blocker that is on changes nothing at all, so hashing it costs you nothing.
-    - "Run `hashsum /dev/evidence/qf-lt-03` while the blocker is on."
+  hash-before-opening:
+    - Think about the order you do things in. Your chain of custody, on the Objectives tab, lists every step.
+    - A fingerprint taken before anything reads the drive shows it was as it arrived. Reading through a blocker that is on changes nothing, so the original is safe to fingerprint.
+    - "Before any `lsfs` or `inode`, run `hashsum --verify <the SHA-256 from handover.txt> /dev/evidence/qf-lt-03` with the blocker on."
 
 report:
   questions:

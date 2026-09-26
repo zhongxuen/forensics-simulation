@@ -1,0 +1,127 @@
+---
+id: disk-deleted-vs-overwritten
+title: Deleted isn't gone, until it's overwritten
+topic: forensics
+level: 2
+readingMinutes: 7
+analogy: "Chalk on a board. Deleting a file rubs out the label above the drawing, and the drawing stays until someone draws over it. Once they have, no amount of squinting brings the old one back."
+summary: What deleting a file really does, why the content usually survives, and why it stops surviving the moment something is written over it.
+prerequisites: [disk-macb-timestamps]
+externalPrerequisites: [forensics-evidence-care]
+relatedCommands: [lsfs, inode, recover]
+glossaryTerms: [unallocated-space, cluster, file-record]
+cites: [carrier-fsfa-ch8]
+---
+
+## The one-sentence version
+
+Deleting a file marks its record and its space as free without wiping either, so the content can be
+read back until another file is written over it, and after that it's gone.
+
+Think of chalk on a board with a label above each drawing. Deleting rubs out the label. The drawing
+stays, and anyone who knows where to look can still see it, right up until somebody draws something
+new in that spot.
+
+<Quiz
+  question="A deleted file's record is still on the drive, but another file has since been written into its clusters. What can you still show?"
+  options={[
+    {
+      text: "Nothing: the file is gone, so there's no evidence of it",
+      explanation:
+        "The content is gone, but the record isn't. Its name, size and times still show the file existed and when it was deleted, which is often exactly what a report needs.",
+    },
+    {
+      text: "That the file existed, with its name, size and times, but not what was in it",
+      correct: true,
+      explanation:
+        "The record survives, so you can show the file was there and when things happened to it. The clusters now hold the other file's bytes, so its content can't be read back.",
+    },
+    {
+      text: "Everything, because deleted files can always be recovered",
+      explanation:
+        "Recovery reads the clusters the record points at. Once another file owns them, what you'd read back is that other file. A good tool refuses rather than hand you the wrong bytes.",
+    },
+  ]}
+/>
+
+## Why it matters in security
+
+People delete things when something has gone wrong: an invoice, a log, a tool they used. Whether
+you can read it back decides what the report can say. It's also a matter of time. A running
+computer writes all day without anyone asking it to, and every write might land on the one file you
+need. That's why a responder wants a machine left alone, and why imaging comes before anything else.
+
+It matters for how you write, too. "The file was deleted at 11:30 and its content recovered" and
+"the file was deleted at 11:30 and has since been overwritten" are both findings. A report that
+can't tell them apart, or presents half a file as a whole one, isn't one to rely on.
+
+## How it actually works
+
+### What deleting does
+
+Carrier (_File System Forensic Analysis_, chapter 8) splits a file system's data into categories.
+Two matter here: the metadata, meaning each file's record, and the content, stored in data units,
+which NTFS calls clusters. Deleting a file changes their status, not their bytes:
+
+- the <Term id="file-record">file record</Term> is marked free, with its name, size, times and
+  cluster list left inside it
+- its <Term id="cluster">clusters</Term> are marked free and join the
+  <Term id="unallocated-space">unallocated space</Term>, with the content still in them
+- the record's C time moves to the moment of deletion
+
+### Recovering by record
+
+While the record survives and no other file has taken its clusters, reading those clusters back
+gives you the file exactly as it was. That's what `recover` does. It writes a copy into your own
+folders and leaves the image untouched.
+
+### Overwritten
+
+The file system is free to give those clusters to the next file that needs space. Once it has,
+the old content is gone: the bytes now belong to someone else. The record may still point at the
+same cluster numbers, which is the trap. Reading them back would hand you the new file's content
+under the old file's name. `recover` checks for this first and refuses, and `inode` says which file
+took the clusters.
+
+Partly overwritten is common too: a new file takes some of the clusters and not others. Case 2 has
+one of those, and the next lesson shows how to read what's left.
+
+## See it
+
+The practice laptop has three deleted files. One of them, a note, lost its only cluster to a log
+file the next morning. Find which, and read back one that survived.
+
+<MiniTerminal
+  scenario="ir-ws-disk"
+  commands={[
+    "lsfs train-lt-01 -d -r",
+    "inode train-lt-01 17",
+    "recover train-lt-01 17 --out recovered/letter-draft.txt",
+    "cat recovered/letter-draft.txt",
+    "inode train-lt-01 18",
+  ]}
+  task="Recover the deleted letter draft: type `recover train-lt-01 17 --out recovered/letter-draft.txt`."
+  expect="recover"
+  success="41 bytes written from cluster 1002, none reused, and the image untouched. Now `inode train-lt-01 18`: the old note's cluster belongs to `update.log`, so its content is gone, and its record still proves it existed."
+/>
+
+Try `recover train-lt-01 18 --out recovered/old-note.txt` to see the refusal. It names the file
+that took the cluster, and points you back at the record, which is still evidence.
+
+## In practice
+
+In [Case 2, The Deleted Invoice](/cases/case-02), Quillfen Freight's invoices were deleted from the bookkeeper's
+laptop on a Saturday evening. Two can be recovered whole; one was partly written over by the zip
+file made the same minute. You'll use `lsfs -d`, `inode` and `recover` there, on the drive you learn
+to image in [Case 1, The Clean Copy](/cases/case-01).
+
+## Common misconceptions
+
+- **"Emptying the recycle bin erases files."** It deletes them the same way: the records and
+  clusters are marked free, and the content stays until reused.
+- **"If the record says which clusters, recovery is always safe."** Only while nobody else owns
+  them. Check first, which is what `inode` does.
+- **"Overwritten means there's no evidence."** The record, with its name and times, often survives
+  and still shows the file existed.
+- **"Recovered means original."** A recovered file is a copy of bytes still on the drive. Say where
+  it came from: the image, the record number and the clusters.

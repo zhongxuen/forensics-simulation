@@ -2,14 +2,19 @@
 
 import { use, useCallback, useLayoutEffect, useMemo, useRef, type RefObject } from "react";
 import type { CaseRunSave, SaveStatus } from "@/lib/case-storage";
+import {
+  buildMentorTranscript,
+  REVIEW_TRANSCRIPT_LIMITS,
+  useMentorSession,
+} from "@/features/mentor";
 import { useTerminalSession, type TerminalSession } from "@/features/terminal";
 import type { SimEvent, SimState } from "@/sim/types";
 import type { RunnableCase } from "../run/case-definition";
 import type { CaseRunAction, CaseRunState } from "../run/case-run";
 import { caseEvidence } from "../run/evidence";
 import { browseChange, evidenceSetup } from "../run/workstation";
-import { CaseDebrief } from "./case-debrief";
-import { CaseReport } from "./case-report";
+import { DebriefScreen } from "./debrief/debrief-screen";
+import { ReportScreen } from "./report/report-screen";
 import { CaseWorkspace } from "./case-workspace";
 
 export interface CasePlayProps {
@@ -36,6 +41,12 @@ export interface CasePlayProps {
  * Opening a case with a save replays its log through the session, entry by entry, before the
  * first paint: the same parser, engine and in-world clock as when it was typed, so the machine
  * and the screen come back as they were, and the events re-tick nothing that wasn't ticked.
+ *
+ * Noor lives here too (docs/plan/14-mentor.md), for the same reason the terminal session does: one
+ * mentor per attempt, across the workspace, the report and the debrief, so closing her panel or
+ * going back and forth to the debrief never asks the model again. `CaseRunner` keys this component
+ * per attempt, so "Start the case again" starts a fresh one; what she said is held in memory only
+ * and is never part of the save.
  */
 export default function CasePlay({
   caseDef,
@@ -58,6 +69,7 @@ export default function CasePlay({
     () => (evidence ? evidenceSetup(caseDef.scenario, evidence) : undefined),
     [caseDef.scenario, evidence],
   );
+  const mentor = useMentorSession(caseDef);
   const session = useTerminalSession({
     scenario: caseDef.scenario,
     seed: caseDef.seed,
@@ -119,9 +131,27 @@ export default function CasePlay({
     case "briefing":
       return null;
     case "report":
-      return <CaseReport caseDef={caseDef} run={run} dispatch={dispatch} headingRef={headingRef} />;
+      return (
+        <ReportScreen
+          caseDef={caseDef}
+          run={run}
+          dispatch={dispatch}
+          evidence={evidence}
+          headingRef={headingRef}
+        />
+      );
     case "debrief":
-      return <CaseDebrief caseDef={caseDef} run={run} dispatch={dispatch} />;
+      return (
+        <DebriefScreen
+          caseDef={caseDef}
+          run={run}
+          dispatch={dispatch}
+          evidence={evidence}
+          mentor={mentor}
+          commandLines={commandLines(run.log)}
+          transcript={buildMentorTranscript(session.blocks, REVIEW_TRANSCRIPT_LIMITS)}
+        />
+      );
     case "workspace":
       return (
         <CaseWorkspace
@@ -133,7 +163,13 @@ export default function CasePlay({
           evidence={evidence}
           headingRef={headingRef}
           saveStatus={saveStatus}
+          mentor={mentor}
         />
       );
   }
+}
+
+/** Every line the player typed this attempt, oldest first, for the review's run facts. */
+function commandLines(log: CaseRunState["log"]): string[] {
+  return log.flatMap((entry) => ("line" in entry ? [entry.line] : []));
 }

@@ -65,6 +65,7 @@ export const recover: Tool = {
       "Recycle bin and $I file parsers, for files that were deleted the ordinary way.",
       "When the record is gone: carving tools such as PhotoRec, Foremost and Scalpel (this game's carve, in file 07).",
     ],
+    lesson: "disk-deleted-vs-overwritten",
   },
 
   run(args, state, ctx) {

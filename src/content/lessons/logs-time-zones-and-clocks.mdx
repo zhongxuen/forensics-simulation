@@ -1,0 +1,129 @@
+---
+id: logs-time-zones-and-clocks
+title: Whose clock is it?
+topic: forensics
+level: 2
+readingMinutes: 7
+analogy: "Two friends agreeing to meet at eight, one living in London and one in Paris. Both turn up at eight on their own clock, and one waits an hour. Nobody's watch was off; nobody said which eight."
+summary: Why the same moment can show two different times, how to write a time so it can't be misread, and what to do about a clock that was never right.
+prerequisites: [logs-windows-logon-events]
+externalPrerequisites: [forensics-timelines]
+relatedCommands: [logq, mem, cat]
+glossaryTerms: [time-zone, utc-offset, coordinated-universal-time, clock-drift]
+cites: [rfc-3339-s4, nist-sp-800-92-s2-3-1]
+---
+
+## The one-sentence version
+
+Every time you read in evidence was written by some clock in some zone, so before you compare two
+times you convert both to UTC and ask whether either clock was off.
+
+Think of friends agreeing to meet "at eight", one living in London and one in Paris. Both turn up at
+eight on their own clock, and one waits an hour. Nobody's watch was off; nobody said which eight.
+
+<Quiz
+  question="A witness says the sign-in happened at 10:15. The security log says 09:15:10Z. The date is in September, in London. Do they disagree?"
+  options={[
+    {
+      text: "Yes, by an hour, so one of them is mistaken",
+      explanation:
+        "They're an hour apart on paper. In September London is on British Summer Time, an hour ahead of UTC, so 10:15 there is 09:15 UTC.",
+    },
+    {
+      text: "No, if the witness meant London time: 10:15 BST is 09:15 UTC",
+      correct: true,
+      explanation:
+        "Convert first, compare second. The Z on the log's time means UTC; the witness's time has no zone written on it, so you find out which one they meant.",
+    },
+    {
+      text: "You can't tell, so leave the witness out of the report",
+      explanation:
+        "You can tell, once you know the witness's zone. Say in the report how you converted it, so a reader can check.",
+    },
+  ]}
+/>
+
+## Why it matters in security
+
+An investigation is mostly putting things in order: what came first, who was where. Order only
+works if every time is on the same scale. Mix a log in UTC with a witness in local time and an hour
+opens up, and an hour is long enough for someone to appear to be somewhere they weren't.
+
+Clocks can also be off. NIST SP 800-92 (§2.3.1) warns that each machine stamps its logs from
+its own clock, so an inaccurate one can make an event look as if it happened before another that
+really came first.
+
+## How it actually works
+
+### One reference time
+
+<Term id="coordinated-universal-time">UTC</Term> is the world's reference clock. It has no summer
+time and never jumps. RFC 3339 (§4.1) says the same: exchanging times works best in UTC. Every
+place's <Term id="time-zone">time zone</Term> sits some hours ahead of or behind it. London is on
+UTC in winter and one hour ahead in summer, British Summer Time (BST).
+
+### Write the offset on the time
+
+RFC 3339 (§4.2) writes a local time with its <Term id="utc-offset">UTC offset</Term> on the end. To
+get UTC, subtract the offset:
+
+| Written as                   | Means                                                      |
+| ---------------------------- | ---------------------------------------------------------- |
+| `2026-09-22T09:15:10Z`       | 09:15:10 UTC. The `Z` means an offset of zero              |
+| `2026-09-22 10:15:10 +01:00` | 10:15:10 on a clock one hour ahead: also 09:15:10 UTC      |
+| `10:15` on a note            | Nobody knows until you find out which zone the writer used |
+
+### Sources that show local time
+
+Windows' own log viewer shows times in the computer's zone. Other tools record UTC. The Timeline in
+this game says which sources displayed local time, and `logq --zone local` shows each record the way
+its own computer did. The ordering never changes, only the numbers on screen.
+
+### Clocks that were wrong
+
+<Term id="clock-drift">Clock drift</Term> is a clock slowly gaining or losing time. A machine can be
+minutes off without anyone noticing. You find out by lining up one moment that two sources both saw,
+such as a connection in one machine's log and the same connection in the firewall's, and measuring
+the gap. Say in the report how you worked it out.
+
+## See it
+
+Kit wrote down the drill's times off the wall clock in the room. Put them next to the laptop's logs.
+
+<MiniTerminal
+  scenario="ir-ws-drill"
+  commands={[
+    "cat kit-notes.txt",
+    "logq --id 4624 --where LogonType=10",
+    "logq --id 4624 --where LogonType=10 --zone local",
+    "logq --source sysmon-lite --id 1 --where ProcessId=6120 --zone local",
+  ]}
+  task="Type `cat kit-notes.txt` to read Kit's notes, then look for the sign-in they mention in the log."
+  expect="logq"
+  success="Kit's 10:15 and the log's 09:15:10Z are the same moment: the security log shows it as 10:15:10 +01:00 in local time."
+/>
+
+Kit's notes say "10:15 got in as trainee". The security log's 4624 says `09:15:10Z`. With
+`--zone local` it shows `2026-09-22 10:15:10 +01:00`: the laptop's own clock, BST. Same moment, two
+ways of writing it. Now look at the process monitor's record of the beacon starting: even with
+`--zone local` it says `09:20:00Z`, because that source always recorded UTC. Two logs on one laptop,
+two ways of showing time. Converting to UTC first keeps them in step. `mem info train-lt-02` does the
+same for the memory image: `09:30:00Z`, shown as 10:30 on the host's clock.
+
+## In practice
+
+[Case 2, The Deleted Invoice](/cases/case-02) turns on this. The owner's complaint says the invoices
+went "around 20:40", and the yard's door log says the bookkeeper badged out at 18:31. Both are
+local time, BST. Compared with the UTC security log without converting, the bookkeeper looks as if
+they were still there. Converted, they'd left over an hour before. One of the case's secrets is
+converting the door log to UTC before you cite it.
+
+## Common misconceptions
+
+- **"Every log on one machine shows the same zone."** Each source decides. On the drill laptop the
+  security log showed BST and the process monitor UTC. Check before you line them up.
+- **"UTC is London time."** Only in winter. In summer London is an hour ahead.
+- **"A time is a time."** A time with no zone or offset is half a fact. Find the other half before
+  relying on it.
+- **"Computer clocks are always right."** They drift, and some are set by hand. Measure the offset
+  when two sources disagree.

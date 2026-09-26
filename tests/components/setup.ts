@@ -50,6 +50,11 @@ window.IntersectionObserver ??= NoopObserver as unknown as typeof IntersectionOb
 Element.prototype.getAnimations ??= () => [];
 
 Element.prototype.scrollIntoView ??= () => {};
+
+// <canvas>: jsdom has no 2D context and logs "not implemented" for asking. Components that draw
+// already cope with no context (the Timeline's tracks), so say there isn't one, quietly.
+HTMLCanvasElement.prototype.getContext = (() =>
+  null) as typeof HTMLCanvasElement.prototype.getContext;
 window.scrollTo = () => {};
 Element.prototype.scrollTo ??= () => {};
 

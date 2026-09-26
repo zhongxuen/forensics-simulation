@@ -1,5 +1,6 @@
 import type { CastId } from "@/content/cast";
 import type { ScenarioSpec, SimEventType } from "@/sim/types";
+import type { CustodyRule } from "../custody";
 
 /**
  * What the case runner needs from a case: the briefing, the objectives with their hints, the story
@@ -37,6 +38,19 @@ export interface RunnableCase {
   readonly report?: CaseReportSpec;
   /** What the debrief says beyond the ticks. The practice case has none. */
   readonly debrief?: CaseDebriefSpec;
+  /**
+   * The case's lessons — its `concepts`, then its `furtherReading`, without repeats — each with
+   * the title to show. Resolved on the server when the case is built, so the debrief can link
+   * them without a lesson loader in the browser. Added by file 14 for "Looking back with Noor",
+   * whose template review suggests these when the model is unavailable.
+   */
+  readonly lessons?: readonly CaseLesson[];
+}
+
+/** One lesson a case points at: the id the content uses, and its title. */
+export interface CaseLesson {
+  readonly id: string;
+  readonly title: string;
 }
 
 /**
@@ -64,6 +78,18 @@ export interface CaseReportQuestion {
   readonly acceptedRefs: readonly string[];
   /** What the answer means, shown once it is given. */
   readonly explain: string;
+  /**
+   * For a choice beat: what a character says about each of the other choices, shown on the
+   * debrief when that one was picked, in place of "not yet".
+   */
+  readonly feedback?: readonly CaseChoiceFeedback[];
+}
+
+export interface CaseChoiceFeedback {
+  readonly choice: string;
+  /** A speaker id from the cast (`src/content/cast.ts`). */
+  readonly speaker: string;
+  readonly text: string;
 }
 
 export interface CaseDebriefSpec {
@@ -126,8 +152,8 @@ export interface CaseObjective {
 
 /**
  * How an objective is checked (run/evaluate.ts): the mission schema's `event` and `commandRun`,
- * and the case schema's forensics kinds — a pin on the board, a report answer that's supported,
- * and groups of checks. A case file's `pinned` pattern arrives already resolved into refs, so the
+ * and the case schema's forensics kinds — a pin on the board, a report answer that's supported, a
+ * rule about the order of the chain of custody, and groups of checks. A case file's `pinned` pattern arrives already resolved into refs, so the
  * browser never needs the evidence to check it.
  */
 export type ObjectiveCheck =
@@ -139,6 +165,11 @@ export type ObjectiveCheck =
       readonly kind: "pinned";
       /** Any one of these on the board holds. */
       readonly refs: readonly string[];
+    }
+  | {
+      /** A rule about the order of the chain of custody (custody/custody-log.ts). */
+      readonly kind: "custody";
+      readonly rule: CustodyRule;
     }
   | {
       readonly kind: "reported";

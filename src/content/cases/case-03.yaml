@@ -1,0 +1,3850 @@
+# case-03, "Something is still running" (docs/plan/12-case-3-something-is-still-running.md).
+#
+# The chapter's last case, and its first live machine. Quillfen's dispatch server has been talking
+# to an address outside the yard once a minute since Sunday night, and Idris captured its memory
+# before anybody touched the power. The case teaches the order of volatility, process trees and
+# hidden processes, network connections, injected code, and lining memory up with the sign-in
+# records: the memory examiner's workflow. It ends the chapter.
+#
+# Five places this file leaves the plan, each because of what the engine allows:
+#
+# - 12 §Choice beats puts "pull the plug or capture memory first?" before anything, as a choice the
+#   player makes. The runner has no in-workspace choice yet, and the capture is a story action, so
+#   here Idris captures memory on arrival (the team's standing order) and Kit, who wanted the plug
+#   out, asks whether that was right. The choice is the report question `pull-the-plug`, with
+#   Noor's explanation on the debrief for the other choice and Change your report offering it again,
+#   the way Case 2's choice beat works. The first objective is to open the capture before anything
+#   else, which is the same lesson from the other side.
+# - The second choice beat, Kit wanting to connect to 203.0.113.47, is the report question
+#   `hack-back`, with a beat on `find-the-beacon` where Kit says it out loud.
+# - 12 §Report's two choice lists ("why", "containment and fixes") are single choices, one of which
+#   holds every right reason. The report has no multi-pick answer yet.
+# - The harmless runtime-compiler region in the dispatch app is written with `inject` by `system`:
+#   the action is what leaves a writable, runnable region with no file behind it, whoever made it.
+# - The beacon ran from Sunday night to Tuesday morning, once a minute. The yard's firewall only
+#   keeps a day of detail, so the letter says Gus exported two windows: Sunday night, when it began,
+#   and Tuesday morning, up to the capture. The story writes those two, and memory holds the last
+#   forty check-ins, which is what a capture would still find.
+#
+# No drive is handed over. The letter says why: the server runs the yard's dispatch, it stays up
+# until it is rebuilt, and the rebuild is one of the report's fixes.
+id: case-03
+version: 1
+title: Something is still running
+client:
+  org: Quillfen Freight
+  signedBy: Delia Quillfen, owner, Quillfen Freight, and Theo Ashgrove, team lead, Candlewright Security
+  letter: |
+    This morning Gus Thimblegate noticed our firewall showing the dispatch server, qf-srv-01,
+    talking to an address none of us recognise, once a minute, every minute. The dispatch
+    program still works, and the lorries still go out.
+
+    Please examine the dispatch server's memory and the yard's logs, and tell us what is running
+    on it, how it got there, and what we should do. Your colleague Idris is on site with Gus. The
+    server runs the whole yard, so it stays switched on until you tell us how to rebuild it.
+
+    Gus has exported the firewall's log for Sunday night, when the connections began, and for
+    this morning. The firewall only keeps a day of detail, so there is nothing for Monday.
+
+    Only the dispatch server and the yard's logs are part of this. Please do not contact the
+    address it is talking to, or anyone behind it.
+estimatedMinutes: 30
+seed: 20260415
+hook: A server is talking to a stranger once a minute. Find out what is running, before anybody pulls the plug.
+learningGoals:
+  - Why memory is captured before a machine is switched off, and what would be lost if it weren't
+  - How a process's folder, its parent and the active list show a program that doesn't belong
+  - How to tell injected code from a harmless runtime compiler in the same kind of memory
+  - How the sign-in records say how someone got in, and a timeline puts memory and logs in one order
+concepts:
+  - foundations-order-of-volatility
+  - memory-why-ram-matters
+  - memory-processes-and-parents
+  - memory-network-artefacts
+  - memory-code-injection
+  - logs-windows-logon-events
+  - logs-super-timelines
+briefing:
+  scenario: >-
+    Quillfen's dispatch server has been talking to an address outside the yard once a minute since
+    Sunday night. It runs the whole yard, so it is still switched on. Idris is on site, and captured
+    the server's memory the moment he arrived. The capture and the yard's logs are on your
+    workstation, with the letter.
+  role: >-
+    You are on Candlewright Security's blue team, at the examining workstation ir-ws-01, signed in
+    as examiner. The case folder is open in the terminal, and the memory capture is waiting.
+  authorization: >-
+    Delia Quillfen, who owns Quillfen Freight, and Theo Ashgrove, Candlewright's team lead, both
+    signed on 14 April 2026. The letter covers the dispatch server qf-srv-01, its memory and the
+    yard's security, process and firewall logs. It does not cover the address the server is
+    talking to, or anyone behind it.
+
+machines:
+  - id: qf-srv-01
+    kind: windows-server
+    baseline: office-server-v1
+    zone: Europe/London
+    ip: 10.60.1.10
+    accounts: [dispatch-admin]
+  - id: ir-ws-01
+    kind: linux-workstation
+    baseline: analyst-workstation-v1
+    zone: Europe/London
+
+# The ground truth, in UTC. The yard's clocks show British Summer Time, an hour ahead.
+story:
+  # --- Before the weekend: the way the server is normally looked after. ---
+
+  # Gus signs in over remote desktop from the office on Friday afternoons to install updates. The
+  # same account, the same kind of sign-in, from inside the yard.
+  - at: "2026-04-10T15:10:00Z"
+    actor: user:dispatch-admin
+    on: qf-srv-01
+    do: logon
+    with: { account: dispatch-admin, type: remote, from: 10.60.0.21, workstation: QF-LT-03 }
+
+  - at: "2026-04-10T15:10:08Z"
+    actor: user:dispatch-admin
+    on: qf-srv-01
+    do: run-process
+    with:
+      name: explorer.exe
+      path: 'C:\Windows\explorer.exe'
+      parent: userinit.exe
+      cmdline: 'C:\Windows\explorer.exe'
+      user: dispatch-admin
+
+  - at: "2026-04-10T15:36:40Z"
+    actor: user:dispatch-admin
+    on: qf-srv-01
+    do: logoff
+    with: { account: dispatch-admin }
+
+  # The dispatch program is a .NET application. Its runtime compiles code while it runs, and that
+  # leaves memory that is writable, runnable and backed by no file: the harmless region the case
+  # asks a player to tell apart from the other one.
+  - at: "2026-04-10T15:30:00Z"
+    actor: system
+    on: qf-srv-01
+    do: inject
+    note: Not an attack. The dispatch program's runtime compiling its own code leaves memory of the same kind.
+    with:
+      into: dispatch-svc.exe
+      preview: "\x55\x48\x08\x53\x56\x57\x41\x54\x41\x55\x48\x03\x65\x10\x48\x0b\x71\x48\x0b\x5a"
+      size: 65536
+
+  # --- Sunday night: guessing, from outside, at the door left open to the internet. ---
+  # 312 refused sign-ins in ten minutes, every two seconds: thirteen common names, twenty-four
+  # passwords each. Only one of the names is a real account here.
+  - {
+      at: "2026-04-12T22:48:00Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:02Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:04Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:06Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:08Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:10Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:12Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:14Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:16Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:18Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:20Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:22Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:24Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:26Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:28Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:30Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:32Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:34Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:36Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:38Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:40Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:42Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:44Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:46Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:48Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:50Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:52Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:54Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:56Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:48:58Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:00Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:02Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:04Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:06Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:08Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:10Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:12Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:14Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:16Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:18Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:20Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:22Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:24Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:26Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:28Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:30Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:32Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:34Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:36Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:38Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:40Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:42Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:44Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:46Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:48Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:50Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:52Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:54Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:56Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:49:58Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:00Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:02Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:04Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:06Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:08Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:10Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:12Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:14Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:16Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:18Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:20Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:22Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:24Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:26Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:28Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:30Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:32Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:34Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:36Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:38Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:40Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:42Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:44Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:46Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:48Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:50Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:52Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:54Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:56Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:50:58Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:00Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:02Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:04Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:06Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:08Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:10Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:12Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:14Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:16Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:18Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:20Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:22Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:24Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:26Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:28Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:30Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:32Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:34Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:36Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:38Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:40Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:42Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:44Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:46Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:48Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:50Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:52Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:54Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:56Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:51:58Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:00Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:02Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:04Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:06Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:08Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:10Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:12Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:14Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:16Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:18Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:20Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:22Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:24Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:26Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:28Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:30Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:32Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:34Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:36Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:38Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:40Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:42Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:44Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:46Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:48Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:50Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:52Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:54Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:56Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:52:58Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:00Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:02Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:04Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:06Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:08Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:10Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:12Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:14Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:16Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:18Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:20Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:22Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:24Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:26Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:28Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:30Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:32Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:34Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:36Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:38Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:40Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:42Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:44Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:46Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:48Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:50Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:52Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:54Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:56Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:53:58Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:00Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:02Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:04Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:06Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:08Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:10Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:12Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:14Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:16Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:18Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:20Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:22Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:24Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:26Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:28Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:30Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:32Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:34Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:36Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:38Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:40Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:42Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:44Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:46Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:48Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:50Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:52Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:54Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:56Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:54:58Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:00Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:02Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:04Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:06Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:08Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:10Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:12Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:14Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:16Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:18Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:20Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:22Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:24Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:26Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:28Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:30Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:32Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:34Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:36Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:38Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:40Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:42Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:44Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:46Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:48Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:50Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:52Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:54Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:56Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:55:58Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:00Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:02Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:04Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:06Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:08Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:10Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:12Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:14Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:16Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:18Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:20Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:22Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:24Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:26Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:28Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:30Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:32Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:34Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:36Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:38Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:40Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:42Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:44Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:46Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:48Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:50Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:52Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:54Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:56Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:56:58Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:00Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:02Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:04Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:06Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:08Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:10Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:12Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:14Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:16Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:18Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:20Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:22Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:24Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:26Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:28Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:30Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:32Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:34Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:36Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:38Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:40Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:42Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:44Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:46Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:48Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:50Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:52Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:54Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:56Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:57:58Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: administrator,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:58:00Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:58:02Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: user,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:58:04Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: test,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:58:06Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: guest,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:58:08Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: backup,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:58:10Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: scanner,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:58:12Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: support,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:58:14Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: office,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:58:16Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: reception,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:58:18Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: it-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:58:20Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  - {
+      at: "2026-04-12T22:58:22Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: failed-logon,
+      account: dispatch-admin,
+      type: remote,
+      from: 198.51.100.23,
+    }
+  # Four minutes later, the real account and a password it used somewhere else.
+  - id: remote-logon
+    at: "2026-04-12T23:01:12Z"
+    actor: attacker
+    on: qf-srv-01
+    do: logon
+    with:
+      {
+        account: dispatch-admin,
+        type: remote,
+        from: 198.51.100.23,
+        workstation: WIN-7Q2LD0,
+        elevated: true,
+      }
+
+  - at: "2026-04-12T23:01:21Z"
+    actor: attacker
+    on: qf-srv-01
+    do: run-process
+    with:
+      name: explorer.exe
+      path: 'C:\Windows\explorer.exe'
+      parent: userinit.exe
+      cmdline: 'C:\Windows\explorer.exe'
+      user: dispatch-admin
+
+  # A way back in that does not depend on the password staying the same.
+  - id: account-created
+    at: "2026-04-12T23:03:40Z"
+    actor: attacker
+    on: qf-srv-01
+    do: create-account
+    with: { account: svc-update, by: dispatch-admin }
+
+  - id: account-promoted
+    at: "2026-04-12T23:03:52Z"
+    actor: attacker
+    on: qf-srv-01
+    do: add-to-group
+    with: { account: svc-update, group: Administrators, by: dispatch-admin }
+
+  # The name of a real Windows program, in the wrong folder, started by the wrong parent, and taken
+  # out of the list of running processes that tools ask for first.
+  - id: beacon-started
+    at: "2026-04-12T23:06:02Z"
+    actor: attacker
+    on: qf-srv-01
+    do: run-process
+    with:
+      name: svchost.exe
+      path: 'C:\ProgramData\svchost.exe'
+      parent: explorer.exe
+      cmdline: 'C:\ProgramData\svchost.exe -k netsvc'
+      user: dispatch-admin
+      pid: 4376
+      threads: 4
+      unlinked: true
+
+  # A whole program copied into its memory: it starts with MZ, like every Windows program file.
+  - id: beacon-injected
+    at: "2026-04-12T23:06:05Z"
+    actor: attacker
+    on: qf-srv-01
+    do: inject
+    with:
+      into: "4376"
+      preview: "MZ\x00\x03\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00The door was open. HL"
+
+  # Its first check-ins, in the firewall's Sunday export.
+  - {
+      at: "2026-04-12T23:06:31Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1190",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-12T23:07:31Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1184",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-12T23:08:31Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1202",
+      rule: servers-outbound,
+    }
+
+  - at: "2026-04-12T23:09:14Z"
+    actor: attacker
+    on: qf-srv-01
+    do: logoff
+    with: { account: dispatch-admin }
+
+  # --- Tuesday morning: Gus notices, and Idris gets there first. ---
+  # Once a minute, every minute. Memory holds the last forty; the firewall's morning export has a
+  # line for each, a second after it opens.
+  - id: beacon
+    at: "2026-04-14T08:52:00Z"
+    actor: attacker
+    on: qf-srv-01
+    do: connect
+    with: { process: "4376", remote: "203.0.113.47:443", every: 60, times: 40 }
+  - {
+      at: "2026-04-14T08:52:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1184",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T08:53:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1190",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T08:54:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1176",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T08:55:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1202",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T08:56:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1188",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T08:57:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1184",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T08:58:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1190",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T08:59:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1176",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:00:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1202",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:01:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1188",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:02:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1184",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:03:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1190",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:04:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1176",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:05:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1202",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:06:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1188",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:07:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1184",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:08:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1190",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:09:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1176",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:10:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1202",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:11:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1188",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:12:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1184",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:13:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1190",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:14:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1176",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:15:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1202",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:16:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1188",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:17:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1184",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:18:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1190",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:19:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1176",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:20:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1202",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:21:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1188",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:22:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1184",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:23:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1190",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:24:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1176",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:25:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1202",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:26:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1188",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:27:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1184",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:28:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1190",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:29:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1176",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:30:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1202",
+      rule: servers-outbound,
+    }
+  - {
+      at: "2026-04-14T09:31:01Z",
+      actor: attacker,
+      on: qf-srv-01,
+      do: firewall-allow,
+      dst: 203.0.113.47,
+      dpt: "443",
+      bytes: "1188",
+      rule: servers-outbound,
+    }
+  # Idris, on the order of volatility: memory first, while it is all still there.
+  - at: "2026-04-14T09:31:40Z"
+    actor: analyst
+    on: qf-srv-01
+    do: capture-memory
+
+  # Only then, on Idris's word, Gus blocks the address. The beacon keeps trying, and is refused.
+  - {
+      at: "2026-04-14T09:36:00Z",
+      actor: system,
+      on: qf-srv-01,
+      do: firewall-block,
+      dst: 203.0.113.47,
+      dpt: "443",
+      rule: block-203-0-113-47,
+    }
+  - {
+      at: "2026-04-14T09:37:00Z",
+      actor: system,
+      on: qf-srv-01,
+      do: firewall-block,
+      dst: 203.0.113.47,
+      dpt: "443",
+      rule: block-203-0-113-47,
+    }
+  - {
+      at: "2026-04-14T09:38:00Z",
+      actor: system,
+      on: qf-srv-01,
+      do: firewall-block,
+      dst: 203.0.113.47,
+      dpt: "443",
+      rule: block-203-0-113-47,
+    }
+
+  - at: "2026-04-14T10:05:00Z"
+    actor: analyst
+    on: ir-ws-01
+    do: hand-over
+    # The server itself stays running (see the letter), so what changes hands is its memory capture,
+    # and its drive is imaged when it is rebuilt. A capture is signed for without hashes on the form.
+    with:
+      item: qf-srv-01
+      hashes: false
+      by: Idris Fenwick, Candlewright Security, who captured its memory, with Gus Thimblegate, IT contractor to Quillfen Freight
+
+# No background activity. The office noise profiles would start desktop programs on a server, and
+# a beginner's first process list should show what a server really runs. The baseline's services,
+# Friday's maintenance sign-in and the dispatch program are the ordinary things to read past.
+noise: { profile: server-idle, density: none }
+
+evidence:
+  disks: []
+  logs: [security, sysmon-lite, firewall]
+  memory: [qf-srv-01]
+  # The server showed British Summer Time. `--zone local` shows the security log the way it did.
+  zones: { security: Europe/London }
+
+# The cold open: two lines, then the first objective (docs/plan/99-reference.md, "Cold opens").
+beats:
+  - on: start
+    speaker: teammate-kit
+    text: >-
+      Kit Nakashima-Reyes here, and I said it on the phone: pull the power cord. It has been talking
+      to a stranger since Sunday. Every minute we wait is another minute of that.
+  - on: start
+    speaker: teammate-idris
+    text: >-
+      Idris Fenwick, on site at the yard. I captured the memory before anybody touched the cord, and
+      you are about to see why. Open the capture first, then tell me whether Kit was right.
+  - on: { objective: capture-first }
+    speaker: mentor-noor
+    text: >-
+      Noor Halvorsen, your mentor. Everything in that file was only ever in the server's memory: the
+      programs running, the connections open, the code sitting in them. Switch the power off and all
+      of it is gone. The drive would still be there, and it would tell you almost none of this.
+  - on: { objective: find-the-beacon }
+    speaker: teammate-kit
+    text: >-
+      There it is, 203.0.113.47. I could open a connection to it right now and see who answers. Five
+      minutes, tops. Should I?
+  - on: { objective: why-it-stands-out }
+    speaker: teammate-idris
+    text: >-
+      A real svchost.exe lives in System32 and is started by services.exe. This one lives in
+      ProgramData, was started by a desktop, and has taken itself off the list. Three things wrong,
+      and any one of them would have been worth a look.
+  - on: { objective: how-they-got-in }
+    speaker: teammate-theo
+    text: >-
+      Theo Ashgrove, team lead. Three hundred and twelve guesses and one right one. Nobody broke
+      anything. They tried the door until a password from somewhere else opened it.
+  - on: complete
+    speaker: teammate-idris
+    text: >-
+      One laptop left unlocked, one password on a note in a shared folder, and one door left open to
+      the internet, with the same two letters left behind. Nobody broke in at Quillfen. They walked
+      through doors, and your three reports say which ones. Write this one up.
+
+objectives:
+  - id: capture-first
+    description: Before anything else, open the memory capture and see what it holds.
+    why: Memory is the evidence that vanishes first. Everything this case needs is in the capture, and would have gone with the power.
+    success: One server, captured at 09:31 UTC with its programs still running and its connections still open. That is what the power cord would have taken.
+    check: { kind: commandRun, pattern: "^\\s*mem\\s+info\\b" }
+
+  - id: find-the-beacon
+    description: Find the program that talks to 203.0.113.47, and pin its connection or the program itself.
+    why: The firewall says something is calling out. Memory says which program is doing it, and that is where the rest of the case starts.
+    success: Found it. A program calling itself svchost.exe, process 4376, opening a connection to 203.0.113.47 once a minute.
+    check:
+      kind: all
+      of:
+        - { kind: commandRun, pattern: "^\\s*mem\\s+netscan\\b" }
+        - kind: any
+          of:
+            - { kind: pinned, evidence: "mem:qf-srv-01-mem:conn/*203.0.113.47*" }
+            - { kind: pinned, evidence: "mem:qf-srv-01-mem:pid/4376" }
+
+  - id: why-it-stands-out
+    description: Show why that program doesn't belong. Compare the active process list with a full scan, check its parent and its folder, and pin the process.
+    why: A name is the easiest thing to fake. Where a program lives, what started it and whether it hides are much harder to fake.
+    success: Wrong folder, wrong parent, and missing from the active list. A real svchost.exe has none of those three.
+    check:
+      kind: all
+      of:
+        - { kind: commandRun, pattern: "^\\s*mem\\s+psscan\\b" }
+        - { kind: commandRun, pattern: "^\\s*mem\\s+(ps|pstree)\\b" }
+        - { kind: pinned, evidence: "mem:qf-srv-01-mem:pid/4376" }
+
+  - id: find-the-injection
+    description: Find the stretch of memory that holds code with no file behind it, and pin the one that is the problem.
+    why: Code that was never loaded from a file is how a program hides what it really runs. There are two regions like that here, and only one is trouble.
+    success: A whole program sitting in process 4376's memory, starting MZ, writable and runnable, with no file behind it.
+    check:
+      kind: all
+      of:
+        - { kind: commandRun, pattern: "^\\s*mem\\s+malfind\\b" }
+        - { kind: pinned, evidence: "mem:qf-srv-01-mem:vad/0x2010000" }
+
+  - id: how-they-got-in
+    description: Find how they got in. Count the refused sign-ins, then pin the sign-in that worked and the account they made.
+    why: Knowing what runs tells the yard what to remove. Knowing how it got there tells them what to close.
+    success: 312 refused guesses from 198.51.100.23, one remote sign-in as dispatch-admin that worked, and a new administrator account four minutes later.
+    check:
+      kind: all
+      of:
+        - { kind: commandRun, pattern: "^\\s*logq\\b.*--count-by\\b" }
+        - { kind: pinned, evidence: "log:security/where eventId=4624 and IpAddress=198.51.100.23" }
+        - { kind: pinned, evidence: "log:security/where eventId=4720" }
+
+  - id: line-it-up
+    description: Put Sunday night in order on the timeline, from the first guess to the first check-in.
+    why: Memory and logs keep different kinds of record. One list, in one zone, is how you see that they tell a single story.
+    success: One night in order. The guessing, the sign-in, the account, the program, and its first call out, all inside twenty minutes.
+    check: { kind: commandRun, pattern: "^\\s*timeline\\b(?=.*--(around|from)\\b)" }
+
+  # 12 §Bonus: the dispatch program's runtime compiler, which malfind shows too. Pinning it is the
+  # moment a player checks which process a region is in and what its first bytes are.
+  - id: jit-is-routine
+    name: Honest Compiler
+    description: Find the other region malfind shows, and pin it once you know why it is harmless.
+    why: A report that calls the yard's own dispatch program an attack would send them to rebuild the wrong thing.
+    success: The dispatch program's runtime compiler, making code while it runs. No MZ, no hiding, in a process that has every reason to do it. Checked, and left out.
+    optional: true
+    check: { kind: pinned, evidence: "mem:qf-srv-01-mem:vad/0x2000000" }
+
+  # 12 §Secret, "Every minute on the minute": the gap between check-ins measured from their times.
+  - id: on-the-minute
+    name: On The Minute
+    description: Measure how often the program calls out, from the times of its connections.
+    why: A person clicks at odd moments. A program waits for its timer. The gap between calls is how you tell which one you are looking at.
+    success: Sixty seconds, every time, to the second. That is a timer, not a person, and the word for it is a beacon.
+    hidden: true
+    check:
+      kind: all
+      of:
+        - { kind: commandRun, pattern: "^\\s*logq\\b.*203\\.0\\.113\\.47" }
+        - {
+            kind: pinned,
+            evidence: "log:sysmon-lite/where eventId=3 and DestinationIp=203.0.113.47",
+          }
+
+hints:
+  capture-first:
+    - Idris made a file of everything the server was holding in its memory. Start by asking that file what it is.
+    - A memory capture says which machine it came from, when it was taken and what it holds. One subcommand of the memory tool prints exactly that.
+    - "Run `mem`, then `mem info qf-srv-01-mem`."
+  find-the-beacon:
+    - The firewall says the server is calling an address outside the yard. Memory knows which program has that connection open.
+    - The memory tool can list every network connection in the capture, with the process that owns each one.
+    - "Run `mem netscan qf-srv-01-mem`, find the lines to 203.0.113.47, and `pin` one of them."
+  why-it-stands-out:
+    - The name looks ordinary. Look at where the program lives, what started it, and whether it shows up where running programs normally do.
+    - The active process list is what most tools ask for first, and a program can take itself off it. A full scan finds every process record, listed or not.
+    - "Run `mem ps qf-srv-01-mem`, then `mem psscan qf-srv-01-mem` and look for the one marked unlinked, check its parent with `mem cmdline qf-srv-01-mem --pid 4376`, and `pin` its psscan line."
+  find-the-injection:
+    - Ordinary code is loaded from a file and can't be changed while it runs. Look for memory that is both, and not from any file.
+    - One subcommand lists regions that are writable and runnable with no file behind them, and prints their first bytes. There will be two. Check which process each is in.
+    - "Run `mem malfind qf-srv-01-mem`, find the region in process 4376 that starts with MZ, and `pin` one of its lines."
+  how-they-got-in:
+    - Somebody signed in to this server on Sunday night. Before that, somebody tried many times and was refused.
+    - A refused sign-in is a 4625 record, a sign-in that worked is a 4624, and a new account is a 4720. Counting the refusals by where they came from makes the pattern plain.
+    - "Run `logq --id 4625 --count-by IpAddress`, then `logq --id 4624 --where IpAddress=<the address that stands out>` and `pin` it, then `logq --id 4720` and `pin` that."
+  line-it-up:
+    - Put everything from Sunday night in one list, in time order, and read it from the first guess onwards.
+    - A timeline merges the logs and the memory capture into one list, in UTC. Ask it for a window, or for the moments around one piece of evidence.
+    - "Run `timeline --from 2026-04-12T22:45Z --to 2026-04-12T23:15Z`, or `timeline --around <the ref of the remote sign-in>`."
+  jit-is-routine:
+    - Two regions look alike. One is in a program the yard runs every day.
+    - A runtime compiler, the part of .NET that turns code into machine instructions while a program runs, makes regions like this on purpose. Its bytes start mid-instruction, with no file header.
+    - "Run `mem malfind qf-srv-01-mem`, look at the region in the yard's dispatch program, check `mem cmdline qf-srv-01-mem --pid 1016` for what it is, and `pin` it."
+
+report:
+  questions:
+    - id: how-they-got-in
+      ask: How did they get in?
+      type: choice
+      answer: "Hundreds of guessed passwords over remote desktop, then one that worked"
+      choices:
+        - "Hundreds of guessed passwords over remote desktop, then one that worked"
+        - "A memory stick plugged into the server"
+        - "A weakness in the dispatch program's web page"
+      acceptedEvidence:
+        - "log:security/where eventId=4625 and IpAddress=198.51.100.23"
+        - "log:security/where eventId=4624 and IpAddress=198.51.100.23"
+      explain: >-
+        312 refused sign-ins in ten minutes from one address outside the yard, then a remote sign-in
+        from the same address that worked. Remote desktop on this server answered anyone on the
+        internet, and that was the door.
+
+    - id: which-account
+      ask: Which account did they sign in with?
+      type: account
+      answer: dispatch-admin
+      acceptedEvidence:
+        - "log:security/where eventId=4624 and IpAddress=198.51.100.23"
+      explain: >-
+        A real account, with a password that had been used somewhere else. It was refused
+        twenty-four times in the burst and accepted four minutes later, which is what a list of
+        leaked passwords looks like when one of them fits.
+
+    - id: what-they-added
+      ask: Which account did they add, to get back in later?
+      type: account
+      answer: svc-update
+      acceptedEvidence:
+        - "log:security/where eventId=4720"
+        - "log:security/where eventId=4732"
+      explain: >-
+        Made two minutes after the sign-in and put in Administrators twelve seconds later. A name
+        chosen to look like something the server needs, and a door that stays open when the
+        password is changed.
+
+    - id: which-process
+      ask: Which process is the problem? Pick it from your board.
+      type: evidence-pick
+      answer: "mem:qf-srv-01-mem:pid/4376"
+      acceptedEvidence:
+        - "mem:qf-srv-01-mem:pid/4376"
+      explain: >-
+        Process 4376. Its name borrows a real Windows program's, and that is the only ordinary thing
+        about it.
+
+    - id: why-malicious
+      ask: What gives it away?
+      type: choice
+      answer: "Its folder, its parent, its hiding from the active list, and the program in its memory with no file behind it"
+      choices:
+        - "Its name: every svchost.exe is suspicious"
+        - "Its folder, its parent, its hiding from the active list, and the program in its memory with no file behind it"
+        - "It uses more memory than anything else on the server"
+      acceptedEvidence:
+        - "mem:qf-srv-01-mem:pid/4376"
+        - "mem:qf-srv-01-mem:vad/0x2010000"
+      explain: >-
+        A real svchost.exe runs from System32 and is started by services.exe, and the server has one
+        of those too. This one runs from ProgramData, was started by explorer.exe, is missing from
+        the active list, and carries a whole program in memory that was never loaded from a file.
+
+    - id: where-it-talks
+      ask: Which address does it talk to?
+      type: host
+      answer: 203.0.113.47
+      acceptedEvidence:
+        - "mem:qf-srv-01-mem:conn/*203.0.113.47*"
+        - "log:firewall/where dst=203.0.113.47"
+        - "log:sysmon-lite/where eventId=3 and DestinationIp=203.0.113.47"
+      explain: >-
+        Once a minute since Sunday night, on port 443 so it looks like ordinary web traffic. The
+        address goes in the report, and it goes on the firewall's block list, and that is all
+        anybody here does with it.
+
+    - id: fixes
+      ask: What should the yard do now?
+      type: choice
+      answer: "Close remote desktop to the internet, reset passwords and turn on a second sign-in step, remove svc-update, block the address and rebuild the server from a known-good image"
+      choices:
+        - "Delete C:\\ProgramData\\svchost.exe and carry on"
+        - "Close remote desktop to the internet, reset passwords and turn on a second sign-in step, remove svc-update, block the address and rebuild the server from a known-good image"
+        - "Change the dispatch-admin password, and leave the rest as it is"
+      acceptedEvidence:
+        - "log:security/where eventId=4624 and IpAddress=198.51.100.23"
+        - "log:security/where eventId=4720"
+      explain: >-
+        Deleting one file leaves the door, the account and whatever else they did while they were
+        in. Close the door, change what they could have learned, remove what they added, stop the
+        calls, and rebuild, because a server someone else ran as administrator can't be trusted again.
+
+    # Choice beat 1 (12 §Choice beats): the order of volatility.
+    - id: pull-the-plug
+      ask: Kit wanted the power cord pulled the moment the calls were spotted. Idris captured memory first. Which was the right call?
+      type: choice
+      answer: "Capture memory first, then contain it"
+      choices:
+        - "Pull the plug at once, to stop it"
+        - "Capture memory first, then contain it"
+      acceptedEvidence:
+        - "mem:qf-srv-01-mem:pid/4376"
+        - "mem:qf-srv-01-mem:vad/0x2010000"
+      feedback:
+        - choice: "Pull the plug at once, to stop it"
+          speaker: mentor-noor
+          text: >-
+            Pull the plug and the running programs, the open connections and the code sitting in
+            memory are gone for good. The hidden process you pinned was never on the drive. The
+            order of volatility says take what disappears first, first. Pick again.
+      explain: >-
+        Memory goes first, so it is taken first (RFC 3227, the order of volatility). Ten minutes of
+        capture kept a hidden process, its connection and its injected code, and the address was
+        blocked straight after.
+
+    # Choice beat 2 (12 §Choice beats): no hacking back.
+    - id: hack-back
+      ask: Kit wants to connect to 203.0.113.47 to see who's there. What goes in your report?
+      type: choice
+      answer: "Block the address at the firewall and write it in the report"
+      choices:
+        - "Connect to it, to see who answers"
+        - "Scan it, to find out what it runs"
+        - "Block the address at the firewall and write it in the report"
+      acceptedEvidence:
+        - "log:firewall/where dst=203.0.113.47"
+      feedback:
+        - choice: "Connect to it, to see who answers"
+          speaker: mentor-noor
+          text: >-
+            Connecting tells whoever is there that they have been found, and they may clean up or
+            hit back. The address may be somebody else's machine that was broken into as well. And
+            without their permission it is a crime, whoever is behind it. Pick again.
+        - choice: "Scan it, to find out what it runs"
+          speaker: teammate-theo
+          text: >-
+            A scan is still us touching a machine nobody gave us permission to touch. Our letter
+            covers the yard's server and the yard's logs, and it stops there. Block it, record it,
+            and anything beyond that is for the police. Pick again.
+      explain: >-
+        The address is evidence, not a target. The firewall now refuses it, the report names it,
+        and if the yard wants more done, the police are the ones who do it.
+
+debrief:
+  summary: >-
+    You opened a memory capture taken before anyone touched the power, found the program calling
+    out once a minute, and showed why it didn't belong: the wrong folder, the wrong parent, hidden
+    from the active list, and carrying a program in memory with no file behind it. You told it apart
+    from the dispatch program's own compiler, traced the way in to 312 guessed passwords and one
+    that worked, and put Sunday night in one order. The address went in the report and on the block
+    list, and nowhere else.
+  whatYouLearned:
+    - Memory is captured before a machine is switched off, because running programs, connections and code in memory vanish with the power.
+    - A program's folder, its parent and whether it hides from the active list say more about it than its name does.
+    - Writable, runnable memory with no file behind it can be an attack or a runtime compiler. The process it is in and its first bytes tell you which.
+    - Sign-in records show how someone got in, and a timeline puts memory and logs in one order.
+  ethicsNote: >-
+    Kit wanted to pull the plug, and then to connect to the address. Both come from wanting it to
+    stop, and both would have made things worse: the first by destroying the evidence, the second by
+    tipping off whoever is there, possibly hitting someone else's broken-into machine, and breaking
+    the law. The investigation stayed inside the letter: the yard's server, its memory and its logs.
+    The address is in the report and on the block list, and anything more is for the police.
+  defensiveTakeaway: >-
+    Close remote desktop to the internet, or put it behind the yard's VPN. Reset every password on
+    the server and use a different one for each account, with a second sign-in step. Remove
+    svc-update and check the Administrators group. Keep the block on 203.0.113.47. Then rebuild the
+    server from a known-good image, because a machine someone else ran as administrator can't be
+    trusted again, and turn on alerts for a burst of refused sign-ins.
+  nextTease: The Hollow Latch have been busy two streets over, and Candlewright's red team has the other side of that story.
+  furtherReading:
+    - foundations-order-of-volatility
+    - memory-code-injection

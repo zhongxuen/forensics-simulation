@@ -55,6 +55,7 @@ export const blocker: Tool = {
       "Hardware write-blockers such as the Tableau and WiebeTech ranges, which sit between the drive and the examiner's machine.",
       "FTK Imager's read-only attach, and mounting a disk image read-only on Linux (mount -o ro,noload) or with a software blocker.",
     ],
+    lesson: "foundations-hashing-for-evidence",
   },
 
   run(args, state) {

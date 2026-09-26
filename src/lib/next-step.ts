@@ -5,11 +5,16 @@ import { CHAPTER_ONE, FIRST_CASE_ID } from "@/content/cases/chapter";
  */
 export interface NextStep {
   readonly href: string;
+  /** The small label above the title: "Start here", or "Pick up where you left off". */
+  readonly label?: string;
   /** The step's name, as the learner sees it. */
   readonly title: string;
   /** One short line of context under the title. */
   readonly detail: string;
 }
+
+/** The label a step shows when it doesn't name its own. */
+export const START_HERE_LABEL = "Start here";
 
 /**
  * The chapter's first case (`src/content/cases/chapter.ts`). The chapter decides which one that

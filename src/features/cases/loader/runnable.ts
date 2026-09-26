@@ -3,12 +3,14 @@ import { EvidencePatternError, resolveAcceptedEvidence } from "@/sim";
 import type { EvidenceSet } from "@/sim/types";
 import type {
   CaseBeat,
+  CaseLesson,
   CaseLine,
   CaseObjective,
   CaseReportQuestion,
   ObjectiveCheck,
   RunnableCase,
 } from "../run/case-definition";
+import { getLesson } from "@/features/learning/server";
 import { getCase } from "./catalog";
 import { caseScenario } from "./scenario";
 import { buildCase, type BuiltCase } from "./source";
@@ -90,6 +92,7 @@ export function toRunnableCase(built: BuiltCase): RunnableCase {
         }),
         acceptedRefs: built.acceptedRefs.get(question.id) ?? [],
         explain: question.explain,
+        ...(question.feedback && { feedback: question.feedback }),
       })),
     },
     debrief: {
@@ -98,7 +101,20 @@ export function toRunnableCase(built: BuiltCase): RunnableCase {
       ethicsNote: entry.debrief.ethicsNote,
       nextTease: entry.debrief.nextTease,
     },
+    lessons: caseLessons(entry),
   };
+}
+
+/**
+ * The case's lessons, gentlest first and without repeats, each with its title (file 14). A lesson
+ * id the content check would already have failed on is left out rather than shown with no title.
+ */
+function caseLessons(entry: Case): CaseLesson[] {
+  const ids = [...new Set([...entry.concepts, ...entry.debrief.furtherReading])];
+  return ids.flatMap((id) => {
+    const lesson = getLesson(id);
+    return lesson ? [{ id, title: lesson.title }] : [];
+  });
 }
 
 function toCheck(
@@ -120,6 +136,8 @@ function toCheck(
       return { kind: "pinned", refs: resolved(evidence, check.evidence) };
     case "reported":
       return { kind: "reported", question: check.question };
+    case "custody":
+      return { kind: "custody", rule: check.rule };
     case "answer":
       throw cannot("an objective checked by a typed answer");
   }

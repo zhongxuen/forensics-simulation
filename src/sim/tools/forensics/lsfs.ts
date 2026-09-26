@@ -76,6 +76,7 @@ export const lsfs: Tool = {
       "Autopsy's file view and its Deleted Files node.",
       "On a live Windows machine the same table is the NTFS master file table, read by tools such as MFTECmd.",
     ],
+    lesson: "disk-partitions-and-filesystems",
   },
 
   run(args, state, ctx) {

@@ -60,6 +60,7 @@ const BADGE_TONES: readonly BadgeTone[] = [
   "danger",
   "info",
   "reward",
+  "evidence-tag",
 ];
 
 const BADGE_WORDS: Readonly<Record<BadgeTone, string>> = {
@@ -70,6 +71,7 @@ const BADGE_WORDS: Readonly<Record<BadgeTone, string>> = {
   danger: "Exposed",
   info: "Port 22",
   reward: "Secret found!",
+  "evidence-tag": "log:security/57",
 };
 
 const TOAST_TONES: readonly ToastTone[] = ["info", "success", "warning", "danger"];
@@ -253,7 +255,10 @@ export function PrimitivesSection({ id }: { id: string }) {
           ]}
         >
           A short label. Every tone carries a word, so colour is never the only signal. The reward
-          tone is kept for celebrations.
+          tone is kept for celebrations. <Code>evidence-tag</Code> is for artefact refs: an amber
+          outline in monospace, like the tag on an evidence bag (its solid form is the subtle amber
+          fill, because a solid amber chip would read as a button). <Code>popKey</Code> pops the
+          badge once when it changes: see Motion below.
         </Specimen>
 
         <Specimen
@@ -296,11 +301,22 @@ export function PrimitivesSection({ id }: { id: string }) {
                 </TooltipRoom>
               ),
             },
+            {
+              label: "Compact (the shell's top bar and other headers)",
+              render: (state: SpecimenState) => (
+                <TooltipRoom>
+                  <SimulatedBadge size="compact" open={state === "default" ? undefined : true} />
+                </TooltipRoom>
+              ),
+            },
           ]}
         >
-          The marker every terminal, scanner and tool view carries, so nobody mistakes simulated
-          output for a real tool&apos;s. It can&apos;t be dismissed. Hover, focus or tap it to see
-          why it&apos;s there.
+          The marker that says nothing here is real, so nobody mistakes simulated output for a real
+          tool&apos;s. It can&apos;t be dismissed. Hover, focus or tap it to see why it&apos;s
+          there. Its look is <Code>tape</Code>: a dashed warning outline, never a fill, so it
+          can&apos;t be mistaken for an amber button. <strong>Once per view:</strong> the
+          shell&apos;s top bar carries one, and so does every terminal (a lesson&apos;s practice
+          terminal can stand on its own). Nothing else adds another.
         </Specimen>
 
         <Specimen
@@ -431,21 +447,22 @@ export function PrimitivesSection({ id }: { id: string }) {
             error: "Switching tabs can't fail.",
           }}
           variants={[
-            {
-              label: "Tabs",
-              render: (state: SpecimenState) => (
+            ...motionVariants(
+              (state: SpecimenState) => (
                 <Tabs
                   label="Mission views"
                   tabs={missionTabs(state === "disabled")}
                   className="w-96 max-w-full"
                 />
               ),
-            },
+              "Tabs",
+            ),
           ]}
         >
           Switch views in place. Tab reaches the selected tab; arrow keys move between tabs and
           select as they go, skipping unavailable ones; Home and End jump to the ends. The selected
-          tab gets an accent bar, not only a colour change. The disabled picture turns off Notes.
+          tab gets an accent bar, not only a colour change, and the bar slides to the tab you pick
+          (instantly under reduced motion). The disabled picture turns off Notes.
         </Specimen>
 
         <Specimen

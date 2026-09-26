@@ -6,6 +6,7 @@ import {
   resetSettings,
   updateSettings,
   useSettings,
+  type AppTheme,
   type ReducedMotionOverride,
   type Settings,
 } from "@/lib/settings";
@@ -16,6 +17,24 @@ import {
   Switch,
   type RadioOption,
 } from "./controls";
+
+const THEME_OPTIONS: ReadonlyArray<RadioOption<AppTheme>> = [
+  {
+    value: "dark",
+    label: "Dark",
+    detail: "Lamplight: an evidence room after hours. Easy on the eyes for long sessions.",
+  },
+  {
+    value: "light",
+    label: "Light",
+    detail: "Daylight: ink on manila paper, like a case file on a sunny desk.",
+  },
+  {
+    value: "system",
+    label: "Match my device",
+    detail: "Light or dark, whichever your device is set to, and it changes when your device does.",
+  },
+];
 
 const MOTION_OPTIONS: ReadonlyArray<RadioOption<ReducedMotionOverride>> = [
   {
@@ -70,6 +89,18 @@ export function SettingsForm({ children }: SettingsFormProps) {
     <ChangeSettingsProvider value={change}>
       <div className="space-y-6">
         <SettingCard
+          title="Colours"
+          description="How the pages look. The terminal stays dark either way, and has its own colours below."
+        >
+          <RadioGroup
+            legend="Which colours should the app use?"
+            value={settings.appTheme}
+            options={THEME_OPTIONS}
+            onChange={(value) => change({ appTheme: value })}
+          />
+        </SettingCard>
+
+        <SettingCard
           title="Sidebar"
           description="The menu on the left. Changes wide screens only: on a phone it opens from the menu button instead."
         >
@@ -90,6 +121,18 @@ export function SettingsForm({ children }: SettingsFormProps) {
             onChange={(checked) => change({ beginnerMode: checked })}
             label="Show beginner help in the terminal"
             detail="Explains every error in plain words underneath it, and suggests commands to try. Turn it off for a cleaner screen."
+          />
+        </SettingCard>
+
+        <SettingCard
+          title="Your mentor"
+          description="Noor gives free hints and explains what's on your screen during a case, whenever you ask."
+        >
+          <Switch
+            checked={settings.nudgeChip}
+            onChange={(checked) => change({ nudgeChip: checked })}
+            label="Offer me a nudge when I seem stuck"
+            detail="A small “Want a nudge?” button appears after a few tries that didn't work, or a few minutes without a new tick. It never opens anything by itself. Turn it off and you can still ask for hints any time."
           />
         </SettingCard>
 

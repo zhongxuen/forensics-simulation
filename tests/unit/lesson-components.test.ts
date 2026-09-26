@@ -210,9 +210,9 @@ describe.each(MINI_TERMINALS.map((mini) => [mini.id, mini] as const))(
     it("builds with the engine, on the Range or the blue-team room", () => {
       const state = createInitialState(mini.scenario, mini.seed);
       expect(state.scenarioId).toBe(id);
-      // The Range machines came with the vendored pipeline; this game's own practice machine is the
-      // analyst workstation in the blue-team room (docs/plan/99-reference.md, "New world facts").
-      const network = id === "ir-ws-practice" ? "10.20.0." : "192.168.60.";
+      // The Range machines came with the vendored pipeline; this game's own practice machines are
+      // the analyst workstation in the blue-team room (docs/plan/99-reference.md, "New world facts").
+      const network = id.startsWith("ir-ws-") ? "10.20.0." : "192.168.60.";
       for (const host of Object.values(state.network.hosts)) {
         expect(host.interfaces.every((iface) => iface.ip.startsWith(network))).toBe(true);
       }

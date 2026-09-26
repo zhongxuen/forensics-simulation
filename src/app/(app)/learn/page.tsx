@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
-import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ArrowRightIcon, BookOpenIcon, TerminalIcon } from "@/components/ui/icons";
 import { GLOSSARY } from "@/content/glossary";
-import { LESSON_LEVEL_LABELS } from "@/content/topics";
 import { TRACKS } from "@/content/tracks";
-import { getLesson, type Lesson } from "@/features/learning/server";
+import { getLesson, LevelLabel, type Lesson } from "@/features/learning/server";
 import { getAppSection } from "@/lib/app-sections";
 import { FIRST_STEP } from "@/lib/next-step";
 
@@ -25,10 +23,9 @@ export default function LearnPage() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-        Every idea, explained in plain words
-      </h1>
-      <p className="mt-4 text-lg leading-8 text-secondary">
+      <p className="type-eyebrow">Learning Center</p>
+      <h1 className="mt-2 type-page-title">Every idea, explained in plain words</h1>
+      <p className="mt-4 max-w-prose text-lg leading-8 text-secondary">
         Short lessons on how investigators work: why you copy a disk before you look at it, what a
         hash proves, and how to show who had the evidence. Each one has something to try on your own
         practice workstation.
@@ -50,10 +47,10 @@ export default function LearnPage() {
         <div className="mt-10 space-y-12">
           {tracks.map((track) => (
             <section key={track.id} aria-labelledby={`track-${track.id}`}>
-              <h2 id={`track-${track.id}`} className="text-2xl font-semibold tracking-tight">
+              <h2 id={`track-${track.id}`} className="type-section-title">
                 {track.title}
               </h2>
-              <p className="mt-1 leading-7 text-secondary">{track.description}</p>
+              <p className="mt-2 max-w-prose type-body text-secondary">{track.description}</p>
               <ol className="mt-4 space-y-3">
                 {track.lessons.map((lesson, index) => (
                   <li key={lesson.id}>
@@ -65,15 +62,17 @@ export default function LearnPage() {
                         {index + 1}
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block text-lg font-semibold">{lesson.title}</span>
+                        <span className="block text-lg leading-7 font-semibold">
+                          {lesson.title}
+                        </span>
                         {(lesson.summary ?? lesson.analogy) !== undefined && (
-                          <span className="mt-1 block leading-7 text-secondary">
+                          <span className="mt-1 block type-body text-secondary">
                             {lesson.summary ?? lesson.analogy}
                           </span>
                         )}
                         <span className="mt-3 flex flex-wrap items-center gap-2">
-                          <Badge>{LESSON_LEVEL_LABELS[lesson.level]}</Badge>
-                          <span className="text-sm text-secondary">
+                          <LevelLabel level={lesson.level} />
+                          <span className="type-small text-secondary">
                             About {lesson.readingMinutes} min
                           </span>
                         </span>
@@ -87,7 +86,8 @@ export default function LearnPage() {
         </div>
       )}
 
-      <Card href="/learn/glossary" className="mt-12 flex items-start gap-4">
+      <h2 className="mt-12 type-eyebrow">Reference</h2>
+      <Card href="/learn/glossary" padding="sm" className="mt-3 flex items-start gap-4">
         <span
           aria-hidden="true"
           className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-overlay text-accent [&_svg]:size-5"
@@ -95,8 +95,8 @@ export default function LearnPage() {
           <BookOpenIcon />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-lg font-semibold">Glossary</span>
-          <span className="mt-1 block leading-7 text-secondary">
+          <span className="block type-body font-semibold">Glossary</span>
+          <span className="mt-1 block type-small text-secondary">
             {GLOSSARY.length} words from forensics and security, each explained in one plain
             sentence.
           </span>
@@ -104,7 +104,7 @@ export default function LearnPage() {
         <ArrowRightIcon aria-hidden="true" className="mt-1 size-5 shrink-0 text-accent" />
       </Card>
 
-      <Card href="/learn/commands" className="mt-3 flex items-start gap-4">
+      <Card href="/learn/commands" padding="sm" className="mt-3 flex items-start gap-4">
         <span
           aria-hidden="true"
           className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-overlay text-accent [&_svg]:size-5"
@@ -112,8 +112,8 @@ export default function LearnPage() {
           <TerminalIcon />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-lg font-semibold">Command manual</span>
-          <span className="mt-1 block leading-7 text-secondary">
+          <span className="block type-body font-semibold">Command manual</span>
+          <span className="mt-1 block type-small text-secondary">
             Every command the terminal knows, with the same manual page{" "}
             <code className="font-mono text-primary">man</code> shows.
           </span>

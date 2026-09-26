@@ -9,13 +9,17 @@ import type { CaseRunAction, CaseRunState } from "./run/case-run";
  * pane's code arrives only when its tab first opens. Files 09 (timeline) and 10 (case board) each
  * add one line and nothing else; until then their tabs show an "arrives in a later update" state.
  *
+ * File 14 (the mentor) adds one optional method to `PaneWorkstation`, `explain`, which is how a
+ * pane offers "Explain this" on one of its rows. It is optional because the mentor is an
+ * enhancement, never a dependency: a workspace built without it simply doesn't pass one.
+ *
  * The tabs always show in PANE_ORDER. A pane module's default export takes WorkspacePaneProps.
  */
 
 export type PaneId = "evidence" | "timeline" | "board" | "objectives";
 
-/** Tab order, left to right. */
-export const PANE_ORDER: readonly PaneId[] = ["evidence", "timeline", "board", "objectives"];
+/** Tab order, left to right: the workspace opens on the first (UIUX.md §2.5). */
+export const PANE_ORDER: readonly PaneId[] = ["objectives", "evidence", "timeline", "board"];
 
 /** What every pane gets. */
 export interface WorkspacePaneProps {
@@ -26,6 +30,18 @@ export interface WorkspacePaneProps {
   readonly evidence: EvidenceSet | null;
   /** The analyst workstation the terminal runs on. */
   readonly workstation: PaneWorkstation;
+  /**
+   * The latest request, from another pane, to bring an artefact into view here ("Show in Evidence
+   * Browser" on a board card). A new request has a new `id`.
+   */
+  readonly reveal?: PaneReveal;
+}
+
+/** A request to show one artefact in a pane. */
+export interface PaneReveal {
+  readonly ref: string;
+  /** Goes up with every request, so asking twice for the same ref still counts. */
+  readonly id: number;
 }
 
 /**
@@ -44,6 +60,26 @@ export interface PaneWorkstation {
   browse(path: string): BrowsedImage | undefined;
   /** Puts a command at the terminal's prompt without running it, and shows the terminal. */
   showInTerminal(line: string): void;
+  /** Opens another pane's tab, asking it to bring `ref` into view when one is given. */
+  show(pane: PaneId, ref?: string): void;
+  /**
+   * "Explain this" on a row the player pointed at (docs/plan/14-mentor.md §Spec). `text` is the row
+   * exactly as this pane drew it and `title` its heading; `fallback` is the plain-language sentence
+   * to show if the mentor is unavailable, so the answer never depends on a key being set. The
+   * mentor is optional, so a workspace built without it leaves this undefined and a pane hides its
+   * Explain buttons.
+   */
+  explain?(row: PaneExplainRow): void;
+}
+
+/** One row of a pane, as "Explain this" sends it: rendered text, never the evidence set. */
+export interface PaneExplainRow {
+  /** The row as the pane draws it. */
+  readonly text: string;
+  /** The row's heading, when it has one ("security record 57"). */
+  readonly title?: string;
+  /** The explanation written ahead of time, shown verbatim if the mentor is unavailable. */
+  readonly fallback: string;
 }
 
 export interface WorkspacePane {
@@ -55,6 +91,16 @@ export interface WorkspacePane {
 export const WORKSPACE_PANES: readonly WorkspacePane[] = [
   { id: "evidence", label: "Evidence", load: () => import("./components/evidence-pane") },
   { id: "objectives", label: "Objectives", load: () => import("./components/objectives-pane") },
+  {
+    id: "timeline",
+    label: "Timeline",
+    load: () => import("@/features/timeline").then((m) => ({ default: m.TimelinePane })),
+  },
+  {
+    id: "board",
+    label: "Board",
+    load: () => import("@/features/case-board").then((m) => ({ default: m.CaseBoardPane })),
+  },
 ];
 
 /** Tab labels for panes that aren't registered yet. */

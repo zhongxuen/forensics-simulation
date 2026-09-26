@@ -36,11 +36,11 @@ export const TERMINAL_THEMES: Readonly<Record<TerminalThemeId, TerminalTheme>> =
   candlewright: theme({
     id: "candlewright",
     name: "Candlewright",
-    description: "The team's own look: soft white on near-black, with a cyan cursor.",
+    description: "The team's own look: soft white on near-black, with a candle-amber cursor.",
     colors: {
-      bg: "#080b10",
-      fg: "#d6e2ee",
-      dim: "#8593a5",
+      bg: "#0a0c11",
+      fg: "#e3dfd6",
+      dim: "#8f939d",
       black: "#2b3340",
       red: "#ff6e6e",
       green: "#4ade80",
@@ -57,7 +57,7 @@ export const TERMINAL_THEMES: Readonly<Record<TerminalThemeId, TerminalTheme>> =
       "bright-magenta": "#f0b5ff",
       "bright-cyan": "#8beeff",
       "bright-white": "#f5f8fb",
-      cursor: "#3dd6ef",
+      cursor: "#f2b84b",
     },
   }),
   phosphor: theme({

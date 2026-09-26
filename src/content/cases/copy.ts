@@ -50,6 +50,9 @@ export function caseCopy(entry: Case): CaseCopy[] {
     add(`${at}.ask`, question.ask);
     add(`${at}.explain`, question.explain);
     question.choices?.forEach((choice, index) => add(`${at}.choices[${index + 1}]`, choice));
+    question.feedback?.forEach((item, index) =>
+      add(`${at}.feedback[${index + 1}].text`, item.text),
+    );
   }
 
   const { debrief } = entry;

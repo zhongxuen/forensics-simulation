@@ -138,7 +138,10 @@ describe("nothing a learner types is run as code", () => {
 
   it("compiles MDX only in the lesson compiler, from lesson files, and never in a route handler", () => {
     const importers = sourceFiles(join(ROOT, "src")).filter((path) =>
-      /from "@mdx-js\/mdx"/.test(readFileSync(path, "utf8").replace(/import type[^;]+;/g, "")),
+      // A static import or a dynamic `import("@mdx-js/mdx")` both count.
+      /(?:from |import\()"@mdx-js\/mdx"/.test(
+        readFileSync(path, "utf8").replace(/import type[^;]+;/g, ""),
+      ),
     );
     expect(importers.map(rel)).toEqual(["src/features/learning/lessons/compile.ts"]);
 

@@ -3,13 +3,17 @@ import {
   MAX_DRAFT_LENGTH,
   MAX_LINE_LENGTH,
   MAX_LOG_ENTRIES,
+  MAX_MARKS,
   MAX_NOTES_LENGTH,
+  MAX_PIN_NOTE_LENGTH,
   MAX_PINS,
   type CaseRunSave,
   type LogEntry,
+  type RunMark,
 } from "@/lib/case-storage";
 import type { CastId } from "@/content/cast";
 import type { SimEvent, SimState } from "@/sim/types";
+import { gradeReport, reportAnswers, supportedCount } from "../grading";
 import type { CaseObjective, RunnableCase } from "./case-definition";
 import { evaluateObjectives, isCaseComplete, type ObjectiveEvaluator } from "./evaluate";
 
@@ -17,7 +21,8 @@ import { evaluateObjectives, isCaseComplete, type ObjectiveEvaluator } from "./e
  * One case run, as pure data (docs/plan/05-workspace-ui.md §Case runner), modelled on Hacker
  * Simulation's `missionRunReducer`: the phase, the engine's latest state, every event since the
  * run started, the terminal's command log, the ticks earned, the story lines played, the hints
- * shown, and what the player wrote: pins, notes and the report draft. Everything that changes it
+ * shown, and what the player wrote: pins and their notes, notes, the report draft and what each
+ * answer cites. Everything that changes it
  * is `caseRunReducer`, so the React store (useCaseRun), headless play and the tests all run the
  * same code.
  *
@@ -65,6 +70,15 @@ export interface CaseRunState {
    * is, for a case with no questions).
    */
   readonly reportDraft: Readonly<Record<string, string>>;
+  /** The pins each report answer cites as its supporting evidence, by question id. */
+  readonly citations: Readonly<Record<string, readonly string[]>>;
+  /** The player's note on each pin, by ref. */
+  readonly pinNotes: Readonly<Record<string, string>>;
+  /**
+   * What the chain of custody records that the engine's events don't: pins made from a view and
+   * each report submission, placed by how many events came before them (custody/custody-log.ts).
+   */
+  readonly marks: readonly RunMark[];
 }
 
 export type CaseRunAction =
@@ -95,15 +109,24 @@ export type CaseRunAction =
   | { readonly type: "reset"; readonly sim: SimState }
   /** Show the next hint tier for an objective. */
   | { readonly type: "hint"; readonly objectiveId: string }
-  | { readonly type: "pin"; readonly ref: string }
+  /** A pin from a view (the terminal's `pin` arrives as an event). `note` comes back on an undo. */
+  | { readonly type: "pin"; readonly ref: string; readonly note?: string }
+  /** Take a pin off the board. Its note goes with it. */
   | { readonly type: "unpin"; readonly ref: string }
+  /** A pin's note changed. Empty text removes it. */
+  | { readonly type: "pinNote"; readonly ref: string; readonly text: string }
+  /** The pins a report answer cites as its supporting evidence. */
+  | { readonly type: "cite"; readonly questionId: string; readonly refs: readonly string[] }
   /** The player's notes changed. */
   | { readonly type: "notes"; readonly text: string }
   /** A report answer changed. Empty text removes it. */
   | { readonly type: "draft"; readonly questionId: string; readonly text: string }
-  /** Write the report: from the workspace, once every main objective is done. */
+  /**
+   * Write the report: from the workspace, once every main objective is done, or straight back
+   * from the debrief to change it and submit again.
+   */
   | { readonly type: "report" }
-  /** Submit report: on to the debrief. */
+  /** Submit report: on to the debrief, as often as the player likes. */
   | { readonly type: "submitReport" }
   /** Back to the workspace from the report or the debrief, to keep looking. */
   | { readonly type: "resume" }
@@ -126,6 +149,9 @@ export function createCaseRun(attempt = 0): CaseRunState {
     pins: [],
     notes: "",
     reportDraft: {},
+    citations: {},
+    pinNotes: {},
+    marks: [],
   };
 }
 
@@ -165,6 +191,9 @@ export function caseRunReducer(
         pins: save.pins,
         notes: save.notes,
         reportDraft: save.reportDraft,
+        citations: save.citations,
+        pinNotes: save.pinNotes,
+        marks: save.marks,
       };
       return playBeats(caseDef, restored, beatsPlayed);
     }
@@ -185,9 +214,16 @@ export function caseRunReducer(
         (list, ref) => (list.includes(ref) || list.length >= MAX_PINS ? list : [...list, ref]),
         run.pins,
       );
+      // `pin -m "..."` writes the pin's first note; a note the player has written since stays.
+      const pinNotes = { ...run.pinNotes };
+      for (const event of action.replay ? [] : action.events) {
+        if (event.type === "board.pinned" && event.note && pinNotes[event.ref] === undefined) {
+          pinNotes[event.ref] = event.note.slice(0, MAX_PIN_NOTE_LENGTH);
+        }
+      }
       return advance(
         caseDef,
-        { ...run, sim: action.sim, events: [...run.events, ...action.events], pins },
+        { ...run, sim: action.sim, events: [...run.events, ...action.events], pins, pinNotes },
         evaluate,
       );
     }
@@ -199,13 +235,44 @@ export function caseRunReducer(
       if (shown >= HINT_TIERS || !exists) return run;
       return { ...run, hintsShown: { ...run.hintsShown, [action.objectiveId]: shown + 1 } };
     }
-    case "pin":
+    case "pin": {
       if (!playing || run.pins.includes(action.ref) || run.pins.length >= MAX_PINS) return run;
-      return advance(caseDef, { ...run, pins: [...run.pins, action.ref] }, evaluate);
+      const note = action.note?.slice(0, MAX_PIN_NOTE_LENGTH);
+      return advance(
+        caseDef,
+        {
+          ...run,
+          pins: [...run.pins, action.ref],
+          pinNotes: note?.trim() ? { ...run.pinNotes, [action.ref]: note } : run.pinNotes,
+          marks: mark(run, { after: run.events.length, kind: "pinned", ref: action.ref }),
+        },
+        evaluate,
+      );
+    }
     case "unpin":
       return run.pins.includes(action.ref)
-        ? { ...run, pins: run.pins.filter((ref) => ref !== action.ref) }
+        ? {
+            ...run,
+            pins: run.pins.filter((ref) => ref !== action.ref),
+            pinNotes: without(run.pinNotes, action.ref),
+          }
         : run;
+    case "pinNote": {
+      if (!playing || !run.pins.includes(action.ref)) return run;
+      const text = action.text.slice(0, MAX_PIN_NOTE_LENGTH);
+      const others = without(run.pinNotes, action.ref);
+      return { ...run, pinNotes: text.trim() === "" ? others : { ...others, [action.ref]: text } };
+    }
+    case "cite": {
+      if (!playing) return run;
+      const refs = action.refs
+        .filter((ref, index) => action.refs.indexOf(ref) === index)
+        .slice(0, MAX_PINS);
+      const others = without(run.citations, action.questionId);
+      const citations = refs.length === 0 ? others : { ...others, [action.questionId]: refs };
+      // A newly cited pin can support an answer, and so tick a `reported` objective.
+      return advance(caseDef, { ...run, citations }, evaluate);
+    }
     case "notes":
       return playing ? { ...run, notes: action.text.slice(0, MAX_NOTES_LENGTH) } : run;
     case "draft": {
@@ -218,11 +285,28 @@ export function caseRunReducer(
       return advance(caseDef, { ...run, reportDraft }, evaluate);
     }
     case "report":
-      return run.phase === "workspace" && isCaseComplete(caseDef, run.completed)
+      return (run.phase === "workspace" && isCaseComplete(caseDef, run.completed)) ||
+        run.phase === "debrief"
         ? { ...run, phase: "report" }
         : run;
-    case "submitReport":
-      return run.phase === "report" ? { ...run, phase: "debrief" } : run;
+    case "submitReport": {
+      if (run.phase !== "report") return run;
+      const findings = gradeReport(
+        caseDef.report ?? { questions: [] },
+        reportAnswers(run.reportDraft, run.citations),
+        run.pins,
+      );
+      return {
+        ...run,
+        phase: "debrief",
+        marks: mark(run, {
+          after: run.events.length,
+          kind: "submitted",
+          supported: supportedCount(findings),
+          total: findings.length,
+        }),
+      };
+    }
     case "resume":
       return run.phase === "report" || run.phase === "debrief"
         ? { ...run, phase: "workspace" }
@@ -230,6 +314,17 @@ export function caseRunReducer(
     case "restart":
       return createCaseRun(run.attempt + 1);
   }
+}
+
+/** The run's custody marks with one more, while there's room for it in a save. */
+const mark = (run: CaseRunState, entry: RunMark): readonly RunMark[] =>
+  run.marks.length >= MAX_MARKS ? run.marks : [...run.marks, entry];
+
+/** A copy of a record without one key. */
+function without<T>(record: Readonly<Record<string, T>>, key: string): Record<string, T> {
+  const copy: Record<string, T> = { ...record };
+  delete copy[key];
+  return copy;
 }
 
 /** A log entry cut to what a save may hold, so the save still validates. */
@@ -338,6 +433,11 @@ export function toSave(run: CaseRunState, savedAt: number): CaseRunSave | undefi
     completed: [...run.completed],
     hintsShown: { ...run.hintsShown },
     beatsPlayed: [...run.beatsPlayed],
+    citations: Object.fromEntries(
+      Object.entries(run.citations).map(([id, refs]) => [id, [...refs]]),
+    ),
+    pinNotes: { ...run.pinNotes },
+    marks: [...run.marks],
     savedAt: Math.max(0, Math.floor(savedAt)),
   };
 }

@@ -1,7 +1,9 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
+import { ButtonLink } from "@/components/ui/button";
 import { FOCUS_RING } from "@/components/ui/focus-ring";
+import { ArrowRightIcon } from "@/components/ui/icons";
 import {
   externalLessonUrl,
   getCitation,
@@ -26,8 +28,17 @@ interface LessonArticleProps {
   readNext: readonly Lesson[];
   /** Where this lesson sits in a track, like Start here, when it's in one. */
   track?: LessonTrackPosition;
+  /** The case the lesson's "In practice" section names, for the button at its foot. */
+  practiceCase?: LessonPracticeCase | undefined;
   /** The related missions' names and addresses, by id. Without one, the id is shown. */
   missionTitles?: Readonly<Record<string, { readonly slug: string; readonly title: string }>>;
+}
+
+/** A released case to try the lesson in: "Try it in Case 2". */
+export interface LessonPracticeCase {
+  readonly href: string;
+  readonly number: number;
+  readonly title: string;
 }
 
 /** A lesson's place in a track (src/content/tracks.ts): "Start here, 3 of 6". */
@@ -40,6 +51,24 @@ export interface LessonTrackPosition {
 }
 
 const LINK = cx("rounded-sm font-medium text-accent hover:underline", FOCUS_RING);
+
+/**
+ * A note in the lesson's header ("Best read first"): a rule down its left edge and no box, so it
+ * reads lighter than a lesson card and heavier than the level label (UIUX.md §2.8).
+ */
+const NOTE = "border-l-2 border-accent/60 py-1 pl-4";
+
+/**
+ * How deep a lesson goes ("Working knowledge"), as quiet metadata: a filled chip without a border,
+ * so it doesn't compete with the topic badge or the cards around it.
+ */
+export function LevelLabel({ level }: { level: Lesson["level"] }) {
+  return (
+    <span className="inline-flex items-center rounded-md bg-surface-overlay px-2 py-0.5 type-small text-secondary">
+      {LESSON_LEVEL_LABELS[level]}
+    </span>
+  );
+}
 
 function LessonLinks({ lessons }: { lessons: readonly Lesson[] }) {
   return (
@@ -93,8 +122,8 @@ function Sources({ citations }: { citations: readonly Citation[] }) {
 function Related({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div>
-      <h2 className="text-sm font-semibold text-primary">{title}</h2>
-      <div className="mt-2 leading-7 text-secondary">{children}</div>
+      <h2 className="type-eyebrow">{title}</h2>
+      <div className="mt-2 type-body text-secondary">{children}</div>
     </div>
   );
 }
@@ -110,6 +139,7 @@ export function LessonArticle({
   prerequisites,
   readNext,
   track,
+  practiceCase,
   missionTitles = {},
 }: LessonArticleProps) {
   const topic = LESSON_TOPICS[lesson.topic];
@@ -128,41 +158,39 @@ export function LessonArticle({
     <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[minmax(0,1fr)_15rem]">
       <article className="max-w-3xl min-w-0">
         <header>
-          <p className="text-sm text-secondary">
+          <p className="type-small text-secondary">
             <Link href="/learn" className={LINK}>
               Learn
             </Link>
             <span aria-hidden="true"> / </span>
             {topic.label}
           </p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-            {lesson.title}
-          </h1>
+          <h1 className="mt-3 type-page-title">{lesson.title}</h1>
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <Badge tone="accent">{topic.label}</Badge>
-            <Badge>{LESSON_LEVEL_LABELS[lesson.level]}</Badge>
-            <span className="text-sm text-secondary">About {lesson.readingMinutes} min</span>
+            <LevelLabel level={lesson.level} />
+            <span className="type-small text-secondary">About {lesson.readingMinutes} min</span>
             {track && (
-              <span className="text-sm text-secondary">
+              <span className="type-small text-secondary">
                 · {track.title}, {track.position} of {track.total}
               </span>
             )}
           </div>
           {prerequisites.length > 0 && (
-            <div className="mt-6 rounded-lg border border-subtle bg-surface-raised px-4 py-3">
-              <p className="text-sm font-semibold text-primary">Best read first</p>
-              <div className="mt-1 text-sm">
+            <div className={cx("mt-6", NOTE)}>
+              <p className="type-eyebrow">Best read first</p>
+              <div className="mt-2 type-small">
                 <LessonLinks lessons={prerequisites} />
               </div>
             </div>
           )}
           {lesson.externalPrerequisites.length > 0 && (
-            <div className="mt-6 rounded-lg border border-subtle bg-surface-raised px-4 py-3">
-              <p className="text-sm font-semibold text-primary">Start here if this is new</p>
-              <p className="mt-1 text-sm text-secondary">
+            <div className={cx("mt-6", NOTE)}>
+              <p className="type-eyebrow">Start here if this is new</p>
+              <p className="mt-2 type-small text-secondary">
                 A gentler first look, on Hacker Simulation, our sister site:
               </p>
-              <div className="mt-1 text-sm">
+              <div className="mt-2 type-small">
                 <ExternalLessonLinks ids={lesson.externalPrerequisites} />
               </div>
             </div>
@@ -171,7 +199,9 @@ export function LessonArticle({
 
         {toc.length >= 2 && (
           <details className="mt-6 rounded-lg border border-subtle px-4 py-3 lg:hidden">
-            <summary className={cx("cursor-pointer rounded-sm text-sm font-semibold", FOCUS_RING)}>
+            <summary
+              className={cx("cursor-pointer rounded-sm type-small font-semibold", FOCUS_RING)}
+            >
               What&apos;s in this lesson
             </summary>
             <TableOfContents entries={toc} className="mt-3" />
@@ -180,6 +210,29 @@ export function LessonArticle({
 
         <div className="mt-10">{content}</div>
 
+        {practiceCase && (
+          <section
+            aria-labelledby="lesson-try-it"
+            className="mt-12 rounded-xl border border-accent/40 bg-surface-raised p-6"
+          >
+            <h2 id="lesson-try-it" className="type-eyebrow">
+              Try it for real
+            </h2>
+            <p className="mt-2 type-body text-secondary">
+              Case {practiceCase.number}, {practiceCase.title}, puts this lesson to work on Quillfen
+              Freight&apos;s evidence.
+            </p>
+            <ButtonLink
+              href={practiceCase.href}
+              variant="primary"
+              className="mt-4"
+              icon={<ArrowRightIcon aria-hidden="true" />}
+            >
+              Try it in Case {practiceCase.number}
+            </ButtonLink>
+          </section>
+        )}
+
         {track && (track.previous || track.next) && (
           <nav
             aria-label={`${track.title} track`}
@@ -187,7 +240,7 @@ export function LessonArticle({
           >
             {track.previous ? (
               <Link href={`/learn/${track.previous.id}`} className={LINK}>
-                <span className="block text-sm font-normal text-secondary">Previous</span>
+                <span className="block type-small font-normal text-secondary">Previous</span>
                 {track.previous.title}
               </Link>
             ) : (
@@ -195,7 +248,7 @@ export function LessonArticle({
             )}
             {track.next && (
               <Link href={`/learn/${track.next.id}`} className={cx(LINK, "text-right")}>
-                <span className="block text-sm font-normal text-secondary">
+                <span className="block type-small font-normal text-secondary">
                   Next in {track.title.toLowerCase()}
                 </span>
                 {track.next.title}
@@ -205,7 +258,7 @@ export function LessonArticle({
         )}
 
         {hasRelated && (
-          <footer className="mt-14 space-y-6 border-t border-subtle pt-8">
+          <footer className="mt-12 space-y-6 border-t border-subtle pt-8">
             {lesson.glossaryTerms.length > 0 && (
               <Related title="Words in this lesson">
                 <ul className="flex flex-wrap gap-x-4 gap-y-1">

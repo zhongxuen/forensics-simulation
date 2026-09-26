@@ -65,6 +65,9 @@ const RUN: CaseRunSave = {
   completed: ["read-letter"],
   hintsShown: { "find-seal": 2 },
   beatsPlayed: [0, 1],
+  citations: {},
+  pinNotes: {},
+  marks: [],
   savedAt: 1_770_000_000_000,
 };
 
@@ -145,6 +148,9 @@ describe("case storage", () => {
           completed: ["read-letter", "find-seal"],
           hintsShown: {},
           beatsPlayed: [],
+          citations: {},
+          pinNotes: {},
+          marks: [],
           savedAt: 0,
         },
       },
@@ -156,6 +162,28 @@ describe("case storage", () => {
     });
     const cases = createCaseStorage({ storage: () => storage });
     expect(cases.load("practice")?.log).toEqual([{ line: "ls" }]);
+  });
+
+  it("reads a v1 save from before citations, pin notes and custody marks, with them empty", () => {
+    const older: Record<string, unknown> = { ...RUN };
+    for (const key of ["citations", "pinNotes", "marks"]) delete older[key];
+    const store = migrate({ v: 1, runs: { practice: older } });
+    expect(store.runs.practice).toEqual({ ...RUN, citations: {}, pinNotes: {}, marks: [] });
+  });
+
+  it("keeps citations, pin notes and custody marks, and refuses marks that aren't marks", () => {
+    const withBoard: CaseRunSave = {
+      ...RUN,
+      citations: { "note-created": ["disk:qf-lt-03:mft/64"] },
+      pinNotes: { "disk:qf-lt-03:mft/64": "the note nobody wrote" },
+      marks: [
+        { after: 3, kind: "pinned", ref: "log:security/2" },
+        { after: 5, kind: "submitted", supported: 2, total: 3 },
+      ],
+    };
+    expect(migrate({ v: 1, runs: { practice: withBoard } }).runs.practice).toEqual(withBoard);
+    const odd = { ...withBoard, marks: [{ after: -1, kind: "pinned", ref: "x" }] };
+    expect(migrate({ v: 1, runs: { practice: odd } }).runs).toEqual({});
   });
 
   it("reads anything else as an empty store, without throwing", () => {

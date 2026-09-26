@@ -15,7 +15,7 @@
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { Case } from "@/content/cases/schema";
+import { SANDBOX_FILE, type Case } from "@/content/cases/schema";
 import { caseCopy } from "@/content/cases/copy";
 import { findBannedWords } from "@/content/voice";
 import {
@@ -35,8 +35,10 @@ import { evidenceDirFor, evidenceFiles, readIfThere } from "./lib/evidence-files
 const args = process.argv.slice(2);
 const strict = args.includes("--strict");
 const wanted = args.filter((arg) => !arg.startsWith("-"));
+// The sandbox isn't a case: `pnpm evidence:check` builds it, and tests/content/sandbox.test.ts
+// holds it to its own schema, the voice rules and every command it suggests.
 const files = readdirSync(CASES_DIR)
-  .filter((name) => name.endsWith(CASE_FILE_EXTENSION))
+  .filter((name) => name.endsWith(CASE_FILE_EXTENSION) && name !== SANDBOX_FILE)
   .sort();
 
 const parsed = new Map<string, Case>();

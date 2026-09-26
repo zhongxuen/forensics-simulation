@@ -69,7 +69,9 @@ export function headOrTail(
       output.push(...splitLines(text).map(stdout));
       return;
     }
-    const lines = splitLines(item.text);
+    // Piped-in lines keep the artefact ref they carried (docs/plan/07-carve-strings-logq.md).
+    const refs = item.name === STDIN_NAME ? ctx.stdinRefs : undefined;
+    const lines = splitLines(item.text).map((text, index) => ({ text, ref: refs?.[index] }));
     const kept =
       tool === "head"
         ? lines.slice(0, count)
@@ -78,7 +80,7 @@ export function headOrTail(
           : count === 0
             ? []
             : lines.slice(-count);
-    output.push(...kept.map(stdout));
+    output.push(...kept.map(({ text, ref }) => (ref ? { ...stdout(text), ref } : stdout(text))));
   });
   return { state, output, events: read.events, exitCode: read.errors.length > 0 ? 1 : 0 };
 }

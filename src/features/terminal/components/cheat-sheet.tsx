@@ -8,6 +8,8 @@ import { cheatSheetGroups } from "../beginner/cheat-sheet";
 interface CommandCheatSheetProps {
   /** Starts open. */
   defaultOpen?: boolean;
+  /** A group's label to show first, like "Investigate" on the sandbox. The rest keep their order. */
+  leadWith?: string;
   className?: string;
 }
 
@@ -15,10 +17,18 @@ interface CommandCheatSheetProps {
  * Every command at a glance, grouped by what you might want to do, with a one-line summary and an
  * example each. It can fold away to give the terminal more room.
  */
-export function CommandCheatSheet({ defaultOpen = true, className }: CommandCheatSheetProps) {
+export function CommandCheatSheet({
+  defaultOpen = true,
+  leadWith,
+  className,
+}: CommandCheatSheetProps) {
   const [open, setOpen] = useState(defaultOpen);
   const bodyId = useId();
-  const groups = cheatSheetGroups();
+  const all = cheatSheetGroups();
+  const groups = [
+    ...all.filter((group) => group.label === leadWith),
+    ...all.filter((group) => group.label !== leadWith),
+  ];
 
   return (
     <section

@@ -1,0 +1,131 @@
+---
+id: logs-super-timelines
+title: Every source, one line of time
+topic: forensics
+level: 3
+readingMinutes: 8
+analogy: "Three people's diaries from the same holiday, cut into entries and shuffled together by date and hour. Each diary alone has gaps. Merged, you can see that the argument at breakfast came right after the missed train, which nobody wrote in the same place."
+summary: Merging file times, log records and memory into one list in time order, and using it to turn one clue into the story around it.
+prerequisites: [logs-time-zones-and-clocks, disk-macb-timestamps]
+externalPrerequisites: [forensics-timelines]
+relatedCommands: [timeline, pin]
+glossaryTerms: [super-timeline, timeline]
+cites: [plaso-docs, nist-sp-800-86-s8]
+---
+
+## The one-sentence version
+
+A super-timeline puts every moment from every piece of evidence (file times from the drive, records
+from each log, processes and connections from memory) into one list in time order, so what each
+source saw on its own lines up into what happened.
+
+Think of three people's diaries from the same holiday, cut into entries and shuffled together by
+date and hour. Each diary alone has gaps. Merged, you can see that the argument at breakfast came
+right after the missed train, which nobody wrote in the same place.
+
+<Quiz
+  question="You've found the moment a suspicious program started. What does a super-timeline let you do next?"
+  options={[
+    {
+      text: "Prove who ran it, from the timeline alone",
+      explanation:
+        "A timeline shows what happened near that moment, such as a sign-in a minute before. It suggests who; the records themselves, and what else you know, have to support it.",
+    },
+    {
+      text: "See everything on every source in the minutes around it",
+      correct: true,
+      explanation:
+        "That's its job. The sign-in before it, the file it came from, the first connection after it: all on one screen, from sources you'd otherwise read one at a time.",
+    },
+    {
+      text: "Skip reading the individual sources",
+      explanation:
+        "A timeline line is a summary. When one matters, go back to the record it came from, which is what its ref is for.",
+    },
+  ]}
+/>
+
+## Why it matters in security
+
+Each source sees part of an incident. The security log sees the sign-in but not the file. The drive
+sees the file but not who was signed in. Memory sees the connection but not how the program arrived.
+NIST SP 800-86 (§8) says incidents are often best handled by correlating several kinds of data
+source; putting them on one clock is the most direct way to do that.
+
+It also changes how you search. Instead of reading every record hoping something stands out, you
+find one thing you're sure of and look at what sits around it.
+
+## How it actually works
+
+### What goes in
+
+A <Term id="timeline">timeline</Term> is events in time order. A <Term id="super-timeline">super-timeline</Term>
+is one built from everything at once:
+
+- **The drive**: each file record's four MACB times, each as its own moment.
+- **The logs**: every record, with its source and event id.
+- **Memory**: each process's start time and each connection's.
+
+The name, and the habit, come from Plaso (whose documentation's motto is "super timeline all the
+things"), an engine that pulls timestamps out of many kinds of evidence into one list automatically.
+
+### One clock
+
+Every moment is ordered by the real instant, in UTC, whatever each source showed on screen. That's
+the last lesson doing its work: a source that displayed British Summer Time still sorts into the
+right place.
+
+### Reading a line
+
+`timeline` prints `time | source | kind | host | summary`, then the ref of the evidence it came from.
+The kind says what happened: MACB letters for a file (a dot for each time that's on another line),
+`process-start` or `connection` for memory, the event id for a log.
+
+### Around one moment
+
+`timeline --around <ref>` is the move to reach for first. Give it the ref of something you've
+already found and it shows everything within five minutes either side, on every source. `--window`
+widens or narrows that.
+
+## See it
+
+You know the drill's beacon, PID 6120, started at 09:20. Look at what surrounds it.
+
+<MiniTerminal
+  scenario="ir-ws-drill"
+  commands={[
+    "timeline --around mem:train-lt-02-mem:pid/6120 --window 2m",
+    "timeline --source memory,security --from 2026-09-22T09:15Z --to 2026-09-22T09:21Z",
+    "pin 11",
+  ]}
+  task="Type `timeline --around mem:train-lt-02-mem:pid/6120 --window 2m` to see everything within two minutes of the beacon starting."
+  expect="timeline"
+  success="At 09:20:00, four sources saw the same moment: the file appearing on the drive, the process in memory, a 4688 in the security log and a process-created record in the process monitor's. A minute later, the first connection."
+/>
+
+Four sources, one second: the drive's record for `C:\Users\Public\Downloads\svchost.exe` is born,
+memory has PID 6120 starting, the security log writes a 4688 and the process monitor a process
+created record, both naming `explorer.exe` as the parent. At 09:21 the first connection to
+`192.168.60.66:443` appears in memory and in the process monitor's log. Narrow it to memory and
+security from 09:15 and the drill's whole path is six lines: the remote sign-in, the new account,
+the account added to Administrators, the beacon starting (in memory and in the security log), its
+first connection. Each line has a number, and `pin 11` puts the one for the beacon starting in
+memory on the case board, with its ref.
+
+## In practice
+
+In [Case 2, The Deleted Invoice](/cases/case-02), putting the evening in order on the timeline, in
+one zone, is an objective: the remote sign-in, the zip, the deletions, the upload. In
+[Case 3, Something Is Still Running](/cases/case-03), the last objective is lining it all up: the
+burst of guesses, the sign-in, the new account, the process and its first check-in.
+
+## Common misconceptions
+
+- **"More sources means more noise."** It means more lines. `--around` and `--source` keep the ones
+  near what you already know.
+- **"The timeline is the evidence."** Each line points at the evidence. Cite the ref, not the
+  summary.
+- **"Things on the same second caused each other."** They happened together. The timeline shows
+  order; cause is something you argue from the records.
+- **"A timeline shows everything that happened."** It shows everything that left a time behind.
+  Some actions leave nothing, and a capture only knows its own moment.

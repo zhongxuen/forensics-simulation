@@ -1,0 +1,134 @@
+---
+id: memory-processes-and-parents
+title: Who started whom
+topic: forensics
+level: 2
+readingMinutes: 8
+analogy: "A school register and a headcount. The register says who should be in the room; counting heads says who is. Someone who crossed their name off the register is still sitting at a desk, and only the headcount finds them."
+summary: Reading the process list, the family tree of parents and children, and the scan that finds a program which took itself off the list.
+prerequisites: [memory-why-ram-matters]
+externalPrerequisites: [blue-reading-alerts]
+relatedCommands: [mem]
+glossaryTerms: [process-list, process-id, parent-process, unlinked-process]
+cites: [amf-ch6, ms-learn-windows-services]
+---
+
+## The one-sentence version
+
+Windows keeps a list of every running program and who started each one, and comparing that list
+with a scan of the whole memory shows you what is running under a borrowed name, in the wrong
+place, or hiding from the list altogether.
+
+Think of a school register and a headcount. The register says who should be in the room; counting
+heads says who is. Someone who crossed their name off the register is still sitting at a desk, and
+only the headcount finds them.
+
+<Quiz
+  question="A memory image has two programs called svchost.exe. What tells you which one belongs?"
+  options={[
+    {
+      text: "The name: svchost.exe is part of Windows, so both belong",
+      explanation:
+        "A name is only what a file is called. Anyone can call a program svchost.exe, which is exactly why it's a popular name to borrow.",
+    },
+    {
+      text: "Which folder it runs from and which program started it",
+      correct: true,
+      explanation:
+        "The real one runs from C:\\Windows\\System32 and is started by services.exe. A copy in a downloads folder, started from the desktop, is the one to look at.",
+    },
+    {
+      text: "Whichever started first is the real one",
+      explanation:
+        "Start order is a hint, not proof. Windows starts many svchost.exe processes, some long after the machine boots. The path and the parent say far more.",
+    },
+  ]}
+/>
+
+## Why it matters in security
+
+Malware wants to look ordinary. The cheapest disguise is a familiar name, and the most familiar
+names on Windows belong to its own programs. Names are free to copy; where a program lives and what
+started it are much harder to fake.
+
+Some code goes further and takes itself out of the list Windows keeps, so Task Manager, and any tool
+that trusts the list, never shows it. It keeps running. _The Art of Memory Forensics_ (Chapter 6)
+describes this and the fix: don't only walk the list, scan memory for anything shaped like a process
+and compare the two.
+
+## How it actually works
+
+### The list and the numbers
+
+Every running program is a <Term id="process">process</Term>. Each one gets a <Term id="process-id">process id</Term>
+(PID), a number no other running process has, so two programs with the same name can still be told
+apart. Windows chains the processes together into the <Term id="process-list">active process list</Term>,
+and that's what `mem ps` reads.
+
+### Parents and children
+
+Every process was started by another one, its <Term id="parent-process">parent</Term>, and records
+its parent's PID (the PPID). Windows starts its own programs in a known order. Microsoft Learn's
+page on Windows system services says `services.exe`, in `C:\Windows\System32`, starts every service
+host, and each service host runs as `C:\Windows\System32\svchost.exe -k` followed by a group name.
+The desktop, `explorer.exe`, starts what a person opens. So:
+
+| You see                                           | It usually means                                   |
+| ------------------------------------------------- | -------------------------------------------------- |
+| `svchost.exe` under `services.exe`, in `System32` | Windows, doing what it always does                 |
+| `svchost.exe` under `explorer.exe`                | Someone, or something, started it from the desktop |
+| `svchost.exe` in a downloads folder               | A borrowed name                                    |
+
+`mem pstree` draws the list as a family tree, each process under its parent.
+
+### What the list leaves out
+
+An <Term id="unlinked-process">unlinked process</Term> has taken its own record out of the chain.
+The record is still in memory; nothing points at it. `mem psscan` reads every record in the image
+that looks like a process, list or no list, and marks two kinds the list doesn't have:
+
+- **unlinked**: still running, missing from the list. This is the one that was hiding.
+- **exited**: finished before the capture, its record not yet cleared away. Nothing sinister, but
+  worth knowing it ran.
+
+## See it
+
+The drill laptop's memory holds six processes. Walk the list, then scan, and compare.
+
+<MiniTerminal
+  scenario="ir-ws-drill"
+  commands={[
+    "mem ps train-lt-02",
+    "mem psscan train-lt-02",
+    "mem pstree train-lt-02",
+    "mem cmdline train-lt-02 --pid 6120",
+  ]}
+  task="Type `mem ps train-lt-02` to walk the active process list, then `mem psscan train-lt-02` to scan for every process."
+  expect="mem"
+  success="The list has five processes; the scan finds six. PID 6120, another svchost.exe, is marked unlinked: still running, missing from the list."
+/>
+
+The list has one `svchost.exe`, PID 884, under `services.exe` (PID 612), running as `SYSTEM`. That's
+the normal shape. The scan finds a second, PID 6120, whose parent is PID 1004, `explorer.exe`, the
+trainee's desktop. It runs as `trainee`, not `SYSTEM`. `mem cmdline --pid 6120` says where it lives:
+`C:\Users\Public\Downloads\svchost.exe -k drill`. Three things are off about it, and each one alone
+would be worth a line in a report: the folder, the parent and the missing list entry.
+
+## In practice
+
+In [Case 3, Something Is Still Running](/cases/case-03), Quillfen Freight's dispatch server has an
+`svchost.exe` running from `C:\ProgramData`, started by `explorer.exe`, and missing from the active
+list. Showing why it's suspicious (its location, its parent and that the list hides it) is one of
+the case's objectives, and one of the report's questions.
+
+## Common misconceptions
+
+- **"If Task Manager doesn't show it, it isn't running."** Task Manager reads the list. A process
+  that unlinked itself is still running.
+- **"svchost.exe is a Windows file, so it's safe."** The name is. The file in a downloads folder
+  with that name is something else.
+- **"Every process psscan finds and ps doesn't is malware."** Some have exited. Check the note:
+  exited means it finished, unlinked means it's hiding.
+- **"The parent is whoever ran it."** The parent is the process that started it. A person
+  double-clicking something makes `explorer.exe` the parent, which is why a system program under
+  `explorer.exe` stands out.

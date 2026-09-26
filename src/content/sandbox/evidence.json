@@ -1,0 +1,1669 @@
+{
+  "caseId": "sandbox",
+  "disks": [
+    {
+      "clusterSize": 4096,
+      "device": {
+        "model": "Pellmoor 128 GB solid-state drive",
+        "serial": "PM-TRN-0003"
+      },
+      "id": "train-lt-03",
+      "partitions": [
+        {
+          "fs": "NTFS-like",
+          "index": 0,
+          "label": "System reserved",
+          "sectors": 1048576,
+          "startSector": 2048
+        },
+        {
+          "fs": "NTFS-like",
+          "index": 1,
+          "label": "Windows",
+          "sectors": 249019056,
+          "startSector": 1050624
+        }
+      ],
+      "records": [
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\",
+          "record": 5,
+          "size": 0,
+          "times": {
+            "a": 1772346953000,
+            "b": 1772346953000,
+            "c": 1772346953000,
+            "m": 1772346953000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows",
+          "record": 6,
+          "size": 0,
+          "times": {
+            "a": 1772350735000,
+            "b": 1772350735000,
+            "c": 1772350735000,
+            "m": 1772350735000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\Temp",
+          "record": 7,
+          "size": 0,
+          "times": {
+            "a": 1772351305000,
+            "b": 1772351305000,
+            "c": 1772351305000,
+            "m": 1772351305000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Users",
+          "record": 8,
+          "size": 0,
+          "times": {
+            "a": 1772348318000,
+            "b": 1772348318000,
+            "c": 1772348318000,
+            "m": 1772348318000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Users\\Public",
+          "record": 9,
+          "size": 0,
+          "times": {
+            "a": 1772344929000,
+            "b": 1772344929000,
+            "c": 1772344929000,
+            "m": 1772344929000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Users\\Public\\Downloads",
+          "record": 10,
+          "size": 0,
+          "times": {
+            "a": 1772349446000,
+            "b": 1772349446000,
+            "c": 1772349446000,
+            "m": 1772349446000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator",
+          "record": 11,
+          "size": 0,
+          "times": {
+            "a": 1784444828000,
+            "b": 1784444828000,
+            "c": 1784444828000,
+            "m": 1784444828000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "Administrator",
+          "path": "C:\\Users\\Administrator\\Documents",
+          "record": 12,
+          "size": 0,
+          "times": {
+            "a": 1784442122000,
+            "b": 1784442122000,
+            "c": 1784442122000,
+            "m": 1784442122000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee",
+          "record": 13,
+          "size": 0,
+          "times": {
+            "a": 1784441691000,
+            "b": 1784441691000,
+            "c": 1784441691000,
+            "m": 1784441691000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee\\Documents",
+          "record": 14,
+          "size": 0,
+          "times": {
+            "a": 1784441234000,
+            "b": 1784441234000,
+            "c": 1784441234000,
+            "m": 1784441234000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32",
+          "record": 15,
+          "size": 0,
+          "times": {
+            "a": 1789628828000,
+            "b": 1789628828000,
+            "c": 1789628828000,
+            "m": 1789628828000
+          }
+        },
+        {
+          "clusters": [
+            1000
+          ],
+          "contentB64": "TVoAAFRoaXMgcHJvZ3JhbSBjYW5ub3QgYmUgcnVuIGluIERPUyBtb2RlLgBiYWNrdXAtY2hlY2suZXhlAA==",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\System32\\backup-check.exe",
+          "record": 16,
+          "size": 61,
+          "times": {
+            "a": 1789628828000,
+            "b": 1789628828000,
+            "c": 1789628828000,
+            "m": 1789628828000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Program Files",
+          "record": 17,
+          "size": 0,
+          "times": {
+            "a": 1789632120000,
+            "b": 1789632120000,
+            "c": 1789632120000,
+            "m": 1789632120000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "C:\\Program Files\\Candlewright",
+          "record": 18,
+          "size": 0,
+          "times": {
+            "a": 1789632120000,
+            "b": 1789632120000,
+            "c": 1789632120000,
+            "m": 1789632120000
+          }
+        },
+        {
+          "clusters": [
+            1001
+          ],
+          "contentB64": "TVoAAFRoaXMgcHJvZ3JhbSBjYW5ub3QgYmUgcnVuIGluIERPUyBtb2RlLgByb3RhLWFwcC5leGUA",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Program Files\\Candlewright\\rota-app.exe",
+          "record": 19,
+          "size": 57,
+          "times": {
+            "a": 1789632120000,
+            "b": 1789632120000,
+            "c": 1789632120000,
+            "m": 1789632120000
+          }
+        },
+        {
+          "clusters": [
+            1002
+          ],
+          "contentB64": "U2hpZnQgbm90ZXMsIFRodXJzZGF5Ci0gUmFuZ2UgZHJpbGwgYXQgMDk6MDAsIEtpdCBkcml2aW5nCi0gSWRyaXMgY2FwdHVyZXMgbWVtb3J5IGJlZm9yZSBhbnl0aGluZyBpcyBzd2l0Y2hlZCBvZmYKLSBMZWF2ZSB0aGUgbGFwdG9wIHNpZ25lZCBpbiBzbyB0aGUgZHJpbGwgaGFzIHNvbWV0aGluZyB0byBmaW5kCg==",
+          "deleted": false,
+          "kind": "file",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee\\Documents\\shift-notes.txt",
+          "record": 20,
+          "size": 178,
+          "times": {
+            "a": 1789634160000,
+            "b": 1789632600000,
+            "c": 1789632600000,
+            "m": 1789632600000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee\\AppData",
+          "record": 21,
+          "size": 0,
+          "times": {
+            "a": 1789632717000,
+            "b": 1789632717000,
+            "c": 1789632717000,
+            "m": 1789632717000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee\\AppData\\Local",
+          "record": 22,
+          "size": 0,
+          "times": {
+            "a": 1789632717000,
+            "b": 1789632717000,
+            "c": 1789632717000,
+            "m": 1789632717000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee\\AppData\\Local\\Web",
+          "record": 23,
+          "size": 0,
+          "times": {
+            "a": 1789632717000,
+            "b": 1789632717000,
+            "c": 1789632717000,
+            "m": 1789632717000
+          }
+        },
+        {
+          "clusters": [
+            1003
+          ],
+          "contentB64": "IyBPbmUgbGluZSBwZXIgcGFnZSBvcGVuZWQ6IGxvY2FsIHRpbWUsIHRoZW4gdGhlIGFkZHJlc3MuCjIwMjYtMDktMTcgMDk6MTE6NTcgKzAxOjAwIGh0dHBzOi8vdXBkYXRlcy5leGFtcGxlLwoyMDI2LTA5LTE3IDA5OjMwOjAwICswMTowMCBodHRwczovL3VwZGF0ZXMuZXhhbXBsZS8KMjAyNi0wOS0xNyAxMDowNTowNyArMDE6MDAgaHR0cHM6Ly9tYWlsLmV4YW1wbGUvCg==",
+          "deleted": false,
+          "kind": "file",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee\\AppData\\Local\\Web\\history.log",
+          "record": 24,
+          "size": 211,
+          "times": {
+            "a": 1789635907000,
+            "b": 1789632717000,
+            "c": 1789635907000,
+            "m": 1789635907000
+          }
+        },
+        {
+          "clusters": [
+            1004
+          ],
+          "contentB64": "VGhlbywgdGhlIHByYWN0aWNlIGtpdCBpcyByZWFkeSBmb3IgdGhlIGRyaWxsLiBUd28gbGFwdG9wcywgb25lIHNlcnZlciBjb3B5LgpLaXQK",
+          "deleted": true,
+          "kind": "file",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee\\Documents\\draft-reply.txt",
+          "record": 25,
+          "size": 81,
+          "times": {
+            "a": 1789632840000,
+            "b": 1789632840000,
+            "c": 1789634400000,
+            "m": 1789632840000
+          }
+        },
+        {
+          "clusters": [
+            1005
+          ],
+          "contentB64": "JVBERi0xLjQKMSAwIG9iaiA8PCAvVGl0bGUgKE9yZGVyIG9mIHZvbGF0aWxpdHkpIC9BdXRob3IgKENhbmRsZXdyaWdodCB0cmFpbmluZykgPj4gZW5kb2JqCjIgMCBvYmogPDwgL0xlbmd0aCA2NCA+PiBzdHJlYW0KTWVtb3J5IGZpcnN0LCB0aGVuIHRoZSBuZXR3b3JrLCB0aGVuIHRoZSBkaXNrLiBTYXkgd2hhdCB5b3UgdG9vay4KZW5kc3RyZWFtIGVuZG9iagp0cmFpbGVyIDw8IC9Sb290IDEgMCBSID4+CiUlRU9GCg==",
+          "deleted": true,
+          "kind": "file",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee\\Documents\\handout.pdf",
+          "record": 26,
+          "size": 238,
+          "times": {
+            "a": 1789632960000,
+            "b": 1789632960000,
+            "c": 1789634460000,
+            "m": 1789632960000
+          }
+        },
+        {
+          "clusters": [
+            1006,
+            1007
+          ],
+          "contentB64": "JVBERi0xLjQKMSAwIG9iaiA8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4gZW5kb2JqCjIgMCBvYmogPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4gZW5kb2JqCjMgMCBvYmogPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvQ29udGVudHMgNCAwIFIgPj4gZW5kb2JqCjQgMCBvYmogPDwgL0xlbmd0aCA0MjAwID4+CnN0cmVhbQpCVCAvRjEgMTIgVGYgNTYgNzgwIFRkIChDYW5kbGV3cmlnaHQgdHJhaW5pbmcgLSBwcmFjdGljZSBzdGF0ZW1lbnQgVFJOLTA5MTcpIFRqIFQqCihFdmVyeSBsaW5lIGJlbG93IGlzIG1hZGUgdXAgZm9yIHByYWN0aWNlLiBOb25lIG9mIGl0IGlzIGFueWJvZHkncyBhY2NvdW50LikgVGogVCoKKExpbmUgMDEgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwNCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMDIgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwNyAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMDMgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwMiAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMDQgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwOSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMDUgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwNSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMDYgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwMyAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMDcgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwOCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMDggIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwNiAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMDkgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwMSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMTAgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAxMCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMTEgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwNCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMTIgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwNyAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMTMgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwMiAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMTQgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwOSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMTUgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwNSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMTYgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwMyAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMTcgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwOCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMTggIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwNiAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMTkgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwMSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMjAgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAxMCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMjEgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwNCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMjIgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwNyAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMjMgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwMiAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMjQgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwOSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMjUgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwNSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMjYgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwMyAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMjcgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwOCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMjggIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwNiAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMjkgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwMSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMzAgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAxMCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMzEgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwNCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMzIgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwNyAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMzMgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwMiAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMzQgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwOSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMzUgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwNSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMzYgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwMyAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMzcgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwOCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMzggIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwNiAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgMzkgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwMSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNDAgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAxMCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNDEgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwNCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNDIgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwNyAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNDMgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwMiAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNDQgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwOSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNDUgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwNSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNDYgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwMyAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNDcgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwOCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNDggIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwNiAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNDkgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwMSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNTAgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAxMCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNTEgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwNCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNTIgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwNyAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNTMgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwMiAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNTQgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwOSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNTUgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwNSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNTYgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwMyAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNTcgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwOCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNTggIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAwNiAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNTkgIHByYWN0aWNlIHJ1biAgbm9ydGggZ2F0ZSAgcGFsbGV0cyAwMSAgYW1vdW50IDAwMC4wMCkgVGogVCoKKExpbmUgNjAgIHByYWN0aWNlIHJ1biAgc291dGggZ2F0ZSAgcGFsbGV0cyAxMCAgYW1vdW50IDAwMC4wMCkgVGogVCoKKFRvdGFsICAwMDAuMDApIFRqIEVUCmVuZHN0cmVhbSBlbmRvYmoKdHJhaWxlciA8PCAvUm9vdCAxIDAgUiA+PgolJUVPRgo=",
+          "deleted": true,
+          "kind": "file",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee\\Documents\\practice-statement.pdf",
+          "record": 27,
+          "size": 4589,
+          "times": {
+            "a": 1789633080000,
+            "b": 1789633080000,
+            "c": 1789634520000,
+            "m": 1789633080000
+          }
+        },
+        {
+          "clusters": [
+            1008
+          ],
+          "contentB64": "VHlyZSBzaXplcyBmb3IgdGhlIHByYWN0aWNlIGZsZWV0ClRyYWN0b3IgdW5pdHMgICAzMTUvODAgUjIyLjUKVHJhaWxlcnMgICAgICAgIDM4NS82NSBSMjIuNQo=",
+          "deleted": false,
+          "kind": "file",
+          "owner": "trainee",
+          "path": "C:\\Users\\trainee\\Documents\\tyre-sizes.txt",
+          "record": 28,
+          "size": 92,
+          "times": {
+            "a": 1789633860000,
+            "b": 1789633860000,
+            "c": 1789633860000,
+            "m": 1789633860000
+          }
+        },
+        {
+          "clusters": [
+            1007
+          ],
+          "contentB64": "cm90YSBjYWNoZSwgd2VlayAzODogTW9uIE5vb3IsIFR1ZSBJZHJpcywgV2VkIEtpdCwgVGh1IGRyaWxsLCBGcmkgcmV2aWV3",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Windows\\Temp\\rota-cache.dat",
+          "record": 29,
+          "size": 72,
+          "times": {
+            "a": 1789634550000,
+            "b": 1789634550000,
+            "c": 1789634550000,
+            "m": 1789634550000
+          }
+        },
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "range-svc",
+          "path": "C:\\Users\\range-svc",
+          "record": 30,
+          "size": 0,
+          "times": {
+            "a": 1789635780000,
+            "b": 1789635780000,
+            "c": 1789635780000,
+            "m": 1789635780000
+          }
+        },
+        {
+          "clusters": [
+            1010
+          ],
+          "contentB64": "TVoAAFRoaXMgcHJvZ3JhbSBjYW5ub3QgYmUgcnVuIGluIERPUyBtb2RlLgB1cGRhdGVyLmV4ZQA=",
+          "deleted": false,
+          "kind": "file",
+          "owner": "SYSTEM",
+          "path": "C:\\Users\\Public\\Downloads\\updater.exe",
+          "record": 31,
+          "size": 56,
+          "times": {
+            "a": 1789635910000,
+            "b": 1789635910000,
+            "c": 1789635910000,
+            "m": 1789635910000
+          }
+        }
+      ],
+      "sectorSize": 512,
+      "sectors": 250069680,
+      "unallocatedB64": "VGhlbywgdGhlIHByYWN0aWNlIGtpdCBpcyByZWFkeSBmb3IgdGhlIGRyaWxsLiBUd28gbGFwdG9wcywgb25lIHNlcnZlciBjb3B5LgpLaXQKJVBERi0xLjQKMSAwIG9iaiA8PCAvVGl0bGUgKE9yZGVyIG9mIHZvbGF0aWxpdHkpIC9BdXRob3IgKENhbmRsZXdyaWdodCB0cmFpbmluZykgPj4gZW5kb2JqCjIgMCBvYmogPDwgL0xlbmd0aCA2NCA+PiBzdHJlYW0KTWVtb3J5IGZpcnN0LCB0aGVuIHRoZSBuZXR3b3JrLCB0aGVuIHRoZSBkaXNrLiBTYXkgd2hhdCB5b3UgdG9vay4KZW5kc3RyZWFtIGVuZG9iagp0cmFpbGVyIDw8IC9Sb290IDEgMCBSID4+CiUlRU9GCiVQREYtMS40CjEgMCBvYmogPDwgL1R5cGUgL0NhdGFsb2cgL1BhZ2VzIDIgMCBSID4+IGVuZG9iagoyIDAgb2JqIDw8IC9UeXBlIC9QYWdlcyAvS2lkcyBbMyAwIFJdIC9Db3VudCAxID4+IGVuZG9iagozIDAgb2JqIDw8IC9UeXBlIC9QYWdlIC9QYXJlbnQgMiAwIFIgL0NvbnRlbnRzIDQgMCBSID4+IGVuZG9iago0IDAgb2JqIDw8IC9MZW5ndGggNDIwMCA+PgpzdHJlYW0KQlQgL0YxIDEyIFRmIDU2IDc4MCBUZCAoQ2FuZGxld3JpZ2h0IHRyYWluaW5nIC0gcHJhY3RpY2Ugc3RhdGVtZW50IFRSTi0wOTE3KSBUaiBUKgooRXZlcnkgbGluZSBiZWxvdyBpcyBtYWRlIHVwIGZvciBwcmFjdGljZS4gTm9uZSBvZiBpdCBpcyBhbnlib2R5J3MgYWNjb3VudC4pIFRqIFQqCihMaW5lIDAxICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDQgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDAyICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDcgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDAzICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDIgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDA0ICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDkgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDA1ICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDUgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDA2ICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDMgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDA3ICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDggIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDA4ICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDYgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDA5ICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDEgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDEwICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMTAgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDExICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDQgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDEyICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDcgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDEzICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDIgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDE0ICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDkgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDE1ICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDUgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDE2ICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDMgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDE3ICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDggIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDE4ICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDYgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDE5ICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDEgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDIwICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMTAgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDIxICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDQgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDIyICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDcgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDIzICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDIgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDI0ICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDkgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDI1ICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDUgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDI2ICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDMgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDI3ICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDggIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDI4ICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDYgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDI5ICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDEgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDMwICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMTAgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDMxICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDQgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDMyICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDcgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDMzICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDIgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDM0ICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDkgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDM1ICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDUgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDM2ICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDMgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDM3ICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDggIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDM4ICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDYgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDM5ICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDEgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDQwICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMTAgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDQxICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDQgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDQyICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDcgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDQzICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDIgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDQ0ICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDkgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDQ1ICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDUgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDQ2ICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDMgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDQ3ICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDggIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDQ4ICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDYgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDQ5ICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDEgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDUwICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMTAgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDUxICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDQgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDUyICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDcgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDUzICBwcmFjdGljZSBydW4gIG5vcnRoIGdhdGUgIHBhbGxldHMgMDIgIGFtb3VudCAwMDAuMDApIFRqIFQqCihMaW5lIDU0ICBwcmFjdGljZSBydW4gIHNvdXRoIGdhdGUgIHBhbGxldHMgMDkgIGFtb3VudCAwMDAuMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    }
+  ],
+  "handover": [
+    {
+      "by": "Idris Fenwick, Candlewright Security, for the practice kit",
+      "hashes": {
+        "md5": "e3860230d35d9464c13affc0ae997303",
+        "sha256": "604a4234b1298cbae542c572db6d5d8b80c7eb64117bd8262bf56af0d1c06032"
+      },
+      "item": "train-lt-03",
+      "receivedAt": 1789637400000
+    }
+  ],
+  "logs": [
+    {
+      "at": 1789628828000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "NewProcessId": "0x3f0",
+        "NewProcessName": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "TRAIN-LT-03",
+        "SubjectUserName": "trainee",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "train-lt-03",
+      "seq": 1,
+      "source": "security"
+    },
+    {
+      "at": 1789628828000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1004",
+        "ProcessId": "1008",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 1,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789631880000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "-",
+        "IpPort": "-",
+        "LogonProcessName": "User32",
+        "LogonType": "2",
+        "SubjectDomainName": "TRAIN-LT-03",
+        "SubjectUserName": "trainee",
+        "TargetDomainName": "TRAIN-LT-03",
+        "TargetLogonId": "0x301d3",
+        "TargetUserName": "trainee",
+        "WorkstationName": "TRAIN-LT-03"
+      },
+      "host": "train-lt-03",
+      "seq": 2,
+      "source": "security"
+    },
+    {
+      "at": 1789632120000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "\"C:\\Program Files\\Candlewright\\rota-app.exe\" --week 38",
+        "NewProcessId": "0x3f4",
+        "NewProcessName": "C:\\Program Files\\Candlewright\\rota-app.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "TRAIN-LT-03",
+        "SubjectUserName": "trainee",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "train-lt-03",
+      "seq": 3,
+      "source": "security"
+    },
+    {
+      "at": 1789632120000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "\"C:\\Program Files\\Candlewright\\rota-app.exe\" --week 38",
+        "Image": "C:\\Program Files\\Candlewright\\rota-app.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1004",
+        "ProcessId": "1012",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 2,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789632600000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Program Files\\Candlewright\\rota-app.exe",
+        "ProcessId": "1012",
+        "TargetFilename": "C:\\Users\\trainee\\Documents\\shift-notes.txt"
+      },
+      "host": "train-lt-03",
+      "seq": 3,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789632717000,
+      "fields": {
+        "client": "10.20.0.43",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "train-lt-03",
+      "seq": 1,
+      "source": "dns"
+    },
+    {
+      "at": 1789632840000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Program Files\\Candlewright\\rota-app.exe",
+        "ProcessId": "1012",
+        "TargetFilename": "C:\\Users\\trainee\\Documents\\draft-reply.txt"
+      },
+      "host": "train-lt-03",
+      "seq": 4,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789632960000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Program Files\\Candlewright\\rota-app.exe",
+        "ProcessId": "1012",
+        "TargetFilename": "C:\\Users\\trainee\\Documents\\handout.pdf"
+      },
+      "host": "train-lt-03",
+      "seq": 5,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789633080000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Program Files\\Candlewright\\rota-app.exe",
+        "ProcessId": "1012",
+        "TargetFilename": "C:\\Users\\trainee\\Documents\\practice-statement.pdf"
+      },
+      "host": "train-lt-03",
+      "seq": 6,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789633530000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "NewProcessId": "0x3fc",
+        "NewProcessName": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentProcessName": "-",
+        "SubjectDomainName": "TRAIN-SRV-01",
+        "SubjectUserName": "SYSTEM",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "train-srv-01",
+      "seq": 4,
+      "source": "security"
+    },
+    {
+      "at": 1789633530000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\backup-check.exe",
+        "Image": "C:\\Windows\\System32\\backup-check.exe",
+        "ParentImage": "-",
+        "ParentProcessId": "0",
+        "ProcessId": "1020",
+        "User": "SYSTEM"
+      },
+      "host": "train-srv-01",
+      "seq": 7,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789633800000,
+      "fields": {
+        "client": "10.20.0.43",
+        "query": "updates.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "train-lt-03",
+      "seq": 2,
+      "source": "dns"
+    },
+    {
+      "at": 1789633860000,
+      "fields": {
+        "client": "10.20.0.43",
+        "query": "parts.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "train-lt-03",
+      "seq": 3,
+      "source": "dns"
+    },
+    {
+      "at": 1789633860000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Program Files\\Candlewright\\rota-app.exe",
+        "ProcessId": "1012",
+        "TargetFilename": "C:\\Users\\trainee\\Documents\\tyre-sizes.txt"
+      },
+      "host": "train-lt-03",
+      "seq": 8,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789634160000,
+      "eventId": 11,
+      "fields": {
+        "Image": "C:\\Program Files\\Candlewright\\rota-app.exe",
+        "ProcessId": "1012",
+        "TargetFilename": "E:\\shift-notes.txt"
+      },
+      "host": "train-lt-03",
+      "seq": 9,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789634400000,
+      "eventId": 23,
+      "fields": {
+        "Image": "C:\\Program Files\\Candlewright\\rota-app.exe",
+        "ProcessId": "1012",
+        "TargetFilename": "C:\\Users\\trainee\\Documents\\draft-reply.txt",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 10,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789634460000,
+      "eventId": 23,
+      "fields": {
+        "Image": "C:\\Program Files\\Candlewright\\rota-app.exe",
+        "ProcessId": "1012",
+        "TargetFilename": "C:\\Users\\trainee\\Documents\\handout.pdf",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 11,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789634520000,
+      "eventId": 23,
+      "fields": {
+        "Image": "C:\\Program Files\\Candlewright\\rota-app.exe",
+        "ProcessId": "1012",
+        "TargetFilename": "C:\\Users\\trainee\\Documents\\practice-statement.pdf",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 12,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789634700000,
+      "fields": {
+        "bytes": "5120",
+        "clientIp": "10.20.0.43",
+        "method": "GET",
+        "path": "/dockets/week",
+        "protocol": "HTTP/1.1",
+        "status": "200",
+        "userAgent": "Candlewright rota app"
+      },
+      "host": "train-srv-01",
+      "seq": 1,
+      "source": "web-access"
+    },
+    {
+      "at": 1789634730000,
+      "fields": {
+        "bytes": "2210",
+        "clientIp": "10.20.0.43",
+        "method": "GET",
+        "path": "/reports/daily",
+        "protocol": "HTTP/1.1",
+        "status": "200",
+        "userAgent": "Candlewright rota app"
+      },
+      "host": "train-srv-01",
+      "seq": 2,
+      "source": "web-access"
+    },
+    {
+      "at": 1789634760000,
+      "fields": {
+        "bytes": "180",
+        "clientIp": "10.20.0.43",
+        "method": "GET",
+        "path": "/admin",
+        "protocol": "HTTP/1.1",
+        "status": "403",
+        "userAgent": "Candlewright rota app"
+      },
+      "host": "train-srv-01",
+      "seq": 3,
+      "source": "web-access"
+    },
+    {
+      "at": 1789635600000,
+      "eventId": 4625,
+      "fields": {
+        "FailureReason": "There is no account with that name.",
+        "IpAddress": "192.168.60.66",
+        "IpPort": "62662",
+        "LogonType": "3",
+        "Status": "0xC000006D",
+        "SubStatus": "0xC0000064",
+        "TargetDomainName": "TRAIN-LT-03",
+        "TargetUserName": "admin",
+        "WorkstationName": "TRAIN-LT-03"
+      },
+      "host": "train-lt-03",
+      "seq": 5,
+      "source": "security"
+    },
+    {
+      "at": 1789635602000,
+      "eventId": 4625,
+      "fields": {
+        "FailureReason": "The password was not correct.",
+        "IpAddress": "192.168.60.66",
+        "IpPort": "56524",
+        "LogonType": "3",
+        "Status": "0xC000006D",
+        "SubStatus": "0xC000006A",
+        "TargetDomainName": "TRAIN-LT-03",
+        "TargetUserName": "administrator",
+        "WorkstationName": "TRAIN-LT-03"
+      },
+      "host": "train-lt-03",
+      "seq": 6,
+      "source": "security"
+    },
+    {
+      "at": 1789635604000,
+      "eventId": 4625,
+      "fields": {
+        "FailureReason": "The password was not correct.",
+        "IpAddress": "192.168.60.66",
+        "IpPort": "49434",
+        "LogonType": "3",
+        "Status": "0xC000006D",
+        "SubStatus": "0xC000006A",
+        "TargetDomainName": "TRAIN-LT-03",
+        "TargetUserName": "trainee",
+        "WorkstationName": "TRAIN-LT-03"
+      },
+      "host": "train-lt-03",
+      "seq": 7,
+      "source": "security"
+    },
+    {
+      "at": 1789635606000,
+      "eventId": 4625,
+      "fields": {
+        "FailureReason": "There is no account with that name.",
+        "IpAddress": "192.168.60.66",
+        "IpPort": "62806",
+        "LogonType": "3",
+        "Status": "0xC000006D",
+        "SubStatus": "0xC0000064",
+        "TargetDomainName": "TRAIN-LT-03",
+        "TargetUserName": "admin",
+        "WorkstationName": "TRAIN-LT-03"
+      },
+      "host": "train-lt-03",
+      "seq": 8,
+      "source": "security"
+    },
+    {
+      "at": 1789635608000,
+      "eventId": 4625,
+      "fields": {
+        "FailureReason": "The password was not correct.",
+        "IpAddress": "192.168.60.66",
+        "IpPort": "64986",
+        "LogonType": "3",
+        "Status": "0xC000006D",
+        "SubStatus": "0xC000006A",
+        "TargetDomainName": "TRAIN-LT-03",
+        "TargetUserName": "administrator",
+        "WorkstationName": "TRAIN-LT-03"
+      },
+      "host": "train-lt-03",
+      "seq": 9,
+      "source": "security"
+    },
+    {
+      "at": 1789635610000,
+      "eventId": 4625,
+      "fields": {
+        "FailureReason": "The password was not correct.",
+        "IpAddress": "192.168.60.66",
+        "IpPort": "57799",
+        "LogonType": "3",
+        "Status": "0xC000006D",
+        "SubStatus": "0xC000006A",
+        "TargetDomainName": "TRAIN-LT-03",
+        "TargetUserName": "trainee",
+        "WorkstationName": "TRAIN-LT-03"
+      },
+      "host": "train-lt-03",
+      "seq": 10,
+      "source": "security"
+    },
+    {
+      "at": 1789635612000,
+      "eventId": 4625,
+      "fields": {
+        "FailureReason": "The password was not correct.",
+        "IpAddress": "192.168.60.66",
+        "IpPort": "53184",
+        "LogonType": "3",
+        "Status": "0xC000006D",
+        "SubStatus": "0xC000006A",
+        "TargetDomainName": "TRAIN-LT-03",
+        "TargetUserName": "trainee",
+        "WorkstationName": "TRAIN-LT-03"
+      },
+      "host": "train-lt-03",
+      "seq": 11,
+      "source": "security"
+    },
+    {
+      "at": 1789635614000,
+      "eventId": 4625,
+      "fields": {
+        "FailureReason": "The password was not correct.",
+        "IpAddress": "192.168.60.66",
+        "IpPort": "62442",
+        "LogonType": "3",
+        "Status": "0xC000006D",
+        "SubStatus": "0xC000006A",
+        "TargetDomainName": "TRAIN-LT-03",
+        "TargetUserName": "trainee",
+        "WorkstationName": "TRAIN-LT-03"
+      },
+      "host": "train-lt-03",
+      "seq": 12,
+      "source": "security"
+    },
+    {
+      "at": 1789635690000,
+      "eventId": 4624,
+      "fields": {
+        "AuthenticationPackageName": "Negotiate",
+        "IpAddress": "192.168.60.66",
+        "IpPort": "59288",
+        "LogonProcessName": "User32",
+        "LogonType": "10",
+        "SubjectDomainName": "TRAIN-LT-03",
+        "SubjectUserName": "-",
+        "TargetDomainName": "TRAIN-LT-03",
+        "TargetLogonId": "0x303a6",
+        "TargetUserName": "trainee",
+        "WorkstationName": "RANGE-KIT"
+      },
+      "host": "train-lt-03",
+      "seq": 13,
+      "source": "security"
+    },
+    {
+      "at": 1789635780000,
+      "eventId": 4720,
+      "fields": {
+        "SamAccountName": "range-svc",
+        "SubjectDomainName": "TRAIN-LT-03",
+        "SubjectUserName": "trainee",
+        "TargetDomainName": "TRAIN-LT-03",
+        "TargetUserName": "range-svc"
+      },
+      "host": "train-lt-03",
+      "seq": 14,
+      "source": "security"
+    },
+    {
+      "at": 1789635800000,
+      "eventId": 4732,
+      "fields": {
+        "MemberName": "TRAIN-LT-03\\range-svc",
+        "MemberSid": "S-1-5-21-2444716238-3037095671-2179617176-1003",
+        "SubjectDomainName": "TRAIN-LT-03",
+        "SubjectUserName": "trainee",
+        "TargetDomainName": "TRAIN-LT-03",
+        "TargetUserName": "Administrators"
+      },
+      "host": "train-lt-03",
+      "seq": 15,
+      "source": "security"
+    },
+    {
+      "at": 1789635900000,
+      "fields": {
+        "answer": "192.168.60.66",
+        "client": "10.20.0.43",
+        "query": "checkin.range.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "train-lt-03",
+      "seq": 4,
+      "source": "dns"
+    },
+    {
+      "at": 1789635907000,
+      "fields": {
+        "client": "10.20.0.43",
+        "query": "mail.example",
+        "rcode": "NOERROR",
+        "type": "A"
+      },
+      "host": "train-lt-03",
+      "seq": 5,
+      "source": "dns"
+    },
+    {
+      "at": 1789635910000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Users\\Public\\Downloads\\updater.exe --quiet",
+        "NewProcessId": "0x1400",
+        "NewProcessName": "C:\\Users\\Public\\Downloads\\updater.exe",
+        "ParentProcessName": "C:\\Windows\\explorer.exe",
+        "SubjectDomainName": "TRAIN-LT-03",
+        "SubjectUserName": "trainee",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "train-lt-03",
+      "seq": 16,
+      "source": "security"
+    },
+    {
+      "at": 1789635910000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Users\\Public\\Downloads\\updater.exe --quiet",
+        "Image": "C:\\Users\\Public\\Downloads\\updater.exe",
+        "ParentImage": "C:\\Windows\\explorer.exe",
+        "ParentProcessId": "1004",
+        "ProcessId": "5120",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 13,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789635960000,
+      "eventId": 3,
+      "fields": {
+        "DestinationIp": "192.168.60.66",
+        "DestinationPort": "8443",
+        "Image": "C:\\Users\\Public\\Downloads\\updater.exe",
+        "ProcessId": "5120",
+        "Protocol": "tcp",
+        "SourceIp": "10.20.0.43",
+        "SourcePort": "54247",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 14,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789635961000,
+      "fields": {
+        "action": "allow",
+        "bytes": "940",
+        "dpt": "8443",
+        "dst": "192.168.60.66",
+        "proto": "tcp",
+        "rule": "range-drill",
+        "spt": "65073",
+        "src": "10.20.0.43"
+      },
+      "host": "train-lt-03",
+      "seq": 1,
+      "source": "firewall"
+    },
+    {
+      "at": 1789636020000,
+      "eventId": 3,
+      "fields": {
+        "DestinationIp": "192.168.60.66",
+        "DestinationPort": "8443",
+        "Image": "C:\\Users\\Public\\Downloads\\updater.exe",
+        "ProcessId": "5120",
+        "Protocol": "tcp",
+        "SourceIp": "10.20.0.43",
+        "SourcePort": "58221",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 15,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789636021000,
+      "fields": {
+        "action": "allow",
+        "bytes": "936",
+        "dpt": "8443",
+        "dst": "192.168.60.66",
+        "proto": "tcp",
+        "rule": "range-drill",
+        "spt": "49937",
+        "src": "10.20.0.43"
+      },
+      "host": "train-lt-03",
+      "seq": 2,
+      "source": "firewall"
+    },
+    {
+      "at": 1789636080000,
+      "eventId": 3,
+      "fields": {
+        "DestinationIp": "192.168.60.66",
+        "DestinationPort": "8443",
+        "Image": "C:\\Users\\Public\\Downloads\\updater.exe",
+        "ProcessId": "5120",
+        "Protocol": "tcp",
+        "SourceIp": "10.20.0.43",
+        "SourcePort": "62026",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 16,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789636081000,
+      "fields": {
+        "action": "allow",
+        "bytes": "944",
+        "dpt": "8443",
+        "dst": "192.168.60.66",
+        "proto": "tcp",
+        "rule": "range-drill",
+        "spt": "63720",
+        "src": "10.20.0.43"
+      },
+      "host": "train-lt-03",
+      "seq": 3,
+      "source": "firewall"
+    },
+    {
+      "at": 1789636140000,
+      "eventId": 3,
+      "fields": {
+        "DestinationIp": "192.168.60.66",
+        "DestinationPort": "8443",
+        "Image": "C:\\Users\\Public\\Downloads\\updater.exe",
+        "ProcessId": "5120",
+        "Protocol": "tcp",
+        "SourceIp": "10.20.0.43",
+        "SourcePort": "61540",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 17,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789636141000,
+      "fields": {
+        "action": "allow",
+        "bytes": "940",
+        "dpt": "8443",
+        "dst": "192.168.60.66",
+        "proto": "tcp",
+        "rule": "range-drill",
+        "spt": "51949",
+        "src": "10.20.0.43"
+      },
+      "host": "train-lt-03",
+      "seq": 4,
+      "source": "firewall"
+    },
+    {
+      "at": 1789636200000,
+      "eventId": 3,
+      "fields": {
+        "DestinationIp": "192.168.60.66",
+        "DestinationPort": "8443",
+        "Image": "C:\\Users\\Public\\Downloads\\updater.exe",
+        "ProcessId": "5120",
+        "Protocol": "tcp",
+        "SourceIp": "10.20.0.43",
+        "SourcePort": "56401",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 18,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789636201000,
+      "fields": {
+        "action": "allow",
+        "bytes": "938",
+        "dpt": "8443",
+        "dst": "192.168.60.66",
+        "proto": "tcp",
+        "rule": "range-drill",
+        "spt": "65196",
+        "src": "10.20.0.43"
+      },
+      "host": "train-lt-03",
+      "seq": 5,
+      "source": "firewall"
+    },
+    {
+      "at": 1789636260000,
+      "eventId": 3,
+      "fields": {
+        "DestinationIp": "192.168.60.66",
+        "DestinationPort": "8443",
+        "Image": "C:\\Users\\Public\\Downloads\\updater.exe",
+        "ProcessId": "5120",
+        "Protocol": "tcp",
+        "SourceIp": "10.20.0.43",
+        "SourcePort": "57718",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 19,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789636320000,
+      "eventId": 3,
+      "fields": {
+        "DestinationIp": "192.168.60.66",
+        "DestinationPort": "8443",
+        "Image": "C:\\Users\\Public\\Downloads\\updater.exe",
+        "ProcessId": "5120",
+        "Protocol": "tcp",
+        "SourceIp": "10.20.0.43",
+        "SourcePort": "61588",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 20,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789636350000,
+      "fields": {
+        "action": "block",
+        "dpt": "445",
+        "dst": "10.20.0.50",
+        "proto": "tcp",
+        "rule": "no-laptop-to-server-shares",
+        "spt": "63040",
+        "src": "10.20.0.43"
+      },
+      "host": "train-lt-03",
+      "seq": 6,
+      "source": "firewall"
+    },
+    {
+      "at": 1789636380000,
+      "eventId": 3,
+      "fields": {
+        "DestinationIp": "192.168.60.66",
+        "DestinationPort": "8443",
+        "Image": "C:\\Users\\Public\\Downloads\\updater.exe",
+        "ProcessId": "5120",
+        "Protocol": "tcp",
+        "SourceIp": "10.20.0.43",
+        "SourcePort": "56463",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 21,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789636440000,
+      "eventId": 4634,
+      "fields": {
+        "LogonType": "10",
+        "TargetDomainName": "TRAIN-LT-03",
+        "TargetLogonId": "0x303a6",
+        "TargetUserName": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 17,
+      "source": "security"
+    },
+    {
+      "at": 1789636440000,
+      "eventId": 3,
+      "fields": {
+        "DestinationIp": "192.168.60.66",
+        "DestinationPort": "8443",
+        "Image": "C:\\Users\\Public\\Downloads\\updater.exe",
+        "ProcessId": "5120",
+        "Protocol": "tcp",
+        "SourceIp": "10.20.0.43",
+        "SourcePort": "63313",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 22,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789636473000,
+      "eventId": 4688,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "NewProcessId": "0x400",
+        "NewProcessName": "C:\\Windows\\System32\\printspool.exe",
+        "ParentProcessName": "-",
+        "SubjectDomainName": "TRAIN-SRV-01",
+        "SubjectUserName": "SYSTEM",
+        "TokenElevationType": "%%1936"
+      },
+      "host": "train-srv-01",
+      "seq": 18,
+      "source": "security"
+    },
+    {
+      "at": 1789636473000,
+      "eventId": 1,
+      "fields": {
+        "CommandLine": "C:\\Windows\\System32\\printspool.exe",
+        "Image": "C:\\Windows\\System32\\printspool.exe",
+        "ParentImage": "-",
+        "ParentProcessId": "0",
+        "ProcessId": "1024",
+        "User": "SYSTEM"
+      },
+      "host": "train-srv-01",
+      "seq": 23,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789636500000,
+      "eventId": 3,
+      "fields": {
+        "DestinationIp": "192.168.60.66",
+        "DestinationPort": "8443",
+        "Image": "C:\\Users\\Public\\Downloads\\updater.exe",
+        "ProcessId": "5120",
+        "Protocol": "tcp",
+        "SourceIp": "10.20.0.43",
+        "SourcePort": "59587",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 24,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789636560000,
+      "eventId": 3,
+      "fields": {
+        "DestinationIp": "192.168.60.66",
+        "DestinationPort": "8443",
+        "Image": "C:\\Users\\Public\\Downloads\\updater.exe",
+        "ProcessId": "5120",
+        "Protocol": "tcp",
+        "SourceIp": "10.20.0.43",
+        "SourcePort": "57692",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 25,
+      "source": "sysmon-lite"
+    },
+    {
+      "at": 1789636620000,
+      "eventId": 3,
+      "fields": {
+        "DestinationIp": "192.168.60.66",
+        "DestinationPort": "8443",
+        "Image": "C:\\Users\\Public\\Downloads\\updater.exe",
+        "ProcessId": "5120",
+        "Protocol": "tcp",
+        "SourceIp": "10.20.0.43",
+        "SourcePort": "61218",
+        "User": "trainee"
+      },
+      "host": "train-lt-03",
+      "seq": 26,
+      "source": "sysmon-lite"
+    }
+  ],
+  "memory": [
+    {
+      "capturedAt": 1789636680000,
+      "connections": [
+        {
+          "createdAt": 1789635960000,
+          "local": "10.20.0.43:54247",
+          "pid": 5120,
+          "proto": "TCPv4",
+          "remote": "192.168.60.66:8443",
+          "state": "CLOSE_WAIT"
+        },
+        {
+          "createdAt": 1789636020000,
+          "local": "10.20.0.43:58221",
+          "pid": 5120,
+          "proto": "TCPv4",
+          "remote": "192.168.60.66:8443",
+          "state": "CLOSE_WAIT"
+        },
+        {
+          "createdAt": 1789636080000,
+          "local": "10.20.0.43:62026",
+          "pid": 5120,
+          "proto": "TCPv4",
+          "remote": "192.168.60.66:8443",
+          "state": "CLOSE_WAIT"
+        },
+        {
+          "createdAt": 1789636140000,
+          "local": "10.20.0.43:61540",
+          "pid": 5120,
+          "proto": "TCPv4",
+          "remote": "192.168.60.66:8443",
+          "state": "CLOSE_WAIT"
+        },
+        {
+          "createdAt": 1789636200000,
+          "local": "10.20.0.43:56401",
+          "pid": 5120,
+          "proto": "TCPv4",
+          "remote": "192.168.60.66:8443",
+          "state": "CLOSE_WAIT"
+        },
+        {
+          "createdAt": 1789636260000,
+          "local": "10.20.0.43:57718",
+          "pid": 5120,
+          "proto": "TCPv4",
+          "remote": "192.168.60.66:8443",
+          "state": "CLOSE_WAIT"
+        },
+        {
+          "createdAt": 1789636320000,
+          "local": "10.20.0.43:61588",
+          "pid": 5120,
+          "proto": "TCPv4",
+          "remote": "192.168.60.66:8443",
+          "state": "CLOSE_WAIT"
+        },
+        {
+          "createdAt": 1789636380000,
+          "local": "10.20.0.43:56463",
+          "pid": 5120,
+          "proto": "TCPv4",
+          "remote": "192.168.60.66:8443",
+          "state": "CLOSE_WAIT"
+        },
+        {
+          "createdAt": 1789636440000,
+          "local": "10.20.0.43:63313",
+          "pid": 5120,
+          "proto": "TCPv4",
+          "remote": "192.168.60.66:8443",
+          "state": "CLOSE_WAIT"
+        },
+        {
+          "createdAt": 1789636500000,
+          "local": "10.20.0.43:59587",
+          "pid": 5120,
+          "proto": "TCPv4",
+          "remote": "192.168.60.66:8443",
+          "state": "CLOSE_WAIT"
+        },
+        {
+          "createdAt": 1789636560000,
+          "local": "10.20.0.43:57692",
+          "pid": 5120,
+          "proto": "TCPv4",
+          "remote": "192.168.60.66:8443",
+          "state": "CLOSE_WAIT"
+        },
+        {
+          "createdAt": 1789636620000,
+          "local": "10.20.0.43:61218",
+          "pid": 5120,
+          "proto": "TCPv4",
+          "remote": "192.168.60.66:8443",
+          "state": "ESTABLISHED"
+        }
+      ],
+      "host": "train-lt-03",
+      "id": "train-lt-03-mem",
+      "modules": [],
+      "processes": [
+        {
+          "cmdline": "",
+          "createdAt": 1789624680000,
+          "name": "System",
+          "path": "C:\\Windows\\System32\\ntoskrnl.exe",
+          "pid": 1000,
+          "ppid": 0,
+          "threads": 80,
+          "user": "SYSTEM"
+        },
+        {
+          "cmdline": "C:\\Windows\\explorer.exe",
+          "createdAt": 1789625880000,
+          "name": "explorer.exe",
+          "path": "C:\\Windows\\explorer.exe",
+          "pid": 1004,
+          "ppid": 0,
+          "threads": 30,
+          "user": "trainee"
+        },
+        {
+          "cmdline": "C:\\Windows\\System32\\backup-check.exe",
+          "createdAt": 1789628828000,
+          "name": "backup-check.exe",
+          "path": "C:\\Windows\\System32\\backup-check.exe",
+          "pid": 1008,
+          "ppid": 1004,
+          "threads": 4,
+          "user": "trainee"
+        },
+        {
+          "cmdline": "\"C:\\Program Files\\Candlewright\\rota-app.exe\" --week 38",
+          "createdAt": 1789632120000,
+          "name": "rota-app.exe",
+          "path": "C:\\Program Files\\Candlewright\\rota-app.exe",
+          "pid": 1012,
+          "ppid": 1004,
+          "threads": 12,
+          "user": "trainee"
+        },
+        {
+          "cmdline": "C:\\Users\\Public\\Downloads\\updater.exe --quiet",
+          "createdAt": 1789635910000,
+          "name": "updater.exe",
+          "path": "C:\\Users\\Public\\Downloads\\updater.exe",
+          "pid": 5120,
+          "ppid": 1004,
+          "threads": 3,
+          "unlinked": true,
+          "user": "trainee"
+        }
+      ],
+      "regions": [
+        {
+          "base": 33554432,
+          "pid": 1012,
+          "previewB64": "VUgIU1ZXQVRBVUgDZRA=",
+          "protection": "PAGE_EXECUTE_READWRITE",
+          "size": 65536
+        },
+        {
+          "base": 33619968,
+          "pid": 5120,
+          "previewB64": "TVoAAwAAAAQAAABwcmFjdGljZSBiZWFjb24sIENhbmRsZXdyaWdodCBkcmlsbA==",
+          "protection": "PAGE_EXECUTE_READWRITE",
+          "size": 16384
+        }
+      ],
+      "strings": [
+        {
+          "offset": 65536,
+          "pid": 1004,
+          "value": "C:\\Windows\\explorer.exe"
+        },
+        {
+          "offset": 65792,
+          "pid": 1008,
+          "value": "C:\\Windows\\System32\\backup-check.exe"
+        },
+        {
+          "offset": 66048,
+          "pid": 1012,
+          "value": "\"C:\\Program Files\\Candlewright\\rota-app.exe\" --week 38"
+        },
+        {
+          "offset": 66304,
+          "pid": 5120,
+          "value": "C:\\Users\\Public\\Downloads\\updater.exe --quiet"
+        },
+        {
+          "offset": 66560,
+          "pid": 1012,
+          "value": "SVWATAUH"
+        },
+        {
+          "offset": 66816,
+          "pid": 5120,
+          "value": "practice beacon, Candlewright drill"
+        },
+        {
+          "offset": 67072,
+          "pid": 5120,
+          "value": "192.168.60.66:8443"
+        },
+        {
+          "offset": 67328,
+          "pid": 5120,
+          "value": "192.168.60.66:8443"
+        },
+        {
+          "offset": 67584,
+          "pid": 5120,
+          "value": "192.168.60.66:8443"
+        },
+        {
+          "offset": 67840,
+          "pid": 5120,
+          "value": "192.168.60.66:8443"
+        },
+        {
+          "offset": 68096,
+          "pid": 5120,
+          "value": "192.168.60.66:8443"
+        },
+        {
+          "offset": 68352,
+          "pid": 5120,
+          "value": "192.168.60.66:8443"
+        },
+        {
+          "offset": 68608,
+          "pid": 5120,
+          "value": "192.168.60.66:8443"
+        },
+        {
+          "offset": 68864,
+          "pid": 5120,
+          "value": "192.168.60.66:8443"
+        },
+        {
+          "offset": 69120,
+          "pid": 5120,
+          "value": "192.168.60.66:8443"
+        },
+        {
+          "offset": 69376,
+          "pid": 5120,
+          "value": "192.168.60.66:8443"
+        },
+        {
+          "offset": 69632,
+          "pid": 5120,
+          "value": "192.168.60.66:8443"
+        },
+        {
+          "offset": 69888,
+          "pid": 5120,
+          "value": "192.168.60.66:8443"
+        }
+      ]
+    }
+  ],
+  "seed": 20260917,
+  "zones": {
+    "disk": "Europe/London",
+    "security": "Europe/London"
+  }
+}

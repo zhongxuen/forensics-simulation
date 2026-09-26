@@ -1,4 +1,3 @@
-import { evaluate } from "@mdx-js/mdx";
 import type { MDXContent } from "mdx/types";
 import * as runtime from "react/jsx-runtime";
 import remarkGfm from "remark-gfm";
@@ -25,6 +24,9 @@ export interface CompiledLesson {
 export async function compileLessonBody(body: string, label: string): Promise<CompiledLesson> {
   const analysis: LessonAnalysis = { toc: [], termIds: [], missionIds: [] };
   const highlighting = await lessonHighlighting();
+  // Loaded here, not at the top: the case loader reaches this module through the server barrel,
+  // and the evidence scripts (tsx, CommonJS) can't `require` the MDX compiler's ESM-only deps.
+  const { evaluate } = await import("@mdx-js/mdx");
   try {
     const { default: Content } = await evaluate(body, {
       ...runtime,

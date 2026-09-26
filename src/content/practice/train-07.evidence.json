@@ -1,0 +1,76 @@
+{
+  "caseId": "train-07",
+  "disks": [
+    {
+      "clusterSize": 4096,
+      "device": {
+        "model": "Wrenfold 8 GB memory stick",
+        "serial": "WF-TRAIN-0007"
+      },
+      "id": "train-07",
+      "partitions": [
+        {
+          "fs": "NTFS-like",
+          "index": 0,
+          "label": "Removable",
+          "sectors": 62912512,
+          "startSector": 2048
+        }
+      ],
+      "records": [
+        {
+          "clusters": [],
+          "contentB64": "",
+          "deleted": false,
+          "kind": "dir",
+          "owner": "SYSTEM",
+          "path": "E:\\",
+          "record": 5,
+          "size": 0,
+          "times": {
+            "a": 1789922640000,
+            "b": 1789922640000,
+            "c": 1789922640000,
+            "m": 1789922640000
+          }
+        },
+        {
+          "clusters": [
+            1000
+          ],
+          "contentB64": "UHJhY3RpY2Ugbm90ZSBvbiBUUkFJTi0wNwpXcml0dGVuIDIwMjYtMDktMjAgYXQgMTY6NDAgYnkgdGhlIHRyYWluaW5nIHRlYW0uCklmIHlvdSBjYW4gcmVhZCB0aGlzLCB0aGUgY29weSB3b3JrZWQuCg==",
+          "deleted": false,
+          "kind": "file",
+          "owner": "trainee",
+          "path": "E:\\note.txt",
+          "record": 6,
+          "size": 115,
+          "times": {
+            "a": 1789922700000,
+            "b": 1789922700000,
+            "c": 1789922700000,
+            "m": 1789922700000
+          }
+        }
+      ],
+      "sectorSize": 512,
+      "sectors": 62914560,
+      "unallocatedB64": ""
+    }
+  ],
+  "handover": [
+    {
+      "by": "Theo Ashgrove",
+      "hashes": {
+        "md5": "e5662445f4b58946c6ed9e9ff2131200",
+        "sha256": "2585ba7c94d34cfbbdce3bde416725b97208e9d5a8368e57da087d34e560bdd4"
+      },
+      "item": "train-07",
+      "receivedAt": 1789981500000
+    }
+  ],
+  "logs": [],
+  "memory": [],
+  "seed": 9301,
+  "zones": {}
+}

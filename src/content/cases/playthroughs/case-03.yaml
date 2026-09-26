@@ -1,0 +1,124 @@
+# The scripted run `pnpm case:play case-03` and CI use to check case-03 still finishes.
+#
+# It takes both of the case's wrong turns on purpose (docs/plan/12-case-3-something-is-still-running.md,
+# §Choice beats), to show that Noor's and Theo's explanations and the choice again are what follow,
+# not a fail screen: it sides with Kit on pulling the plug, then on connecting to the address, and
+# then picks again. It also pins the harmless runtime-compiler region first, which is the bonus and
+# not the injection, before it finds the one that is.
+case: case-03
+description: "Open the capture, find the beacon and why it doesn't belong, tell the injected code from the compiler, trace the way in; side with Kit twice, then pick again."
+steps:
+  # The paperwork first: what is in scope, and what arrived.
+  - run: ls
+  - run: cat letter.txt
+  - run: cat handover.txt
+
+  # --- Memory first. ---
+  - run: mem
+  - run: mem info qf-srv-01-mem
+    ticks: [capture-first]
+
+  # --- Who is calling out. ---
+  - run: mem netscan qf-srv-01-mem
+  - run: 'pin -m "connection to 203.0.113.47, owned by svchost.exe, pid 4376"'
+    ticks: [find-the-beacon]
+
+  # --- Why it doesn't belong: the list against the scan, its parent and its folder. ---
+  - run: mem ps qf-srv-01-mem
+  - run: mem pstree qf-srv-01-mem
+  - run: mem psscan qf-srv-01-mem
+  - run: 'pin -m "svchost.exe in ProgramData, parent explorer.exe, unlinked from the active list"'
+    ticks: [why-it-stands-out]
+  - run: mem cmdline qf-srv-01-mem
+
+  # --- Two regions of the same kind. The first one pinned is the compiler, not the attack. ---
+  - run: mem malfind qf-srv-01-mem
+  - run: 'pin 3 -m "dispatch-svc.exe, the runtime compiler: no MZ, the yard''s own program"'
+    ticks: [jit-is-routine]
+  - run: mem malfind qf-srv-01-mem --pid 4376
+  - run: 'pin -m "a whole program in pid 4376''s memory, starting MZ, no file behind it"'
+    ticks: [find-the-injection]
+
+  # --- How they got in. ---
+  - run: logq --id 4625 --count-by IpAddress
+  - run: logq --id 4625 --count-by TargetUserName
+  - run: logq --id 4624 --count-by IpAddress
+  - run: logq --id 4624 --where IpAddress=198.51.100.23
+  - run: 'pin -m "remote sign-in as dispatch-admin from 198.51.100.23, four minutes after the guessing"'
+  - run: logq --id 4720
+  - run: 'pin -m "svc-update made by dispatch-admin two minutes later"'
+    ticks: [how-they-got-in]
+  - run: logq --id 4732
+  - run: pin
+
+  # --- Sunday night in one order. ---
+  - run: timeline --from 2026-04-12T22:57Z --to 2026-04-12T23:10Z
+    ticks: [line-it-up]
+
+  # --- Every minute on the minute. ---
+  - run: logq --source sysmon-lite --id 3 --where DestinationIp=203.0.113.47 --from 2026-04-14T09:28Z
+  - run: 'pin -m "09:28, 09:29, 09:30, 09:31: sixty seconds apart, to the second"'
+    ticks: [on-the-minute]
+  - run: logq --source firewall --where dst=203.0.113.47 --from 2026-04-14T09:30Z
+  - run: pin
+
+  # --- The report. Every answer cites something on the board. ---
+  - report: how-they-got-in
+    answer: "Hundreds of guessed passwords over remote desktop, then one that worked"
+    cite: ["log:security/where eventId=4624 and IpAddress=198.51.100.23"]
+    verdict: supported
+  - report: which-account
+    answer: dispatch-admin
+    cite: ["log:security/where eventId=4624 and IpAddress=198.51.100.23"]
+    verdict: supported
+  - report: what-they-added
+    answer: svc-update
+    cite: ["log:security/where eventId=4720"]
+    verdict: supported
+  - report: which-process
+    answer: "mem:qf-srv-01-mem:pid/4376"
+    verdict: supported
+  - report: why-malicious
+    answer: "Its folder, its parent, its hiding from the active list, and the program in its memory with no file behind it"
+    cite: ["mem:qf-srv-01-mem:pid/4376", "mem:qf-srv-01-mem:vad/0x2010000"]
+    verdict: supported
+  - report: where-it-talks
+    answer: 203.0.113.47
+    cite: ["mem:qf-srv-01-mem:conn/*203.0.113.47*"]
+    verdict: supported
+  - report: fixes
+    answer: "Close remote desktop to the internet, reset passwords and turn on a second sign-in step, remove svc-update, block the address and rebuild the server from a known-good image"
+    cite: ["log:security/where eventId=4624 and IpAddress=198.51.100.23"]
+    verdict: supported
+
+  # Choice beat 1: Kit's side first, then the order of volatility.
+  - report: pull-the-plug
+    answer: "Pull the plug at once, to stop it"
+    cite: ["mem:qf-srv-01-mem:pid/4376"]
+    verdict: not-yet
+  - report: pull-the-plug
+    answer: "Capture memory first, then contain it"
+    cite: ["mem:qf-srv-01-mem:pid/4376"]
+    verdict: supported
+
+  # Choice beat 2: Kit's side first, then no hacking back.
+  - report: hack-back
+    answer: "Connect to it, to see who answers"
+    cite: ["log:firewall/where dst=203.0.113.47"]
+    verdict: not-yet
+  - report: hack-back
+    answer: "Block the address at the firewall and write it in the report"
+    cite: ["log:firewall/where dst=203.0.113.47"]
+    verdict: supported
+expect:
+  complete: true
+  objectives:
+    - capture-first
+    - find-the-beacon
+    - why-it-stands-out
+    - find-the-injection
+    - how-they-got-in
+    - line-it-up
+    - jit-is-routine
+    - on-the-minute
+  supported: true

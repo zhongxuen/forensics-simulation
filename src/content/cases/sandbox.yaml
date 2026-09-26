@@ -1,0 +1,521 @@
+# The sandbox (docs/plan/15-quality-and-launch.md, part B): evidence with no goals, at /sandbox.
+#
+# Not a case. There is no client, no letter, no objectives and no report, so it has a schema of its
+# own (`SandboxSchema` in schema.ts), and the case catalog skips this file. Its story is played by
+# the same generator as a case, into src/content/sandbox/evidence.json, and `pnpm evidence:check`
+# holds the two together.
+#
+# The machines are Candlewright's own, from the training cupboard, so no client's evidence is used
+# and no case is spoiled: a practice laptop, `train-lt-03`, and a practice copy of a small dispatch
+# server, `train-srv-01`, both in the blue-team room (10.20.0.0/24). On the morning of Thursday 17
+# September 2026 Kit ran a mixed drill against them from a practice machine on the Range
+# (192.168.60.66), and Idris captured the laptop's memory and imaged its drive afterwards. A bit of
+# everything, so every tool has something to find:
+#
+# - the drive: a draft deleted and left alone (recover), a handout deleted (recover or carve), a
+#   statement partly written over (carve finds a start with no end), a file copied to a memory
+#   stick, and a download;
+# - memory: a .NET rota app with a runtime compiler's region, and a practice beacon named
+#   `updater.exe` from the wrong folder, unlinked, with a whole program in memory, calling out once
+#   a minute;
+# - logs: refused sign-ins, a remote sign-in and a new account (security), process starts and
+#   connections (sysmon-lite), requests to the server (web-access), the beacon and a blocked probe
+#   (firewall), and name lookups (dns). No story action writes the `vpn` source yet, so it is not
+#   handed over.
+id: sandbox
+title: The sandbox kit
+banner: No goals here. Try any tool on anything.
+summary: >-
+  Candlewright's practice kit, from the training cupboard: a laptop's drive, its memory and five
+  sets of logs from a morning when Kit ran a drill against it. Nothing is being asked, and nothing
+  you do is kept after you leave.
+seed: 20260917
+tryThis:
+  - { command: "cat handover.txt", why: "What arrived, and the fingerprint to check it against" }
+  - {
+      command: "acquire /dev/evidence/train-lt-03 --out images/train-lt-03.img",
+      why: "Copy the drive before you touch it",
+    }
+  - { command: "lsfs images/train-lt-03.img -r -d", why: "Every deleted file on the copy" }
+  - { command: "carve images/train-lt-03.img", why: "Files found in the space no file owns" }
+  - { command: "mem psscan train-lt-03-mem", why: "Every process, the hidden one too" }
+  - { command: "mem malfind train-lt-03-mem", why: "Memory that can be written and run" }
+  - {
+      command: "logq --id 4625 --count-by IpAddress",
+      why: "Refused sign-ins, counted by where from",
+    }
+  - {
+      command: "timeline --from 2026-09-17T08:55Z --to 2026-09-17T09:25Z",
+      why: "The drill in one order",
+    }
+
+machines:
+  - id: train-lt-03
+    kind: windows-laptop
+    baseline: training-laptop-v1
+    zone: Europe/London
+    ip: 10.20.0.43
+    accounts: [trainee]
+    device: { model: "Pellmoor 128 GB solid-state drive", serial: "PM-TRN-0003" }
+  - id: train-srv-01
+    kind: windows-server
+    baseline: office-server-v1
+    zone: Europe/London
+    ip: 10.20.0.50
+  - id: ir-ws-01
+    kind: linux-workstation
+    baseline: analyst-workstation-v1
+    zone: Europe/London
+
+story:
+  # --- An ordinary start to the morning. ---
+  - at: "2026-09-17T07:58:00Z"
+    actor: user:trainee
+    on: train-lt-03
+    do: logon
+    with: { account: trainee, type: interactive }
+
+  - at: "2026-09-17T08:02:00Z"
+    actor: user:trainee
+    on: train-lt-03
+    do: run-process
+    with:
+      name: rota-app.exe
+      path: 'C:\Program Files\Candlewright\rota-app.exe'
+      cmdline: '"C:\Program Files\Candlewright\rota-app.exe" --week 38'
+      parent: explorer.exe
+      user: trainee
+      threads: 12
+
+  # The rota app is a .NET program. Its runtime compiler leaves memory that is writable, runnable
+  # and backed by no file, which is not an attack.
+  - at: "2026-09-17T08:02:10Z"
+    actor: system
+    on: train-lt-03
+    do: inject
+    note: Not an attack. The rota app's runtime compiling its own code leaves memory of the same kind.
+    with:
+      into: rota-app.exe
+      preview: "\x55\x48\x08\x53\x56\x57\x41\x54\x41\x55\x48\x03\x65\x10"
+      size: 65536
+
+  - at: "2026-09-17T08:10:00Z"
+    actor: user:trainee
+    on: train-lt-03
+    do: create-file
+    path: 'C:\Users\trainee\Documents\shift-notes.txt'
+    content: |
+      Shift notes, Thursday
+      - Range drill at 09:00, Kit driving
+      - Idris captures memory before anything is switched off
+      - Leave the laptop signed in so the drill has something to find
+
+  - at: "2026-09-17T08:14:00Z"
+    actor: user:trainee
+    on: train-lt-03
+    do: create-file
+    path: 'C:\Users\trainee\Documents\draft-reply.txt'
+    content: |
+      Theo, the practice kit is ready for the drill. Two laptops, one server copy.
+      Kit
+
+  - at: "2026-09-17T08:16:00Z"
+    actor: user:trainee
+    on: train-lt-03
+    do: create-file
+    path: 'C:\Users\trainee\Documents\handout.pdf'
+    content: |
+      %PDF-1.4
+      1 0 obj << /Title (Order of volatility) /Author (Candlewright training) >> endobj
+      2 0 obj << /Length 64 >> stream
+      Memory first, then the network, then the disk. Say what you took.
+      endstream endobj
+      trailer << /Root 1 0 R >>
+      %%EOF
+
+  # A long statement, so it spans two clusters and one of them can be written over.
+  - at: "2026-09-17T08:18:00Z"
+    actor: user:trainee
+    on: train-lt-03
+    do: create-file
+    path: 'C:\Users\trainee\Documents\practice-statement.pdf'
+    content: |
+      %PDF-1.4
+      1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+      2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj
+      3 0 obj << /Type /Page /Parent 2 0 R /Contents 4 0 R >> endobj
+      4 0 obj << /Length 4200 >>
+      stream
+      BT /F1 12 Tf 56 780 Td (Candlewright training - practice statement TRN-0917) Tj T*
+      (Every line below is made up for practice. None of it is anybody's account.) Tj T*
+      (Line 01  practice run  north gate  pallets 04  amount 000.00) Tj T*
+      (Line 02  practice run  south gate  pallets 07  amount 000.00) Tj T*
+      (Line 03  practice run  north gate  pallets 02  amount 000.00) Tj T*
+      (Line 04  practice run  south gate  pallets 09  amount 000.00) Tj T*
+      (Line 05  practice run  north gate  pallets 05  amount 000.00) Tj T*
+      (Line 06  practice run  south gate  pallets 03  amount 000.00) Tj T*
+      (Line 07  practice run  north gate  pallets 08  amount 000.00) Tj T*
+      (Line 08  practice run  south gate  pallets 06  amount 000.00) Tj T*
+      (Line 09  practice run  north gate  pallets 01  amount 000.00) Tj T*
+      (Line 10  practice run  south gate  pallets 10  amount 000.00) Tj T*
+      (Line 11  practice run  north gate  pallets 04  amount 000.00) Tj T*
+      (Line 12  practice run  south gate  pallets 07  amount 000.00) Tj T*
+      (Line 13  practice run  north gate  pallets 02  amount 000.00) Tj T*
+      (Line 14  practice run  south gate  pallets 09  amount 000.00) Tj T*
+      (Line 15  practice run  north gate  pallets 05  amount 000.00) Tj T*
+      (Line 16  practice run  south gate  pallets 03  amount 000.00) Tj T*
+      (Line 17  practice run  north gate  pallets 08  amount 000.00) Tj T*
+      (Line 18  practice run  south gate  pallets 06  amount 000.00) Tj T*
+      (Line 19  practice run  north gate  pallets 01  amount 000.00) Tj T*
+      (Line 20  practice run  south gate  pallets 10  amount 000.00) Tj T*
+      (Line 21  practice run  north gate  pallets 04  amount 000.00) Tj T*
+      (Line 22  practice run  south gate  pallets 07  amount 000.00) Tj T*
+      (Line 23  practice run  north gate  pallets 02  amount 000.00) Tj T*
+      (Line 24  practice run  south gate  pallets 09  amount 000.00) Tj T*
+      (Line 25  practice run  north gate  pallets 05  amount 000.00) Tj T*
+      (Line 26  practice run  south gate  pallets 03  amount 000.00) Tj T*
+      (Line 27  practice run  north gate  pallets 08  amount 000.00) Tj T*
+      (Line 28  practice run  south gate  pallets 06  amount 000.00) Tj T*
+      (Line 29  practice run  north gate  pallets 01  amount 000.00) Tj T*
+      (Line 30  practice run  south gate  pallets 10  amount 000.00) Tj T*
+      (Line 31  practice run  north gate  pallets 04  amount 000.00) Tj T*
+      (Line 32  practice run  south gate  pallets 07  amount 000.00) Tj T*
+      (Line 33  practice run  north gate  pallets 02  amount 000.00) Tj T*
+      (Line 34  practice run  south gate  pallets 09  amount 000.00) Tj T*
+      (Line 35  practice run  north gate  pallets 05  amount 000.00) Tj T*
+      (Line 36  practice run  south gate  pallets 03  amount 000.00) Tj T*
+      (Line 37  practice run  north gate  pallets 08  amount 000.00) Tj T*
+      (Line 38  practice run  south gate  pallets 06  amount 000.00) Tj T*
+      (Line 39  practice run  north gate  pallets 01  amount 000.00) Tj T*
+      (Line 40  practice run  south gate  pallets 10  amount 000.00) Tj T*
+      (Line 41  practice run  north gate  pallets 04  amount 000.00) Tj T*
+      (Line 42  practice run  south gate  pallets 07  amount 000.00) Tj T*
+      (Line 43  practice run  north gate  pallets 02  amount 000.00) Tj T*
+      (Line 44  practice run  south gate  pallets 09  amount 000.00) Tj T*
+      (Line 45  practice run  north gate  pallets 05  amount 000.00) Tj T*
+      (Line 46  practice run  south gate  pallets 03  amount 000.00) Tj T*
+      (Line 47  practice run  north gate  pallets 08  amount 000.00) Tj T*
+      (Line 48  practice run  south gate  pallets 06  amount 000.00) Tj T*
+      (Line 49  practice run  north gate  pallets 01  amount 000.00) Tj T*
+      (Line 50  practice run  south gate  pallets 10  amount 000.00) Tj T*
+      (Line 51  practice run  north gate  pallets 04  amount 000.00) Tj T*
+      (Line 52  practice run  south gate  pallets 07  amount 000.00) Tj T*
+      (Line 53  practice run  north gate  pallets 02  amount 000.00) Tj T*
+      (Line 54  practice run  south gate  pallets 09  amount 000.00) Tj T*
+      (Line 55  practice run  north gate  pallets 05  amount 000.00) Tj T*
+      (Line 56  practice run  south gate  pallets 03  amount 000.00) Tj T*
+      (Line 57  practice run  north gate  pallets 08  amount 000.00) Tj T*
+      (Line 58  practice run  south gate  pallets 06  amount 000.00) Tj T*
+      (Line 59  practice run  north gate  pallets 01  amount 000.00) Tj T*
+      (Line 60  practice run  south gate  pallets 10  amount 000.00) Tj T*
+      (Total  000.00) Tj ET
+      endstream endobj
+      trailer << /Root 1 0 R >>
+      %%EOF
+
+  - at: "2026-09-17T08:30:00Z"
+    actor: user:trainee
+    on: train-lt-03
+    do: browse
+    with: { url: "https://updates.example/", account: trainee }
+
+  - at: "2026-09-17T08:31:00Z"
+    actor: user:trainee
+    on: train-lt-03
+    do: download
+    with:
+      url: "https://parts.example/tyre-sizes.txt"
+      path: 'C:\Users\trainee\Documents\tyre-sizes.txt'
+      content: |
+        Tyre sizes for the practice fleet
+        Tractor units   315/80 R22.5
+        Trailers        385/65 R22.5
+
+  - at: "2026-09-17T08:35:00Z"
+    actor: user:trainee
+    on: train-lt-03
+    do: usb-insert
+    with: { device: train-08, model: "Wrenfold 8 GB memory stick", serial: WF-TRAIN-0008 }
+
+  - at: "2026-09-17T08:36:00Z"
+    actor: user:trainee
+    on: train-lt-03
+    do: copy-to-usb
+    with: { path: 'C:\Users\trainee\Documents\shift-notes.txt', device: train-08 }
+
+  # The trainee tidies up: two deletions, and one file written straight after into freed space.
+  - at: "2026-09-17T08:40:00Z"
+    actor: user:trainee
+    on: train-lt-03
+    do: delete-file
+    path: 'C:\Users\trainee\Documents\draft-reply.txt'
+
+  - at: "2026-09-17T08:41:00Z"
+    actor: user:trainee
+    on: train-lt-03
+    do: delete-file
+    path: 'C:\Users\trainee\Documents\handout.pdf'
+
+  - at: "2026-09-17T08:42:00Z"
+    actor: user:trainee
+    on: train-lt-03
+    do: delete-file
+    path: 'C:\Users\trainee\Documents\practice-statement.pdf'
+
+  - at: "2026-09-17T08:42:30Z"
+    actor: system
+    on: train-lt-03
+    do: overwrite-clusters
+    path: 'C:\Users\trainee\Documents\practice-statement.pdf'
+    by: 'C:\Windows\Temp\rota-cache.dat'
+    keep: 1
+    content: "rota cache, week 38: Mon Noor, Tue Idris, Wed Kit, Thu drill, Fri review"
+
+  # The laptop asks the practice server for the day's dockets, the way the office app does.
+  - {
+      at: "2026-09-17T08:45:00Z",
+      actor: system,
+      on: train-srv-01,
+      do: web-request,
+      path: /dockets/week,
+      clientIp: 10.20.0.43,
+      status: "200",
+      bytes: "5120",
+      userAgent: Candlewright rota app,
+    }
+  - {
+      at: "2026-09-17T08:45:30Z",
+      actor: system,
+      on: train-srv-01,
+      do: web-request,
+      path: /reports/daily,
+      clientIp: 10.20.0.43,
+      status: "200",
+      bytes: "2210",
+      userAgent: Candlewright rota app,
+    }
+  - {
+      at: "2026-09-17T08:46:00Z",
+      actor: system,
+      on: train-srv-01,
+      do: web-request,
+      path: /admin,
+      clientIp: 10.20.0.43,
+      status: "403",
+      bytes: "180",
+      userAgent: Candlewright rota app,
+    }
+
+  # --- The drill: Kit, from the Range. ---
+  - {
+      at: "2026-09-17T09:00:00Z",
+      actor: attacker,
+      on: train-lt-03,
+      do: failed-logon,
+      account: admin,
+      type: network,
+      from: 192.168.60.66,
+    }
+  - {
+      at: "2026-09-17T09:00:02Z",
+      actor: attacker,
+      on: train-lt-03,
+      do: failed-logon,
+      account: administrator,
+      type: network,
+      from: 192.168.60.66,
+    }
+  - {
+      at: "2026-09-17T09:00:04Z",
+      actor: attacker,
+      on: train-lt-03,
+      do: failed-logon,
+      account: trainee,
+      type: network,
+      from: 192.168.60.66,
+    }
+  - {
+      at: "2026-09-17T09:00:06Z",
+      actor: attacker,
+      on: train-lt-03,
+      do: failed-logon,
+      account: admin,
+      type: network,
+      from: 192.168.60.66,
+    }
+  - {
+      at: "2026-09-17T09:00:08Z",
+      actor: attacker,
+      on: train-lt-03,
+      do: failed-logon,
+      account: administrator,
+      type: network,
+      from: 192.168.60.66,
+    }
+  - {
+      at: "2026-09-17T09:00:10Z",
+      actor: attacker,
+      on: train-lt-03,
+      do: failed-logon,
+      account: trainee,
+      type: network,
+      from: 192.168.60.66,
+    }
+  - {
+      at: "2026-09-17T09:00:12Z",
+      actor: attacker,
+      on: train-lt-03,
+      do: failed-logon,
+      account: trainee,
+      type: network,
+      from: 192.168.60.66,
+    }
+  - {
+      at: "2026-09-17T09:00:14Z",
+      actor: attacker,
+      on: train-lt-03,
+      do: failed-logon,
+      account: trainee,
+      type: network,
+      from: 192.168.60.66,
+    }
+
+  - at: "2026-09-17T09:01:30Z"
+    actor: attacker
+    on: train-lt-03
+    do: logon
+    with: { account: trainee, type: remote, from: 192.168.60.66, workstation: RANGE-KIT }
+
+  - at: "2026-09-17T09:03:00Z"
+    actor: attacker
+    on: train-lt-03
+    do: create-account
+    with: { account: range-svc, by: trainee }
+
+  - at: "2026-09-17T09:03:20Z"
+    actor: attacker
+    on: train-lt-03
+    do: add-to-group
+    with: { account: range-svc, group: Administrators, by: trainee }
+
+  - at: "2026-09-17T09:05:00Z"
+    actor: attacker
+    on: train-lt-03
+    do: dns-query
+    with: { query: checkin.range.example, answer: 192.168.60.66 }
+
+  - at: "2026-09-17T09:05:10Z"
+    actor: attacker
+    on: train-lt-03
+    do: run-process
+    with:
+      name: updater.exe
+      path: 'C:\Users\Public\Downloads\updater.exe'
+      cmdline: 'C:\Users\Public\Downloads\updater.exe --quiet'
+      parent: explorer.exe
+      user: trainee
+      pid: 5120
+      threads: 3
+      unlinked: true
+
+  - at: "2026-09-17T09:05:12Z"
+    actor: attacker
+    on: train-lt-03
+    do: inject
+    with:
+      into: "5120"
+      preview: "MZ\x00\x03\x00\x00\x00\x04\x00\x00\x00practice beacon, Candlewright drill"
+
+  - at: "2026-09-17T09:06:00Z"
+    actor: attacker
+    on: train-lt-03
+    do: connect
+    with: { process: "5120", remote: "192.168.60.66:8443", every: 60, times: 12 }
+
+  - {
+      at: "2026-09-17T09:06:01Z",
+      actor: attacker,
+      on: train-lt-03,
+      do: firewall-allow,
+      dst: 192.168.60.66,
+      dpt: "8443",
+      bytes: "940",
+      rule: range-drill,
+    }
+  - {
+      at: "2026-09-17T09:07:01Z",
+      actor: attacker,
+      on: train-lt-03,
+      do: firewall-allow,
+      dst: 192.168.60.66,
+      dpt: "8443",
+      bytes: "936",
+      rule: range-drill,
+    }
+  - {
+      at: "2026-09-17T09:08:01Z",
+      actor: attacker,
+      on: train-lt-03,
+      do: firewall-allow,
+      dst: 192.168.60.66,
+      dpt: "8443",
+      bytes: "944",
+      rule: range-drill,
+    }
+  - {
+      at: "2026-09-17T09:09:01Z",
+      actor: attacker,
+      on: train-lt-03,
+      do: firewall-allow,
+      dst: 192.168.60.66,
+      dpt: "8443",
+      bytes: "940",
+      rule: range-drill,
+    }
+  - {
+      at: "2026-09-17T09:10:01Z",
+      actor: attacker,
+      on: train-lt-03,
+      do: firewall-allow,
+      dst: 192.168.60.66,
+      dpt: "8443",
+      bytes: "938",
+      rule: range-drill,
+    }
+
+  # Something the firewall said no to: the beacon trying the practice server's admin share.
+  - {
+      at: "2026-09-17T09:12:30Z",
+      actor: attacker,
+      on: train-lt-03,
+      do: firewall-block,
+      dst: 10.20.0.50,
+      dpt: "445",
+      rule: no-laptop-to-server-shares,
+    }
+
+  - at: "2026-09-17T09:14:00Z"
+    actor: attacker
+    on: train-lt-03
+    do: logoff
+    with: { account: trainee }
+
+  # --- Idris: memory first, then the drive. ---
+  - at: "2026-09-17T09:18:00Z"
+    actor: analyst
+    on: train-lt-03
+    do: capture-memory
+
+  - at: "2026-09-17T09:30:00Z"
+    actor: analyst
+    on: ir-ws-01
+    do: hand-over
+    with: { item: train-lt-03, by: "Idris Fenwick, Candlewright Security, for the practice kit" }
+
+noise: { profile: office-day, density: low }
+
+evidence:
+  disks: [train-lt-03]
+  logs: [security, sysmon-lite, web-access, firewall, dns]
+  memory: [train-lt-03]
+  zones: { disk: Europe/London, security: Europe/London }

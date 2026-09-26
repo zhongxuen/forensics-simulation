@@ -1,7 +1,10 @@
 /**
  * pnpm case:play <id> [--script <file>]
  * pnpm case:play <id> --run "<command>" [--pin <pattern>] [--report <question>=<answer>]
- *                     [--answer <objective>=<text>] [--reset]
+ *                     [--cite <pattern>] [--answer <objective>=<text>] [--reset]
+ *
+ * `--cite` adds a pinned pattern to the report answer before it: an answer is only supported
+ * when something it cites proves it.
  *
  * Plays a case headlessly, through the same parser, engine and tool registry as the browser, and
  * prints the transcript: every command with its output, every objective as it ticks, every story
@@ -61,6 +64,12 @@ for (let index = 0; index < args.length; index++) {
   } else if (arg === "--report" && value !== undefined) {
     const [question = "", ...rest] = value.split("=");
     steps.push({ report: question, answer: rest.join("="), verdict: "supported" });
+    index++;
+  } else if (arg === "--cite" && value !== undefined) {
+    const last = steps.at(-1);
+    if (last && "report" in last)
+      steps[steps.length - 1] = { ...last, cite: [...(last.cite ?? []), value] };
+    else fail("Put --cite after the --report answer it supports.");
     index++;
   } else if (arg === "--answer" && value !== undefined) {
     const [objective = "", ...rest] = value.split("=");

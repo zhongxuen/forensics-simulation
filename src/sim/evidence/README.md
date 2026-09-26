@@ -58,6 +58,10 @@ Offsets come from **`ZONE_TABLE`**, a small committed table covering only the ca
 
 An event id with no name still renders, titled "Event.". Every line is a single line, so the vendored shell can pipe it through `grep`. Goldens: `tests/unit/fixtures/evidence-logs/`.
 
+## File signatures (`magic.ts`)
+
+What `carve` and `strings` know about file formats (`docs/plan/07-carve-strings-logq.md`): `SIGNATURES`, one entry per carvable type (`pdf`, `zip`, `jpg`, `png`) with its header bytes, how its end is found, and a citation of the specification those bytes come from (ISO 32000, PKWARE's APPNOTE, ITU-T T.81, the PNG specification). `carveBytes(bytes, types?)` scans for them and cuts each object from its header to its end marker; with no end marker before the next header, the object is **partial**, which is what a file whose tail was written over looks like. A complete object is skipped over once carved, so a PDF stored inside a ZIP isn't carved twice. `carvedObjectAt(bytes, offset)` is how a carve ref resolves to what's there. `magic.test.ts` covers the table, and `tools/forensics/carve.test.ts` checks carving against what the builder planted, byte for byte.
+
 ## Schemas (`schema.ts`)
 
 Zod schemas for every type, written with `zod/mini` because the loader runs them in the browser. The generator (Node) uses the same file. Objects are strict (a misspelt key fails), and the schemas also check what keeps refs and tools honest: unique ids, record numbers, pids, region bases and `(source, seq)` pairs; every pid a connection, module, region or string names exists; a file's `size` matches its content; ids fit in a ref; and every display zone is in the offset table. `tests/unit/evidence-schema.test.ts` proves the schemas' output types equal the hand-written ones.
@@ -112,7 +116,7 @@ It is a _test_ builder, not the generator: it checks nothing for consistency or 
 
 `generate(caseSpec)` plays a written story against a clean machine and returns the evidence it would really have left, plus a **trace** saying which action left what (`docs/plan/03-case-format-and-generator.md`). Nobody writes evidence by hand, so it can never disagree with the story.
 
-- `baselines/` are the clean machine templates: `office-laptop-v1`, `office-server-v1`, and `analyst-workstation-v1`, which is never imaged because it is where evidence is examined.
+- `baselines/` are the clean machine templates: `office-laptop-v1`, `office-server-v1`, `analyst-workstation-v1`, which is never imaged because it is where evidence is examined, and `training-laptop-v1`, Candlewright's practice laptop, which only the lessons' practice stories use (`src/content/practice/`).
 - `actions/` is the story vocabulary, one file and one test per action, each leaving every artefact that action really would — MACB times, log records, processes, connections, regions.
 - `noise.ts` is the seeded ordinary activity around a story: turning its density up makes a case harder without touching the story.
 - `accepted.ts` resolves a report question's `acceptedEvidence` patterns (`disk:qf-lt-07:mft/*inv-0412*`) into concrete refs, and fails loudly when one matches nothing.

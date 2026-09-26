@@ -1,13 +1,14 @@
 import type { ReactNode } from "react";
 import { cx } from "@/lib/cx";
-import { BookOpenIcon, LightbulbIcon, WarningIcon } from "./icons";
+import { BookOpenIcon, InfoIcon, LightbulbIcon, WarningIcon } from "./icons";
 
 /**
  * `tip`: a helpful shortcut or next step. `concept`: a new idea, explained before a mission needs
- * it. `warning`: something to watch out for. Never used for errors: those say what happened and
- * what to try next, in place.
+ * it. `info`: something true about what's on screen that changes how you read it (the Timeline's
+ * time zones). `warning`: something to watch out for. Never used for errors: those say what
+ * happened and what to try next, in place.
  */
-export type CalloutKind = "tip" | "concept" | "warning";
+export type CalloutKind = "tip" | "concept" | "info" | "warning";
 
 const KINDS: Readonly<
   Record<CalloutKind, { label: string; Icon: typeof LightbulbIcon; border: string; text: string }>
@@ -19,6 +20,7 @@ const KINDS: Readonly<
     border: "border-l-status-info",
     text: "text-status-info",
   },
+  info: { label: "Note", Icon: InfoIcon, border: "border-l-status-info", text: "text-status-info" },
   warning: {
     label: "Heads up",
     Icon: WarningIcon,

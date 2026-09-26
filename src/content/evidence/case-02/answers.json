@@ -1,0 +1,82 @@
+{
+  "caseId": "case-02",
+  "questions": [
+    {
+      "acceptedRefs": [
+        "log:security/79"
+      ],
+      "answer": "jory",
+      "id": "which-account",
+      "type": "account"
+    },
+    {
+      "acceptedRefs": [
+        "log:security/79"
+      ],
+      "answer": "qf-lt-03",
+      "id": "which-machine",
+      "type": "host"
+    },
+    {
+      "acceptedRefs": [
+        "log:security/79"
+      ],
+      "answer": "Logon type 10: remote desktop, from another machine",
+      "id": "logon-type",
+      "type": "choice"
+    },
+    {
+      "acceptedRefs": [
+        "disk:qf-lt-07:mft/48",
+        "disk:qf-lt-07:mft/52",
+        "disk:qf-lt-07:mft/54",
+        "log:sysmon-lite/100",
+        "log:sysmon-lite/101",
+        "log:sysmon-lite/102"
+      ],
+      "answer": "2026-04-11T19:42:03Z",
+      "answerAt": 1775936523000,
+      "id": "when-deleted",
+      "toleranceSeconds": 60,
+      "type": "timestamp"
+    },
+    {
+      "acceptedRefs": [
+        "log:security/72",
+        "log:security/77",
+        "log:security/79"
+      ],
+      "answer": "No. The door log's 18:31 is 17:31 UTC, the minute their own session ended, more than two hours before the deletions",
+      "id": "bookkeeper-present",
+      "type": "choice"
+    },
+    {
+      "acceptedRefs": [
+        "log:dns/91",
+        "log:firewall/12"
+      ],
+      "answer": "203.0.113.80",
+      "id": "where-it-went",
+      "type": "host"
+    },
+    {
+      "acceptedRefs": [
+        "log:security/79"
+      ],
+      "answer": "Keep passwords out of shared folders, and lock screens that are left unattended",
+      "id": "two-fixes",
+      "type": "choice"
+    },
+    {
+      "acceptedRefs": [
+        "log:security/72",
+        "log:security/77",
+        "log:security/79"
+      ],
+      "answer": "What the evidence shows, whoever it points at",
+      "id": "owner-request",
+      "type": "choice"
+    }
+  ],
+  "version": 1
+}

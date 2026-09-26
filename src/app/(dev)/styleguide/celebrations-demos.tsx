@@ -44,25 +44,42 @@ const TOUR_STEPS = [
   },
 ] as const;
 
-/** One objective with a button that ticks it off, to watch the celebration. */
+/** One objective with a button that moves it along: to do, then Now, then done. */
 export function ObjectiveTickDemo() {
-  const [done, setDone] = useState(false);
+  const [step, setStep] = useState<"open" | "current" | "done">("open");
+  const objective = (
+    <>
+      Look around your home folder with <Cmd>ls</Cmd>.
+    </>
+  );
+  const why = (
+    <p className="mt-2 type-small text-secondary">
+      Why: knowing what&apos;s in a folder is the first step of every case.
+    </p>
+  );
 
   return (
     <div className="flex max-w-xl flex-col items-start gap-4">
-      <ul>
-        {done ? (
+      <ul className="w-full">
+        {step === "done" ? (
           <ObjectiveTick status="done" success={<LsSuccess />}>
-            Look around your home folder with <Cmd>ls</Cmd>.
+            {objective}
           </ObjectiveTick>
         ) : (
-          <ObjectiveTick status="open">
-            Look around your home folder with <Cmd>ls</Cmd>.
+          <ObjectiveTick status={step} details={step === "current" ? why : undefined}>
+            {objective}
           </ObjectiveTick>
         )}
       </ul>
-      <Button size="sm" onClick={() => setDone(!done)}>
-        {done ? "Reset" : "Complete objective"}
+      <Button
+        size="sm"
+        onClick={() => setStep(step === "open" ? "current" : step === "current" ? "done" : "open")}
+      >
+        {step === "open"
+          ? "Make it the current one"
+          : step === "current"
+            ? "Complete objective"
+            : "Reset"}
       </Button>
     </div>
   );

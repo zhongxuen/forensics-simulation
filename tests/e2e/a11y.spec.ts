@@ -10,7 +10,11 @@ import { run } from "./helpers";
  * with output, the search palette. Vendored from Hacker Simulation's a11y spec and adapted to
  * these routes (VENDORED.md). Lessons are read from their folder, so a new one is checked without
  * anyone remembering to add it; file 03 does the same for cases once they live in
- * src/content/cases. The case workspace states are in case-01.spec.ts.
+ * src/content/cases. The case workspace states are in the case-01, case-02 and case-03 specs.
+ *
+ * Every route is checked in both app themes, Lamplight (dark, the default) and Daylight (light,
+ * the appTheme setting; src/styles/tokens.css). The terminal stays dark in both, and its own
+ * colours are a separate setting, so the sandbox terminal is checked in each of those too.
  *
  * axe finds what a machine can: missing names, contrast, roles, structure. It can't say whether a
  * page makes sense with a screen reader; a person checks that (file 15).
@@ -56,21 +60,151 @@ async function seriousViolations(page: Page) {
     }));
 }
 
-test.describe.configure({ mode: "parallel" });
-
-for (const route of ROUTES) {
-  test(`axe: ${route} has no serious or critical violations`, async ({ page }) => {
-    await page.goto(route);
-    await page.waitForLoadState("networkidle");
-    expect(await seriousViolations(page)).toEqual([]);
+/** Starts the page in Daylight, as a saved setting would, before any script runs. */
+async function useDaylight(page: Page) {
+  await page.addInitScript(() => {
+    localStorage.setItem("incident-room:settings", JSON.stringify({ appTheme: "light" }));
   });
 }
+
+test.describe.configure({ mode: "parallel" });
+
+for (const theme of ["dark", "light"] as const) {
+  test.describe(`${theme} theme`, () => {
+    for (const route of ROUTES) {
+      test(`axe: ${route} has no serious or critical violations`, async ({ page }) => {
+        // The glossary is the longest page for axe (~50 s); with every route run twice in
+        // parallel it can pass the default limit.
+        if (route === "/learn/glossary") test.slow();
+        if (theme === "light") await useDaylight(page);
+        await page.goto(route);
+        await page.waitForLoadState("networkidle");
+        // Dark is :root's own tokens, so it sets no attribute.
+        expect(await page.locator("html").getAttribute("data-theme")).toBe(
+          theme === "light" ? "light" : null,
+        );
+        expect(await seriousViolations(page)).toEqual([]);
+      });
+    }
+  });
+}
+
+/** Picks a radio the way a keyboard does (the input itself is visually hidden). */
+async function choose(page: Page, name: RegExp) {
+  const radio = page.getByRole("radio", { name });
+  await radio.focus();
+  await page.keyboard.press("Space");
+  await expect(radio).toBeChecked();
+}
+
+test.describe("the app theme setting", () => {
+  test("Light applies at once, and is on before first paint after a reload", async ({ page }) => {
+    await page.goto("/settings");
+    await choose(page, /^Light/);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+    // The terminal stays dark.
+    await page.goto("/sandbox");
+    await expect(page.getByRole("region", { name: "Terminal" })).toHaveAttribute(
+      "data-theme",
+      "dark",
+    );
+    // Read before hydration: the boot script, not React, has to have set it.
+    await page.goto("/settings", { waitUntil: "commit" });
+    await page.waitForSelector("body");
+    expect(await page.locator("html").getAttribute("data-theme")).toBe("light");
+  });
+
+  test("Match my device follows the device's colour scheme", async ({ page }) => {
+    await page.emulateMedia({ colorScheme: "light" });
+    await page.goto("/settings");
+    await expect(page.locator("html")).not.toHaveAttribute("data-theme", "light");
+    await choose(page, /^Match my device.*light or dark/i);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+    await page.emulateMedia({ colorScheme: "dark" });
+    await expect(page.locator("html")).not.toHaveAttribute("data-theme", "light");
+  });
+
+  test("axe: the sandbox terminal with output, in Daylight", async ({ page }) => {
+    await useDaylight(page);
+    await page.goto("/sandbox");
+    await run(page, "ls");
+    await run(page, "mem psscan train-lt-03-mem");
+    expect(await seriousViolations(page)).toEqual([]);
+  });
+});
 
 test.describe("states the player spends time in", () => {
   test("axe: the sandbox terminal, with output", async ({ page }) => {
     await page.goto("/sandbox");
     await run(page, "ls");
-    await run(page, "cat notes.txt");
+    await run(page, "cat about.txt");
+    await run(page, "mem psscan train-lt-03-mem");
+    expect(await seriousViolations(page)).toEqual([]);
+  });
+
+  // The terminal colour themes in src/content/themes, by id (this folder never imports the app).
+  for (const theme of ["candlewright", "phosphor", "amber", "deep-sea", "high-contrast"]) {
+    test(`axe: the sandbox terminal in the ${theme} theme`, async ({ page }) => {
+      await page.addInitScript((id) => {
+        localStorage.setItem("incident-room:settings", JSON.stringify({ terminalTheme: id }));
+      }, theme);
+      await page.goto("/sandbox");
+      await run(page, "logq --id 4625 --count-by IpAddress");
+      // The default theme is the plain tokens, so it sets no attribute on <html>.
+      const expected = theme === "candlewright" ? null : theme;
+      expect(await page.locator("html").getAttribute("data-terminal-theme")).toBe(expected);
+      expect(await seriousViolations(page)).toEqual([]);
+    });
+  }
+
+  test("axe: /cases and the sidebar with a case closed and one in progress", async ({ page }) => {
+    await page.addInitScript(() => {
+      const run = {
+        phase: "workspace",
+        log: [],
+        pins: [],
+        notes: "",
+        reportDraft: {},
+        completed: [],
+        hintsShown: {},
+        beatsPlayed: [],
+        savedAt: 1,
+      };
+      const closed = {
+        ...run,
+        phase: "debrief",
+        marks: [{ after: 0, kind: "submitted", supported: 3, total: 3 }],
+      };
+      localStorage.setItem(
+        "incident-room:cases:v1",
+        JSON.stringify({ v: 1, runs: { "case-01": closed, "case-02": run } }),
+      );
+    });
+    await page.goto("/cases");
+    await expect(page.getByText("Closed · 3 of 3 findings supported")).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Read the debrief for Case 1", exact: true }),
+    ).toBeVisible();
+    await expect(page.getByRole("link", { name: "Continue Case 2", exact: true })).toBeVisible();
+    // The sidebar points back at the case in progress.
+    await expect(page.locator("#app-sidebar").getByText(/Continue Case 2 · 0 of/)).toBeVisible();
+    expect(await seriousViolations(page)).toEqual([]);
+  });
+
+  test("inside a case the sidebar starts on the rail, and the saved setting is kept", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/cases/case-01");
+    const sidebar = page.locator("#app-sidebar");
+    await expect(page.getByRole("button", { name: "Expand sidebar" })).toBeVisible();
+    await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toContainText(
+      "The clean copy",
+    );
+    expect((await sidebar.boundingBox())?.width).toBeLessThan(100);
+    await page.getByRole("button", { name: "Expand sidebar" }).click();
+    await expect.poll(async () => (await sidebar.boundingBox())?.width).toBeGreaterThan(200);
+    expect(await page.evaluate(() => localStorage.getItem("incident-room:settings"))).toBeNull();
     expect(await seriousViolations(page)).toEqual([]);
   });
 

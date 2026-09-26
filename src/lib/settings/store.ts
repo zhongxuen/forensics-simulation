@@ -1,4 +1,4 @@
-import { applySettingsToElement } from "./document";
+import { applySettingsToElement, PREFERS_LIGHT_QUERY } from "./document";
 import { DEFAULT_SETTINGS, parseSettings, sameSettings, type Settings } from "./schema";
 
 /** The one localStorage key the app uses. Its value is the settings object as JSON. */
@@ -119,13 +119,25 @@ export function createSettingsStore({
 
 const browser = typeof window === "undefined" ? undefined : window;
 
+// Absent in some test environments and very old browsers: then "system" means dark.
+const colourScheme = browser?.matchMedia?.(PREFERS_LIGHT_QUERY);
+
+function applyToPage(settings: Readonly<Settings>) {
+  if (browser) {
+    applySettingsToElement(browser.document.documentElement, settings, colourScheme?.matches);
+  }
+}
+
 /** The app's settings, saved in this browser and mirrored onto <html>. */
 export const settingsStore: SettingsStore = createSettingsStore({
   storage: () => browser?.localStorage,
   events: () => browser,
-  onChange: (settings) => {
-    if (browser) applySettingsToElement(browser.document.documentElement, settings);
-  },
+  onChange: applyToPage,
+});
+
+// With the "system" theme, follow the device when it switches between light and dark.
+colourScheme?.addEventListener?.("change", () => {
+  if (settingsStore.get().appTheme === "system") applyToPage(settingsStore.get());
 });
 
 export const getSettings = (): Readonly<Settings> => settingsStore.get();

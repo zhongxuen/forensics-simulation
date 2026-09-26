@@ -76,6 +76,7 @@ export const hashsum: Tool = {
       "md5sum, sha1sum and sha256sum on Linux; Get-FileHash in PowerShell; certutil -hashfile on Windows.",
       "The hash fields on a chain-of-custody form, and hashdeep for hashing a whole folder at once.",
     ],
+    lesson: "foundations-hashing-for-evidence",
   },
 
   run(args, state, ctx) {

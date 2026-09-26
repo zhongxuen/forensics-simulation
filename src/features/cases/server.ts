@@ -25,6 +25,16 @@ export {
 } from "./loader/source";
 export { toCaseSpec } from "./loader/spec";
 export { caseDir, caseScenario, type CaseScenario } from "./loader/scenario";
+export {
+  buildSandbox,
+  loadSandbox,
+  SANDBOX_DIR,
+  SANDBOX_EVIDENCE_PATH,
+  SANDBOX_PATH,
+  sandboxSpec,
+  sandboxWorkstation,
+  type SandboxWorkstation,
+} from "./loader/sandbox";
 export { getRunnableCase, toRunnableCase } from "./loader/runnable";
 export {
   mainObjectiveIds,

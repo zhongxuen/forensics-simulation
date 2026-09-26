@@ -1,32 +1,49 @@
 import type { Metadata } from "next";
-import { CHAPTER, CaseList, RELEASED_CASE_LISTINGS } from "@/features/cases";
+import { CHAPTER, CaseList, caseSummaries } from "@/features/cases";
+import { getCase } from "@/features/cases/server";
 import { getAppSection } from "@/lib/app-sections";
 
 export const metadata: Metadata = { title: getAppSection("cases").label };
 
+/** How every case goes, in four short steps under the chapter's lede. */
+const HOW_A_CASE_WORKS = [
+  "A client asks for help and signs a letter saying what you may examine.",
+  "You look at a disk, a memory dump and logs in a simulated terminal.",
+  "You pin what you find to a case board.",
+  "You write a report where every answer points at a pin.",
+];
+
 /**
- * The case list: the chapter's released cases in its own order, then the practice case. Cases not
- * released yet (`released` in src/content/cases/chapter.ts) keep their pages but aren't listed.
+ * The case list: the chapter's cases in its own order (a case not released yet, per `released`
+ * in src/content/cases/chapter.ts, stays on the list without a button), then the practice case in
+ * its own row. Each case's state comes from the run saved in this browser.
  */
 export default function CasesPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       <div className="max-w-3xl">
-        <p className="text-sm font-medium tracking-wide text-secondary uppercase">
-          {CHAPTER.client}
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-          {CHAPTER.title}
-        </h1>
-        <p className="mt-4 text-lg leading-8 text-secondary">{CHAPTER.opening}</p>
-        <p className="mt-4 text-base leading-7 text-secondary">
-          Each case starts with a client who asked for help and signed a letter saying what you may
-          examine. You&apos;ll look at a disk, a memory dump and logs, pin what you find to a case
-          board, and write a report that points at the evidence. Your work on each case is saved in
-          this browser only.
+        <p className="type-eyebrow">{CHAPTER.client}</p>
+        <h1 className="mt-2 type-page-title">{CHAPTER.title}</h1>
+        <p className="mt-4 max-w-prose text-lg leading-8 text-secondary">{CHAPTER.opening}</p>
+        <h2 className="mt-8 type-eyebrow">How a case works</h2>
+        <ol className="mt-3 max-w-prose space-y-2">
+          {HOW_A_CASE_WORKS.map((step, index) => (
+            <li key={step} className="flex gap-3 type-body text-secondary">
+              <span
+                aria-hidden="true"
+                className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full border border-accent/40 bg-accent-subtle text-xs font-semibold text-accent"
+              >
+                {index + 1}
+              </span>
+              {step}
+            </li>
+          ))}
+        </ol>
+        <p className="mt-4 type-small text-muted">
+          Your work on each case is saved in this browser only.
         </p>
       </div>
-      <CaseList listings={RELEASED_CASE_LISTINGS} />
+      <CaseList summaries={caseSummaries(getCase)} />
     </div>
   );
 }

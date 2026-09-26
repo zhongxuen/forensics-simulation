@@ -1,6 +1,7 @@
 # The scripted run `pnpm case:play _fixture` and CI use to check _fixture still finishes.
 #
-# Steps: run: <command>, pin: <evidence pattern>, report: <question id> with answer: <text>,
+# Steps: run: <command>, pin: <evidence pattern>, report: <question id> with answer: <text> (and
+# cite: [<evidence patterns>], the pinned evidence the answer points at),
 # answer: <text> with objective: <id>, or reset: true. Add ticks: [ids] to a step to say what it
 # should tick, and the run fails if it doesn't.
 case: _fixture
@@ -25,10 +26,12 @@ steps:
 
   - report: when-deleted
     answer: "2026-04-11T21:51:07Z"
+    cite: ["disk:qf-lt-03:mft/*docket-4471*"]
     verdict: supported
     ticks: [answer-the-report]
   - report: which-account
     answer: mara
+    cite: ["log:security/where eventId=4624 and LogonType=10"]
     verdict: supported
 expect:
   complete: true

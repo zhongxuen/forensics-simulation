@@ -5,45 +5,65 @@ import {
   CONTRAST_AUDIT_EXCLUSIONS,
   CONTRAST_AUDIT_GROUPS,
   CONTRAST_MINIMUM,
+  CONTRAST_THEMES,
   formatContrastRatio,
+  themeTokens,
   type ContrastAuditGroupSpec,
 } from "@/lib/contrast-audit";
 import { customPropertiesIn } from "@/lib/css-custom-properties";
 
 const tokensCss = readFileSync(new URL("../../src/styles/tokens.css", import.meta.url), "utf8");
-const tokens = customPropertiesIn(tokensCss, ":root");
 
-describe("the design tokens in src/styles/tokens.css", () => {
-  it("pass WCAG AA in every audited pair", () => {
-    const failures = auditContrast(tokens)
-      .flatMap((group) => group.rows)
-      .filter((row) => !row.passes)
-      .map(
-        (row) =>
-          `--${row.foreground} on --${row.background}: ` +
-          (row.problem ?? `${formatContrastRatio(row.ratio ?? 0)}:1, needs ${row.minimum}:1`),
+describe.each(CONTRAST_THEMES.map((theme) => [theme.title, theme] as const))(
+  "the %s tokens in src/styles/tokens.css",
+  (_title, theme) => {
+    const tokens = themeTokens(tokensCss, theme);
+
+    it("pass WCAG AA in every audited pair", () => {
+      const failures = auditContrast(tokens)
+        .flatMap((group) => group.rows)
+        .filter((row) => !row.passes)
+        .map(
+          (row) =>
+            `--${row.foreground} on --${row.background}: ` +
+            (row.problem ?? `${formatContrastRatio(row.ratio ?? 0)}:1, needs ${row.minimum}:1`),
+        );
+      expect(failures).toEqual([]);
+    });
+
+    it("are all either audited or excluded with a reason", () => {
+      const audited = new Set(
+        CONTRAST_AUDIT_GROUPS.flatMap((group) => [...group.foregrounds, ...group.backgrounds]),
       );
-    expect(failures).toEqual([]);
+      const colourTokens = [...tokens].filter(([, value]) => /^#|^rgb|^hsl|^oklch/.test(value));
+      const unaccounted = colourTokens
+        .map(([name]) => name)
+        .filter((name) => !audited.has(name) && !(name in CONTRAST_AUDIT_EXCLUSIONS));
+      expect(colourTokens.length).toBeGreaterThan(0);
+      expect(unaccounted).toEqual([]);
+    });
+
+    it("define every token the audit names", () => {
+      const named = CONTRAST_AUDIT_GROUPS.flatMap((group) => [
+        ...group.foregrounds,
+        ...group.backgrounds,
+      ]);
+      expect(named.filter((name) => !tokens.has(name))).toEqual([]);
+    });
+  },
+);
+
+describe("the Daylight block", () => {
+  const dark = themeTokens(tokensCss, CONTRAST_THEMES[0]!);
+  const light = customPropertiesIn(tokensCss, '[data-theme="light"]');
+
+  it("reassigns every app colour, and only names the dark theme already has", () => {
+    const appColours = [...dark.keys()].filter((name) => !name.startsWith("term-"));
+    expect([...light.keys()].sort()).toEqual(appColours.sort());
   });
 
-  it("are all either audited or excluded with a reason", () => {
-    const audited = new Set(
-      CONTRAST_AUDIT_GROUPS.flatMap((group) => [...group.foregrounds, ...group.backgrounds]),
-    );
-    const colourTokens = [...tokens].filter(([, value]) => /^#|^rgb|^hsl|^oklch/.test(value));
-    const unaccounted = colourTokens
-      .map(([name]) => name)
-      .filter((name) => !audited.has(name) && !(name in CONTRAST_AUDIT_EXCLUSIONS));
-    expect(colourTokens.length).toBeGreaterThan(0);
-    expect(unaccounted).toEqual([]);
-  });
-
-  it("define every token the audit names", () => {
-    const named = CONTRAST_AUDIT_GROUPS.flatMap((group) => [
-      ...group.foregrounds,
-      ...group.backgrounds,
-    ]);
-    expect(named.filter((name) => !tokens.has(name))).toEqual([]);
+  it("leaves the terminal dark", () => {
+    expect([...light.keys()].filter((name) => name.startsWith("term-"))).toEqual([]);
   });
 });
 

@@ -31,7 +31,7 @@ export interface Citation {
   readonly section: string;
   /** What that part says that the lesson relies on, in one plain sentence. */
   readonly supports: string;
-  /** Where to read it, free of charge. */
+  /** Where to read it, free of charge where it can be; for a book, the publisher's page. */
   readonly url: string;
   /** When the section number and wording were checked against the document (YYYY-MM-DD). */
   readonly checked: string;
@@ -43,6 +43,23 @@ const SP_800_86 = {
   publisher: "National Institute of Standards and Technology",
   year: 2006,
   url: "https://doi.org/10.6028/NIST.SP.800-86",
+} as const;
+
+const FSFA = {
+  source: "Carrier",
+  title: "File System Forensic Analysis",
+  publisher: "Brian Carrier, Addison-Wesley Professional",
+  year: 2005,
+  url: "https://www.informit.com/store/file-system-forensic-analysis-9780321268174",
+} as const;
+
+const AMF = {
+  source: "The Art of Memory Forensics",
+  title:
+    "The Art of Memory Forensics: Detecting Malware and Threats in Windows, Linux, and Mac Memory",
+  publisher: "Michael Hale Ligh, Andrew Case, Jamie Levy and AAron Walters, Wiley",
+  year: 2014,
+  url: "https://www.wiley.com/en-us/The+Art+of+Memory+Forensics%3A+Detecting+Malware+and+Threats+in+Windows%2C+Linux%2C+and+Mac+Memory-p-9781118825099",
 } as const;
 
 export const CITATIONS: readonly Citation[] = [
@@ -148,6 +165,216 @@ export const CITATIONS: readonly Citation[] = [
       "MD5 collisions can be found in about a minute on a laptop, so MD5 is no longer acceptable where collision resistance is required.",
     url: "https://www.rfc-editor.org/rfc/rfc6151#section-2.1",
     checked: "2026-09-23",
+  },
+  // The Disk track. Carrier's book isn't free to read; the publisher's page lists its contents,
+  // which is where the chapter and section names below were checked.
+  {
+    id: "carrier-fsfa-ch5",
+    ...FSFA,
+    section: "Chapter 5, PC-based Partitions (DOS Partitions; Analysis Considerations)",
+    supports:
+      "A PC drive is divided into partitions by a table near its start that gives where each one begins and how long it is, and an examiner checks the space no partition claims.",
+    checked: "2026-09-24",
+  },
+  {
+    id: "carrier-fsfa-ch8",
+    ...FSFA,
+    section: "Chapter 8, File System Analysis (Content Category; Metadata Category)",
+    supports:
+      "A file system's data falls into categories, content in data units and metadata about each file, and deleting a file leaves both behind until the space is allocated to something else.",
+    checked: "2026-09-24",
+  },
+  {
+    id: "carrier-fsfa-ch11",
+    ...FSFA,
+    section: "Chapter 11, NTFS Concepts (Everything is a File; MFT Concepts)",
+    supports:
+      "In NTFS every file and folder has an entry in the Master File Table, and the file system's own bookkeeping is stored as files too.",
+    checked: "2026-09-24",
+  },
+  {
+    id: "carrier-fsfa-ch13",
+    ...FSFA,
+    section: "Chapter 13, NTFS Data Structures (Standard File Attributes)",
+    supports:
+      "Each file's $STANDARD_INFORMATION attribute holds four times: when it was created, when its content was last modified, when its MFT entry was last modified, and when it was last accessed.",
+    checked: "2026-09-24",
+  },
+  {
+    id: "ms-learn-file-times",
+    source: "Microsoft Learn",
+    title: "File Times",
+    publisher: "Microsoft",
+    year: 2018,
+    section: "The whole page, which has no numbered sections",
+    supports:
+      "NTFS stores file times in UTC, may delay updating a file's last-access time by up to an hour, and SetFileTime can change a file's times without changing its content.",
+    url: "https://learn.microsoft.com/en-us/windows/win32/sysinfo/file-times",
+    checked: "2026-09-24",
+  },
+  {
+    id: "garfinkel-2007-carving",
+    source: "Garfinkel",
+    title: "Carving contiguous and fragmented files with fast object validation",
+    publisher: "Digital Investigation 4S, pp. S2–S12 (Elsevier), from the 2007 DFRWS conference",
+    year: 2007,
+    section: "§1, Introduction; §3.2, Fragmentation distribution; §5.1.1, Header/footer carving",
+    supports:
+      "Carving rebuilds files from their content instead of the metadata that points to it; 6% of the files recovered from the study's drives were fragmented; and header/footer carving cuts out everything between a start marker and an end marker.",
+    url: "https://hdl.handle.net/10945/38489",
+    checked: "2026-09-24",
+  },
+  // The Memory track. The book is paywalled: each chapter's number, title and subsections were
+  // checked against the publisher's contents and the authors' extended contents, not its text.
+  {
+    id: "amf-ch4",
+    ...AMF,
+    section:
+      "Chapter 4, Memory Acquisition (Preserving the Digital Environment; When to Acquire Memory)",
+    supports:
+      "Memory is volatile and changes while a system runs, so it has to be preserved before the machine is changed or switched off.",
+    checked: "2026-09-24",
+  },
+  {
+    id: "amf-ch6",
+    ...AMF,
+    section:
+      "Chapter 6, Processes, Handles, and Tokens (Enumerating Processes in Memory; Process Tree Visualizations; Detecting DKOM Attacks; Alternate Process Listings)",
+    supports:
+      "The active process list can be walked, drawn as a parent-and-child tree, and cross-checked against other listings to find processes that were unlinked from it.",
+    checked: "2026-09-24",
+  },
+  {
+    id: "amf-ch8",
+    ...AMF,
+    section:
+      "Chapter 8, Hunting Malware in Process Memory (Code Injection; Code Injection Detection)",
+    supports:
+      "Injected code can be found by looking for regions of process memory that can be run but are not backed by a file on disk.",
+    checked: "2026-09-24",
+  },
+  {
+    id: "amf-ch11",
+    ...AMF,
+    section:
+      "Chapter 11, Networking (Active Sockets and Connections; Attributing Connections to Code; Inactive Sockets and Connections)",
+    supports:
+      "Memory holds active and recently closed connections, and each one can be tied back to the process that owns it.",
+    checked: "2026-09-24",
+  },
+  {
+    id: "ms-learn-windows-services",
+    source: "Microsoft Learn",
+    title: "Windows System Services Fundamentals",
+    publisher: "Microsoft (TechNet Wiki archive)",
+    year: 2024,
+    section: "The whole page, which has no numbered sections",
+    supports:
+      "The Service Control Manager runs as System32\\services.exe and starts the service host processes, whose image path is System32\\svchost.exe -k followed by a group name.",
+    url: "https://learn.microsoft.com/en-us/archive/technet-wiki/12229.windows-system-services-fundamentals",
+    checked: "2026-09-24",
+  },
+  {
+    id: "mitre-attack-t1055",
+    source: "MITRE ATT&CK",
+    title: "Process Injection, Technique T1055",
+    publisher: "The MITRE Corporation",
+    year: 2025,
+    section: "The whole page, the technique's description",
+    supports:
+      "Attackers may inject code into another live process's memory to hide their work from defences that look at processes, and possibly to gain its privileges.",
+    url: "https://attack.mitre.org/techniques/T1055/",
+    checked: "2026-09-24",
+  },
+  // The Logs and timelines track.
+  {
+    id: "ms-learn-event-4624",
+    source: "Microsoft Learn",
+    title: "4624(S): An account was successfully logged on",
+    publisher: "Microsoft",
+    year: 2021,
+    section: "The whole page, including its table of logon types",
+    supports:
+      "Event 4624 records a new logon session with a Logon Type field: 2 interactive, 3 network, 4 batch, 5 service, 7 unlock, 8 network cleartext, 9 new credentials, 10 remote interactive and 11 cached interactive.",
+    url: "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4624",
+    checked: "2026-09-24",
+  },
+  {
+    id: "ms-learn-event-4625",
+    source: "Microsoft Learn",
+    title: "4625(F): An account failed to log on",
+    publisher: "Microsoft",
+    year: 2026,
+    section: "The whole page, including its table of logon types",
+    supports:
+      "Event 4625 records a logon attempt that did not succeed, with the same Logon Type field as 4624 and the address it came from.",
+    url: "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4625",
+    checked: "2026-09-24",
+  },
+  {
+    id: "rfc-3339-s4",
+    source: "RFC 3339",
+    title: "Date and Time on the Internet: Timestamps",
+    publisher: "Internet Engineering Task Force",
+    year: 2002,
+    section: "§4.1, Coordinated Universal Time (UTC); §4.2, Local Offsets",
+    supports:
+      "Interoperability is best achieved by using UTC, and a local time carries its offset from UTC, which is subtracted from it to give UTC.",
+    url: "https://www.rfc-editor.org/rfc/rfc3339",
+    checked: "2026-09-24",
+  },
+  {
+    id: "nist-sp-800-92-s2-3-1",
+    source: "NIST SP 800-92",
+    title: "Guide to Computer Security Log Management",
+    publisher: "National Institute of Standards and Technology",
+    year: 2006,
+    section: "§2.3.1, Log Generation and Storage (Inconsistent Timestamps)",
+    supports:
+      "Each host stamps its logs from its own clock, so an inaccurate clock can make one event look as if it came before another that really happened first.",
+    url: "https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-92.pdf",
+    checked: "2026-09-24",
+  },
+  {
+    id: "plaso-docs",
+    source: "Plaso",
+    title: "Welcome to the Plaso documentation",
+    publisher: "The log2timeline / Plaso project",
+    year: 2025,
+    section: "The whole page, the project's introduction",
+    supports:
+      'Plaso, whose motto is "super timeline all the things", is an engine that extracts timestamps from many kinds of evidence to build one timeline automatically.',
+    url: "https://plaso.readthedocs.io/en/latest/",
+    checked: "2026-09-24",
+  },
+  {
+    id: "nist-sp-800-86-s8",
+    ...SP_800_86,
+    section: "§8, Using Data from Multiple Sources",
+    supports:
+      "Incidents are often best handled by analysing several kinds of data source and correlating the events across them.",
+    checked: "2026-09-24",
+  },
+  {
+    id: "nist-sp-800-86-s3-4",
+    ...SP_800_86,
+    section: "§3.4, Reporting",
+    supports:
+      "A report is shaped by alternative explanations (each plausible one should be weighed), by who will read it, and by the actionable information it can give.",
+    checked: "2026-09-24",
+  },
+  {
+    id: "nist-sp-800-61r3-s3-1",
+    source: "NIST SP 800-61r3",
+    title:
+      "Incident Response Recommendations and Considerations for Cybersecurity Risk Management: A CSF 2.0 Community Profile",
+    publisher: "National Institute of Standards and Technology",
+    year: 2025,
+    section: "§3.1, Preparation and Lessons Learned",
+    supports:
+      "Improvements to how an organisation defends itself often come out of the follow-up reports and lessons-learned meetings after an incident.",
+    url: "https://doi.org/10.6028/NIST.SP.800-61r3",
+    checked: "2026-09-24",
   },
 ];
 

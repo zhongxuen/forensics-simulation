@@ -459,6 +459,7 @@ const ACTION_SCHEMAS = {
     path: WindowsPathSchema,
     by: z.optional(WindowsPathSchema),
     content: z.optional(z.string()),
+    keep: z.optional(z.int().min(1)),
   }),
   "usb-insert": action("usb-insert", {
     device: machineRef("an id for the drive, like `qf-usb-01`"),
@@ -635,6 +636,8 @@ const NoiseSchema = strict(
       required("which kind of ordinary day to put around the story"),
     ),
     density: z.enum(["none", "low", "medium", "high"], required("how much of it there is")),
+    /** Whether it carries on through Saturday and Sunday. On unless a case says otherwise. */
+    weekends: z.optional(z.boolean()),
   },
   "the background activity (profile, density)",
 );
@@ -652,6 +655,26 @@ const EvidenceSchema = strict(
     ),
   },
   "what the client handed over (disks, logs, memory)",
+);
+
+/** The two files every case folder already has, which a document may not replace. */
+export const CASE_FOLDER_FILES = ["letter.txt", "handover.txt"] as const;
+
+const DocumentSchema = strict(
+  {
+    file: z
+      .string(required("the file name it has in the case folder, like `door-log.txt`"))
+      .regex(
+        /^[a-z0-9][a-z0-9-]*\.txt$/,
+        "Use a lowercase .txt file name with hyphens, like `door-log.txt`.",
+      )
+      .refine(
+        (file) => !(CASE_FOLDER_FILES as readonly string[]).includes(file),
+        `Every case folder already has ${CASE_FOLDER_FILES.join(" and ")}. Pick another name.`,
+      ),
+    content: text("what the document says"),
+  },
+  "a document (file, content)",
 );
 
 // ---------------------------------------------------------------------------------------------
@@ -726,6 +749,25 @@ const AnswerCheckSchema = strict(
   "an answer check",
 );
 
+/**
+ * The rules a `custody` check can ask about. Each is a pure check on the order of the run's chain
+ * of custody (`src/features/cases/custody`), which is built from the engine's events: something a
+ * `commandRun` pattern can't see, because it's about what came *before* what.
+ *
+ * - `hashed-before-analysing`: a hash was taken (and, if checked, matched) before anything opened
+ *   the evidence — no original read, examination, recovery or pin came first.
+ */
+export const CUSTODY_RULES = ["hashed-before-analysing"] as const;
+export type CustodyRule = (typeof CUSTODY_RULES)[number];
+
+const CustodyCheckSchema = strict(
+  {
+    kind: z.literal("custody"),
+    rule: z.enum(CUSTODY_RULES, required(`the rule, one of: ${CUSTODY_RULES.join(", ")}`)),
+  },
+  "a custody check",
+);
+
 export interface CheckGroup {
   kind: "all" | "any";
   of: ObjectiveCheck[];
@@ -736,6 +778,7 @@ export type ObjectiveCheck =
   | z.output<typeof PinnedCheckSchema>
   | z.output<typeof ReportedCheckSchema>
   | z.output<typeof AnswerCheckSchema>
+  | z.output<typeof CustodyCheckSchema>
   | CheckGroup;
 
 export interface CheckGroupInput {
@@ -748,6 +791,7 @@ export type ObjectiveCheckInput =
   | z.input<typeof PinnedCheckSchema>
   | z.input<typeof ReportedCheckSchema>
   | z.input<typeof AnswerCheckSchema>
+  | z.input<typeof CustodyCheckSchema>
   | CheckGroupInput;
 
 export const OBJECTIVE_CHECK_KINDS = [
@@ -755,6 +799,7 @@ export const OBJECTIVE_CHECK_KINDS = [
   "pinned",
   "reported",
   "answer",
+  "custody",
   "all",
   "any",
 ] as const;
@@ -767,6 +812,7 @@ export const ObjectiveCheckSchema: z.ZodType<ObjectiveCheck, ObjectiveCheckInput
       PinnedCheckSchema,
       ReportedCheckSchema,
       AnswerCheckSchema,
+      CustodyCheckSchema,
       CheckGroupSchema,
     ],
     {
@@ -912,6 +958,25 @@ const ReportQuestionSchema = strict(
       .min(1, "Add at least one evidence pattern: every answer points at evidence."),
     explain: text("what this answer means, without giving the next one away"),
     answerFrom: z.optional(ContentIdSchema),
+    /**
+     * For a choice question that is a **choice beat** (docs/plan/99-reference.md, rule 6): what a
+     * character says when the player picks one of the other choices. It is the consequence,
+     * shown on the debrief in place of "not yet", and Change your report offers the choice again.
+     */
+    feedback: z.optional(
+      z
+        .array(
+          strict(
+            {
+              choice: text("the choice this answers, exactly as it is written in choices"),
+              speaker: SpeakerSchema,
+              text: text("what the character says about that choice"),
+            },
+            "feedback on a choice (choice, speaker, text)",
+          ),
+        )
+        .min(1, "Add at least one piece of feedback, or leave feedback out."),
+    ),
   },
   "a report question",
 )
@@ -931,6 +996,27 @@ const ReportQuestionSchema = strict(
     } else if (question.choices) {
       problem(["choices"], `Only a choice question has choices. This one is a ${question.type}.`);
     }
+
+    const seen = new Set<string>();
+    question.feedback?.forEach((item, index) => {
+      if (question.type !== "choice") {
+        problem(
+          ["feedback"],
+          `Only a choice question has feedback. This one is a ${question.type}.`,
+        );
+      } else if (item.choice === question.answer) {
+        problem(
+          ["feedback", index, "choice"],
+          "That is the answer. Feedback is for the other choices; the answer's own words are its explain.",
+        );
+      } else if (!question.choices?.includes(item.choice)) {
+        problem(["feedback", index, "choice"], `"${item.choice}" isn't one of the choices.`);
+      }
+      if (seen.has(item.choice)) {
+        problem(["feedback", index, "choice"], `Two pieces of feedback answer "${item.choice}".`);
+      }
+      seen.add(item.choice);
+    });
 
     if (question.type === "timestamp") {
       if (parseCaseTime(question.answer) === undefined) {
@@ -961,6 +1047,62 @@ const caseIdSchema = (what: string) =>
   z
     .string(required(what))
     .regex(CASE_ID_PATTERN, "Use lowercase letters, digits and single hyphens, like `case-01`.");
+
+/**
+ * What a case and the sandbox both hold their story to: every machine named once, every action on
+ * a machine that exists, action ids unique, and every disk or memory capture handed over from a
+ * machine (or a drive the story plugs in). Returns the story's action ids, for `answerFrom`.
+ */
+function checkWorld(
+  entry: {
+    readonly machines: readonly { readonly id: string }[];
+    readonly story: readonly CaseStoryAction[];
+    readonly evidence: { readonly disks: readonly string[]; readonly memory: readonly string[] };
+  },
+  problem: (path: PropertyKey[], message: string) => void,
+): ReadonlySet<string> {
+  const machineIds = new Set<string>();
+  entry.machines.forEach((machine, index) => {
+    if (machineIds.has(machine.id)) {
+      problem(["machines", index, "id"], `Two machines are called "${machine.id}".`);
+    }
+    machineIds.add(machine.id);
+  });
+
+  const deviceIds = new Set(
+    entry.story.filter((item) => item.do === "usb-insert").map((item) => item.device),
+  );
+  const actionIds = new Set<string>();
+  entry.story.forEach((item, index) => {
+    if (!machineIds.has(item.on)) {
+      const suggestion = closestName(item.on, [...machineIds]);
+      problem(
+        ["story", index, "on"],
+        `There's no machine called "${item.on}".${suggestion ? ` Did you mean "${suggestion}"?` : ""} The machines are: ${[...machineIds].join(", ")}.`,
+      );
+    }
+    if (item.id !== undefined) {
+      if (actionIds.has(item.id)) {
+        problem(["story", index, "id"], `Two story actions have the id "${item.id}".`);
+      }
+      actionIds.add(item.id);
+    }
+  });
+
+  for (const [field, ids] of [
+    ["disks", entry.evidence.disks],
+    ["memory", entry.evidence.memory],
+  ] as const) {
+    ids.forEach((id, index) => {
+      if (machineIds.has(id) || deviceIds.has(id)) return;
+      problem(
+        ["evidence", field, index],
+        `"${id}" isn't a machine in this case, or a drive the story plugs in. The machines are: ${[...machineIds].join(", ")}.`,
+      );
+    });
+  }
+  return actionIds;
+}
 
 export const CaseSchema = strict(
   {
@@ -1021,6 +1163,13 @@ export const CaseSchema = strict(
       .min(1, "Add at least one story action."),
     noise: z.optional(NoiseSchema),
     evidence: EvidenceSchema,
+    /**
+     * Paperwork that arrived with the evidence besides the letter and the handover form — a
+     * message from the client, a printout of the door log — which the player reads in the case
+     * folder. Like the letter, these are realistic documents rather than game copy, and nothing
+     * in them is evidence a report can cite: a time in one is what somebody wrote down.
+     */
+    documents: z.array(DocumentSchema).default([]),
     beats: z.array(BeatSchema).default([]),
     objectives: z
       .array(
@@ -1075,46 +1224,15 @@ export const CaseSchema = strict(
     );
   }
 
-  const machineIds = new Set<string>();
-  entry.machines.forEach((machine, index) => {
-    if (machineIds.has(machine.id)) {
-      problem(["machines", index, "id"], `Two machines are called "${machine.id}".`);
-    }
-    machineIds.add(machine.id);
-  });
+  const actionIds = checkWorld(entry, problem);
 
-  const deviceIds = new Set(
-    entry.story.filter((item) => item.do === "usb-insert").map((item) => item.device),
-  );
-  const actionIds = new Set<string>();
-  entry.story.forEach((item, index) => {
-    if (!machineIds.has(item.on)) {
-      const suggestion = closestName(item.on, [...machineIds]);
-      problem(
-        ["story", index, "on"],
-        `There's no machine called "${item.on}".${suggestion ? ` Did you mean "${suggestion}"?` : ""} The machines are: ${[...machineIds].join(", ")}.`,
-      );
+  const documentFiles = new Set<string>();
+  entry.documents.forEach((document, index) => {
+    if (documentFiles.has(document.file)) {
+      problem(["documents", index, "file"], `Two documents are called "${document.file}".`);
     }
-    if (item.id !== undefined) {
-      if (actionIds.has(item.id)) {
-        problem(["story", index, "id"], `Two story actions have the id "${item.id}".`);
-      }
-      actionIds.add(item.id);
-    }
+    documentFiles.add(document.file);
   });
-
-  for (const [field, ids] of [
-    ["disks", entry.evidence.disks],
-    ["memory", entry.evidence.memory],
-  ] as const) {
-    ids.forEach((id, index) => {
-      if (machineIds.has(id) || deviceIds.has(id)) return;
-      problem(
-        ["evidence", field, index],
-        `"${id}" isn't a machine in this case, or a drive the story plugs in. The machines are: ${[...machineIds].join(", ")}.`,
-      );
-    });
-  }
 
   const objectiveIds = new Set<string>();
   entry.objectives.forEach((objective, index) => {
@@ -1239,6 +1357,79 @@ export type CaseParseResult =
 export function parseCase(data: unknown): CaseParseResult {
   const result = CaseSchema.safeParse(data, { error: authorErrorMap });
   if (result.success) return { success: true, case: result.data };
+  return {
+    success: false,
+    problems: result.error.issues.map((issue) => {
+      const path = formatIssuePath(issue.path, data);
+      return path === "" ? issue.message : `${path}: ${issue.message}`;
+    }),
+  };
+}
+
+// ---------------------------------------------------------------------------------------------
+// The sandbox
+// ---------------------------------------------------------------------------------------------
+
+/** The sandbox's file, beside the cases but not one of them: the case catalog skips it. */
+export const SANDBOX_FILE = "sandbox.yaml";
+
+/**
+ * `sandbox.yaml` (docs/plan/15-quality-and-launch.md, part B): evidence with no goals. It is built
+ * by the same generator from the same kind of story as a case, and held to the same rules about
+ * machines and actions, but it has no client, objectives, report or debrief, because nobody is
+ * asked anything. It is Candlewright's own practice kit, so no client's letter is needed.
+ */
+export const SandboxSchema = strict(
+  {
+    id: z.literal("sandbox", required("the id: sandbox")),
+    title: text("the sandbox's name").max(80, "Keep the title to 80 characters or fewer."),
+    /** The line above the terminal, which says there are no goals. */
+    banner: oneLine("the banner: one line saying there are no goals"),
+    /** What the evidence is, in a sentence or two, under the banner. */
+    summary: text("what the evidence is, in a sentence or two"),
+    seed: z
+      .number(required("the seed: any whole number. The same seed always builds the same evidence"))
+      .int()
+      .min(0)
+      .max(CASE_SEED_MAX, `The seed is a whole number from 0 to ${CASE_SEED_MAX}.`),
+    /** A few commands worth trying on this evidence, shown beside the terminal. */
+    tryThis: z
+      .array(
+        strict(
+          {
+            command: oneLine("the command, exactly as it would be typed"),
+            why: oneLine("what it shows, in a few words"),
+          },
+          "a command to try (command, why)",
+        ),
+        required("tryThis: a few commands worth trying first"),
+      )
+      .min(3, "Suggest at least three commands.")
+      .max(10, "Suggest ten commands or fewer: the cheat sheet has the rest."),
+    machines: z
+      .array(MachineSchema, required("the machines the story happens on"))
+      .min(1, "Add at least one machine."),
+    story: z
+      .array(StoryActionSchema, required("the story: what happened, in order"))
+      .min(1, "Add at least one story action."),
+    noise: z.optional(NoiseSchema),
+    evidence: EvidenceSchema,
+  },
+  "the sandbox",
+).superRefine((entry, ctx) => {
+  checkWorld(entry, (path, message) => ctx.addIssue({ code: "custom", path, message }));
+});
+
+export type Sandbox = z.output<typeof SandboxSchema>;
+
+export type SandboxParseResult =
+  | { readonly success: true; readonly sandbox: Sandbox }
+  | { readonly success: false; readonly problems: readonly string[] };
+
+/** Validates the sandbox's data (already read from YAML), listing every problem as `path: message`. */
+export function parseSandbox(data: unknown): SandboxParseResult {
+  const result = SandboxSchema.safeParse(data, { error: authorErrorMap });
+  if (result.success) return { success: true, sandbox: result.data };
   return {
     success: false,
     problems: result.error.issues.map((issue) => {

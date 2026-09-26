@@ -16,7 +16,13 @@ import type { WorkspacePaneProps } from "../workspace-panes";
  * through `workstation.browse`, the same engine call the disk tools make. Pins go on the run's
  * board, the same one the terminal's `pin` fills.
  */
-export default function EvidencePane({ evidence, run, dispatch, workstation }: WorkspacePaneProps) {
+export default function EvidencePane({
+  evidence,
+  run,
+  dispatch,
+  workstation,
+  reveal,
+}: WorkspacePaneProps) {
   if (evidence === null || isEmpty(evidence)) {
     return (
       <EmptyState
@@ -46,6 +52,8 @@ export default function EvidencePane({ evidence, run, dispatch, workstation }: W
         onPin={(ref) => dispatch({ type: "pin", ref })}
         onUnpin={(ref) => dispatch({ type: "unpin", ref })}
         showInTerminal={workstation.showInTerminal}
+        {...(workstation.explain && { explainRow: workstation.explain })}
+        {...(reveal && { reveal })}
       />
 
       {(evidence.memory.length > 0 || evidence.logs.length > 0) && (

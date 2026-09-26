@@ -57,6 +57,6 @@ Copy follows 99 §Voice. Finish with pnpm lint, pnpm typecheck, pnpm test and pn
 
 ## Done when
 
-- [ ] A correct answer with no cited evidence is never marked supported
-- [ ] Resubmitting is always possible, and nothing about hints affects grading (tested)
-- [ ] The custody log on the debrief matches the event stream exactly (tested by replaying a playthrough)
+- [x] A correct answer with no cited evidence is never marked supported
+- [x] Resubmitting is always possible, and nothing about hints affects grading (tested)
+- [x] The custody log on the debrief matches the event stream exactly (tested by replaying a playthrough)

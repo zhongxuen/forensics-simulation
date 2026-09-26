@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { TRACKS } from "@/content/tracks";
+import { CHAPTER, findCaseListing } from "@/features/cases";
 import {
   getLesson,
   getPrerequisiteGraph,
+  inPracticeCaseId,
   LessonArticle,
   listLessons,
   renderLesson,
   type Lesson,
+  type LessonPracticeCase,
   type LessonTrackPosition,
 } from "@/features/learning/server";
 
@@ -48,6 +51,19 @@ function trackPosition(id: string): LessonTrackPosition | undefined {
   };
 }
 
+/**
+ * The released chapter case a lesson's "In practice" section names first, for the "Try it in
+ * Case N" button at its foot.
+ */
+function practiceCase(lesson: Lesson): LessonPracticeCase | undefined {
+  const id = inPracticeCaseId(lesson.body);
+  if (id === undefined) return undefined;
+  const index = CHAPTER.cases.indexOf(id);
+  const listing = findCaseListing(id);
+  if (index === -1 || !listing || CHAPTER.released[id] !== true) return undefined;
+  return { href: `/cases/${id}`, number: index + 1, title: listing.title };
+}
+
 export default async function LessonPage({ params }: PageProps<"/learn/[lessonId]">) {
   const lesson = getLesson((await params).lessonId);
   if (!lesson) notFound();
@@ -63,6 +79,7 @@ export default async function LessonPage({ params }: PageProps<"/learn/[lessonId
       prerequisites={resolve(graph.prerequisitesOf(lesson.id))}
       readNext={resolve(graph.dependentsOf(lesson.id))}
       track={trackPosition(lesson.id)}
+      practiceCase={practiceCase(lesson)}
     />
   );
 }

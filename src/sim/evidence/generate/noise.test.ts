@@ -56,6 +56,22 @@ const noiseCount = (profile: NoiseProfileId, density: NoiseDensity) =>
   withNoise(profile, density).trace.filter((entry) => entry.source === "noise").length;
 
 describe("noise", () => {
+  it("keeps to weekdays when a case turns weekends off", () => {
+    // START and END are a Saturday: the whole window is a weekend.
+    const count = (weekends?: boolean) =>
+      generate(
+        caseOf(STORY, {
+          noise: {
+            profile: "office-day",
+            density: "medium",
+            ...(weekends === false && { weekends }),
+          },
+        }),
+      ).trace.filter((entry) => entry.source === "noise").length;
+    expect(count()).toBeGreaterThan(0);
+    expect(count(false)).toBe(0);
+  });
+
   it("adds nothing at all when a case asks for none", () => {
     expect(noiseCount("office-day", "none")).toBe(0);
     expect(generate(caseOf(STORY)).trace.every((entry) => entry.source === "story")).toBe(true);

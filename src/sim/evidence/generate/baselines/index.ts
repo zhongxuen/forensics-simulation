@@ -1,6 +1,7 @@
 import { analystWorkstation } from "./analyst-workstation";
 import { officeLaptop } from "./office-laptop";
 import { officeServer } from "./office-server";
+import { trainingLaptop } from "./training-laptop";
 import type { Baseline } from "./types";
 
 /**
@@ -11,6 +12,7 @@ export const BASELINES: Readonly<Record<string, Baseline>> = {
   [officeLaptop.id]: officeLaptop,
   [officeServer.id]: officeServer,
   [analystWorkstation.id]: analystWorkstation,
+  [trainingLaptop.id]: trainingLaptop,
 };
 
 /** Every baseline id, sorted, for error messages and the authoring scripts. */

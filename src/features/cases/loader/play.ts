@@ -1,6 +1,7 @@
 import { getCastMember } from "@/content/cast";
 import type { PlaythroughStep, ReportVerdict } from "@/content/cases/playthrough";
-import { parseCaseTime, type Case, type ObjectiveCheck } from "@/content/cases/schema";
+import type { Case, ObjectiveCheck } from "@/content/cases/schema";
+import type { RunMark } from "@/lib/case-storage";
 import {
   createTerminalSession,
   plainTranscript,
@@ -10,6 +11,8 @@ import {
 } from "@/features/terminal";
 import { attachEvidence, resolveAcceptedEvidence, EvidencePatternError } from "@/sim";
 import type { ArtefactRef, EvidenceSet, SimEvent, SimState } from "@/sim/types";
+import { custodyLog, custodyRuleHolds } from "../custody";
+import { gradeQuestion } from "../grading";
 import { caseScenario } from "./scenario";
 import type { BuiltCase } from "./source";
 
@@ -33,7 +36,9 @@ export interface ReportGrade {
   /** What the player wrote, or "" for a question they haven't answered. */
   readonly answer: string;
   readonly verdict: ReportVerdict;
-  /** The refs on the board that support this answer. */
+  /** The refs cited for this answer that are on the board. */
+  readonly cited: readonly ArtefactRef[];
+  /** The cited refs that support this answer. */
   readonly supportedBy: readonly ArtefactRef[];
   /** Every ref this answer may point at, resolved when the evidence was built. */
   readonly acceptedRefs: readonly ArtefactRef[];
@@ -85,6 +90,10 @@ interface RunState {
   readonly answers: Map<string, string[]>;
   /** What the player has written on the report so far. */
   readonly report: Map<string, string>;
+  /** The refs each report answer cites, from the step's `cite` patterns. */
+  readonly citations: Map<string, string[]>;
+  /** Pins made from a view (`pin` steps), for the chain of custody, as the browser keeps them. */
+  readonly marks: RunMark[];
 }
 
 /**
@@ -94,15 +103,25 @@ interface RunState {
 export function playCase(built: BuiltCase, steps: readonly PlaythroughStep[]): CasePlayResult {
   const entry = built.case;
   const { scenario, seed, startsAt } = caseScenario(entry, built.evidence);
+  // A case with nothing handed over (the scaffold's) has no evidence to attach. One with only a
+  // memory capture and logs (case-03) still does, as the browser's workstation always attaches.
+  const { disks, memory, logs } = built.evidence;
   const attach = (sim: SimState): SimState =>
-    built.evidence.disks.length === 0
+    disks.length + memory.length + logs.length === 0
       ? sim
       : attachEvidence(sim, built.evidence, { now: startsAt });
 
   let session = createTerminalSession({ scenario, seed });
   session = { ...session, sim: attach(session.sim) };
 
-  const run: RunState = { events: [], pins: [], answers: new Map(), report: new Map() };
+  const run: RunState = {
+    events: [],
+    pins: [],
+    answers: new Map(),
+    report: new Map(),
+    citations: new Map(),
+    marks: [],
+  };
   let completed: string[] = [];
   let beatsPlayed: number[] = [];
   const played: CasePlayStep[] = [];
@@ -131,7 +150,11 @@ export function playCase(built: BuiltCase, steps: readonly PlaythroughStep[]): C
         if (refs.length === 0) {
           problem = `nothing in this case's evidence matches "${step.pin}".`;
         } else {
-          for (const ref of refs) addPin(run.pins, ref);
+          for (const ref of refs) {
+            if (addPin(run.pins, ref)) {
+              run.marks.push({ after: run.events.length, kind: "pinned", ref });
+            }
+          }
           output = `[pin] ${step.pin} → ${refs.join(", ")}`;
         }
       } catch (error) {
@@ -140,12 +163,20 @@ export function playCase(built: BuiltCase, steps: readonly PlaythroughStep[]): C
       }
     } else if ("report" in step) {
       run.report.set(step.report, step.answer);
+      const cited: string[] = [];
+      for (const pattern of step.cite ?? []) {
+        const refs = matching(built.evidence, pattern);
+        if (refs.length === 0) problem = `nothing in this case's evidence matches "${pattern}".`;
+        cited.push(...refs);
+      }
+      run.citations.set(step.report, cited);
       const question = entry.report.questions.find((item) => item.id === step.report);
       if (!question) {
         problem = `there's no report question with the id "${step.report}".`;
       } else {
         verdict = grade(built, question.id, run).verdict;
-        output = `[report ${step.report}] ${step.answer} → ${verdict}`;
+        const cites = step.cite?.length ? ` (citing ${step.cite.join(", ")})` : " (citing nothing)";
+        output = `[report ${step.report}] ${step.answer}${cites} → ${verdict}`;
       }
     } else if ("objective" in step) {
       run.answers.set(step.objective, [...(run.answers.get(step.objective) ?? []), step.answer]);
@@ -208,8 +239,11 @@ export function playCase(built: BuiltCase, steps: readonly PlaythroughStep[]): C
   };
 }
 
-function addPin(pins: string[], ref: string): void {
-  if (!pins.includes(ref)) pins.push(ref);
+/** Pins a ref, once. True when it wasn't on the board before. */
+function addPin(pins: string[], ref: string): boolean {
+  if (pins.includes(ref)) return false;
+  pins.push(ref);
+  return true;
 }
 
 /** The main objectives: not bonuses, not secrets. */
@@ -270,6 +304,8 @@ function holds(
     }
     case "reported":
       return grade(built, check.question, run).verdict === "supported";
+    case "custody":
+      return custodyRuleHolds(check.rule, custodyLog(run.events, run.marks));
     case "answer":
       return (run.answers.get(objectiveId) ?? []).some((answer) =>
         check.accept.some((wanted) => same(answer, wanted)),
@@ -305,37 +341,38 @@ const same = (a: string, b: string): boolean => a.trim().toLowerCase() === b.tri
 // ---------------------------------------------------------------------------------------------
 
 /**
- * One report answer's verdict. An answer that is right but points at nothing is **needs
- * evidence**, not a failure: the habit being taught is that a finding carries the evidence it
- * rests on, and the way to learn it is to be told what is missing, not to be marked down.
+ * One report answer's verdict, from the same grader the browser uses (`../grading`). An answer
+ * that is right but cites nothing that proves it is **needs evidence**, not a failure: the habit
+ * being taught is that a finding carries the evidence it rests on, and the way to learn it is to
+ * be told what is missing, not to be marked down.
  */
 function grade(built: BuiltCase, questionId: string, run: RunState): ReportGrade {
   const question = built.case.report.questions.find((item) => item.id === questionId);
   const acceptedRefs = (built.acceptedRefs.get(questionId) ?? []) as readonly ArtefactRef[];
   const answer = run.report.get(questionId) ?? "";
-  const supportedBy = acceptedRefs.filter((ref) => run.pins.includes(ref));
-  const base = { questionId, answer, acceptedRefs, supportedBy };
-
-  if (!question || answer.trim() === "" || !answers(question, answer, acceptedRefs)) {
-    return { ...base, verdict: "not-yet" };
+  if (!question) {
+    return { questionId, answer, acceptedRefs, cited: [], supportedBy: [], verdict: "not-yet" };
   }
-  return { ...base, verdict: supportedBy.length > 0 ? "supported" : "needs-evidence" };
-}
-
-/** Whether what the player wrote is the answer, by the question's kind. */
-function answers(
-  question: Case["report"]["questions"][number],
-  given: string,
-  acceptedRefs: readonly ArtefactRef[],
-): boolean {
-  if (question.type === "timestamp") {
-    const wanted = "answerAt" in question ? question.answerAt : parseCaseTime(question.answer);
-    const got = parseCaseTime(given.trim());
-    if (wanted === undefined || got === undefined) return false;
-    return Math.abs(got - wanted) <= (question.toleranceSeconds ?? 0) * 1000;
-  }
-  if (question.type === "evidence-pick") {
-    return acceptedRefs.some((ref) => same(ref, given));
-  }
-  return same(question.answer, given);
+  const finding = gradeQuestion(
+    {
+      id: question.id,
+      type: question.type,
+      answer: question.answer,
+      ...("answerAt" in question && { answerAt: question.answerAt }),
+      ...(question.toleranceSeconds !== undefined && {
+        toleranceSeconds: question.toleranceSeconds,
+      }),
+      acceptedRefs,
+    },
+    { value: answer, cited: run.citations.get(questionId) ?? [] },
+    run.pins,
+  );
+  return {
+    questionId,
+    answer,
+    acceptedRefs,
+    cited: finding.cited as readonly ArtefactRef[],
+    supportedBy: finding.supportedBy as readonly ArtefactRef[],
+    verdict: finding.verdict,
+  };
 }

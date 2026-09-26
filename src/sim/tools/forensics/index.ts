@@ -9,21 +9,44 @@
  */
 import { acquire } from "./acquire";
 import { blocker } from "./blocker";
+import { carve } from "./carve";
 import { hashsum } from "./hashsum";
 import { inode } from "./inode";
+import { logq } from "./logq";
 import { lsfs } from "./lsfs";
+import { mem } from "./mem";
 import { pin } from "./pin";
 import { recover } from "./recover";
+import { strings } from "./strings";
+import { timeline } from "./timeline";
 import type { Tool } from "../types";
 
 export const FORENSICS_TOOLS: readonly Tool[] = [
   acquire,
   blocker,
+  carve,
   hashsum,
   inode,
+  logq,
   lsfs,
+  mem,
   pin,
   recover,
+  strings,
+  timeline,
 ];
 
-export { acquire, blocker, hashsum, inode, lsfs, pin, recover };
+export {
+  acquire,
+  blocker,
+  carve,
+  hashsum,
+  inode,
+  logq,
+  lsfs,
+  mem,
+  pin,
+  recover,
+  strings,
+  timeline,
+};

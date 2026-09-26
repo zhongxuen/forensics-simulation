@@ -25,6 +25,8 @@ export const MAX_PINS = 500;
 export const MAX_NOTES_LENGTH = 20_000;
 export const MAX_DRAFT_LENGTH = 4000;
 export const MAX_RUNS = 100;
+export const MAX_PIN_NOTE_LENGTH = 500;
+export const MAX_MARKS = 2000;
 /** Hints come in three tiers (docs/plan/99-reference.md, authoring checklist). */
 export const HINT_TIERS = 3;
 
@@ -53,6 +55,26 @@ export const LogEntrySchema = z.union([
 
 export type LogEntry = z.output<typeof LogEntrySchema>;
 
+const ref = () => z.string().check(z.regex(REF));
+
+/**
+ * Something the chain of custody (src/features/cases/custody) records that the engine's events
+ * don't: a pin made from a view rather than the terminal, and each time the report was submitted
+ * (with how many findings were supported then). `after` is how many engine events the run had at
+ * that moment; replaying the log rebuilds the same events, so the mark lands in the same place.
+ */
+export const RunMarkSchema = z.union([
+  z.strictObject({ after: count(), kind: z.literal("pinned"), ref: ref() }),
+  z.strictObject({
+    after: count(),
+    kind: z.literal("submitted"),
+    supported: count(),
+    total: count(),
+  }),
+]);
+
+export type RunMark = z.output<typeof RunMarkSchema>;
+
 /** The phases a saved run can be in. A run still on its briefing has nothing worth saving. */
 export const SavedPhaseSchema = z.enum(["workspace", "report", "debrief"]);
 
@@ -65,6 +87,18 @@ export const CaseRunSaveSchema = z.object({
   completed: z.array(id()),
   hintsShown: z.record(id(), z.int().check(z.gte(0), z.lte(HINT_TIERS))),
   beatsPlayed: z.array(count()),
+  /**
+   * The pins each report answer cites, by question id (file 10). The next three fields arrived
+   * after version 1 shipped, each defaulting to empty, so an older save still reads as it was.
+   */
+  citations: z._default(z.record(id(), z.array(ref()).check(z.maxLength(MAX_PINS))), () => ({})),
+  /** The player's note on each pin, by ref. */
+  pinNotes: z._default(
+    z.record(ref(), z.string().check(z.maxLength(MAX_PIN_NOTE_LENGTH))),
+    () => ({}),
+  ),
+  /** View pins and report submissions, for the chain of custody. */
+  marks: z._default(z.array(RunMarkSchema).check(z.maxLength(MAX_MARKS)), () => []),
   /** When it was saved (milliseconds since the Unix epoch). Shown, never compared. */
   savedAt: count(),
 });
@@ -103,6 +137,9 @@ const fromV0 = (run: V0Run): CaseRunSave => ({
   completed: run.ticked ?? [],
   hintsShown: {},
   beatsPlayed: [],
+  citations: {},
+  pinNotes: {},
+  marks: [],
   savedAt: 0,
 });
 

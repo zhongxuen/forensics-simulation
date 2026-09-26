@@ -4,62 +4,73 @@
  * Components use these through Tailwind classes (see theme.css), never raw hex. Every opaque colour
  * is a 6-digit hex so src/lib/contrast.ts can measure it.
  *
- * Dark-first: :root is the dark theme, the only theme in v1. To add a light theme later, add one
- * block that reassigns the same names, for example:
+ * The theme is "Lamplight" (UIUX.md §3): an evidence room after hours. Ink-navy surfaces, warm
+ * paper-white text, and one candle-amber accent for everything you can act on, so Candlewright
+ * doesn't look like its red-team sibling's cyan.
  *
- *   [data-theme="light"] {
- *     color-scheme: light;
- *     --surface-base: #...;
- *     ...
- *   }
+ * Dark-first: :root is the dark theme and the default. [data-theme="light"] below is "Daylight"
+ * (UIUX.md §3.5), the same room with the lamp swapped for daylight on a manila case file: paper
+ * surfaces, ink text, a darker amber that still reads as text on paper, and status colours
+ * re-picked for a light ground. It reassigns the same names and nothing else, so components and
+ * theme.css need no changes. The settings module puts it on <html> (src/lib/settings, the
+ * appTheme setting); the boot script does so before first paint.
+ *
+ * The terminal stays dark in both themes: Daylight leaves the --term-* tokens alone, and the
+ * terminal's own frame sets data-theme="dark", which the first selector below matches, so its
+ * header, menus and buttons keep the dark tokens they were measured on.
  *
  * theme.css reads these with `@theme inline`, so an override on any element re-themes that
- * subtree. Components and theme.css need no changes.
+ * subtree. src/lib/contrast-audit.ts measures both blocks.
  *
  * Tokens live in Tailwind's `theme` layer so utilities (for example scheme-light) still win.
  */
 
 @layer theme {
-  :root {
+  :root,
+  [data-theme="dark"] {
     color-scheme: dark;
 
     /* Surfaces: near-black, not #000, so three elevations stay distinguishable. */
-    --surface-base: #0b0f14;
-    --surface-raised: #121821;
-    --surface-overlay: #1a2230;
+    --surface-base: #0f1117;
+    --surface-raised: #171a22;
+    --surface-overlay: #20242e;
 
     /* Text. Each passes WCAG AA (4.5:1) on every surface above. */
-    --text-primary: #e6edf3;
-    --text-secondary: #b4c0cd;
-    --text-muted: #8d9aab;
+    --text-primary: #eeeae3;
+    --text-secondary: #c3c1bb;
+    --text-muted: #9c9ea7;
 
     /* The one interaction hue. Text on a solid accent fill uses --surface-base. */
-    --accent: #3dd6ef;
-    --accent-hover: #7ee6f7;
-    --accent-subtle: #0f2f38;
+    --accent: #f2b84b;
+    --accent-hover: #ffd27e;
+    --accent-subtle: #2c2414;
 
     /* Status. Always pair with an icon or label: colour alone never carries meaning. */
-    --status-success: #4ade94;
-    --status-warning: #f5b94a;
-    --status-danger: #ff7a7a;
-    --status-info: #7cb4ff;
+    --status-success: #5fd39a;
+    --status-warning: #ff9a5c;
+    --status-danger: #ff7c88;
+    --status-info: #88b6ff;
 
     /* Reward: celebrations only (objective ticks, secrets found, mission complete), so wins read
        instantly. */
-    --reward: #d4a5ff;
-    --reward-glow: rgb(212 165 255 / 0.35); /* translucent: glows and shadows only, never text */
+    --reward: #c9a8ff;
+    --reward-glow: rgb(201 168 255 / 0.35); /* translucent: glows and shadows only, never text */
 
     /* Borders and focus. --border-strong and --focus-ring pass 3:1 (WCAG UI contrast). */
-    --border-subtle: #243041;
-    --border-strong: #66778c;
-    --focus-ring: #7ee6f7;
+    --border-subtle: #2a2f3b;
+    --border-strong: #6f7687;
+    --focus-ring: #ffd98f;
+  }
 
+  /* :root only, never [data-theme="dark"]: terminal colour themes set these on <html>
+     (src/lib/terminal-themes.ts), and the terminal's dark frame must inherit them, not reset them. */
+  :root {
     /* Terminal palette, consumed by the terminal renderer in phase 05. Terminal themes (phase 08,
        src/content/themes) reassign these on [data-terminal-theme]; this is the default theme. */
-    --term-bg: #080b10;
-    --term-cursor: #3dd6ef;
-    --term-fg: #d6e2ee;
-    --term-dim: #8593a5;
+    --term-bg: #0a0c11;
+    --term-cursor: #f2b84b;
+    --term-fg: #e3dfd6;
+    --term-dim: #8f939d;
     --term-black: #2b3340; /* a background colour: too dark to read as text on --term-bg */
     --term-red: #ff6e6e;
     --term-green: #4ade80;
@@ -76,5 +87,40 @@
     --term-bright-magenta: #f0b5ff;
     --term-bright-cyan: #8beeff;
     --term-bright-white: #f5f8fb;
+  }
+
+  /* Daylight. Ratios in UIUX.md §3.5, measured like Lamplight's. */
+  [data-theme="light"] {
+    color-scheme: light;
+
+    /* Surfaces: manila paper. Cards are the fresh sheet on top; overlays the folder's darker card. */
+    --surface-base: #f3ead6;
+    --surface-raised: #fbf7ee;
+    --surface-overlay: #eadfc6;
+
+    /* Ink. Each passes WCAG AA (4.5:1) on every surface above. */
+    --text-primary: #1b1e27;
+    --text-secondary: #3d4150;
+    --text-muted: #595c68;
+
+    /* Amber darkened until it reads as text on paper. Text on a solid fill is still
+       --surface-base, now paper on dark amber. */
+    --accent: #8a4f00;
+    --accent-hover: #6b3c00;
+    --accent-subtle: #f2deb0;
+
+    /* Status, re-picked for a light ground. Warning leans red so it never reads as the accent. */
+    --status-success: #1d6b40;
+    --status-warning: #a3420a;
+    --status-danger: #b0222c;
+    --status-info: #1d539f;
+
+    --reward: #6a3cb0;
+    --reward-glow: rgb(106 60 176 / 0.3);
+
+    /* The focus ring also passes 3:1 on --term-bg, for anything focusable inside the terminal. */
+    --border-subtle: #dccfb3;
+    --border-strong: #817764;
+    --focus-ring: #b8690a;
   }
 }

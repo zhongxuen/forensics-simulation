@@ -54,6 +54,12 @@ const ReportStepSchema = z.strictObject({
   /** The report question's id. */
   report: ContentIdSchema,
   answer: text("the answer to write on the report"),
+  /**
+   * The pinned evidence the answer cites, as evidence patterns (the report's "Supporting evidence"
+   * picker). An answer only counts as supported when something it cites is on the board and proves
+   * it, so leave this out to see an answer come back as needs evidence.
+   */
+  cite: z.array(text("an evidence pattern to cite")).optional(),
   /** What the answer should come back as. Defaults to `supported`. */
   verdict: z.enum(REPORT_VERDICTS).default("supported"),
   ticks,

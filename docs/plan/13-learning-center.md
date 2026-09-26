@@ -22,18 +22,18 @@ On `https://hacker-simulation.vercel.app/learn/…`: `forensics-what-logs-are`, 
 | | `foundations-order-of-volatility` | RFC 3227 §2.1, §2.2; NIST SP 800-86 §5.2.1.3 |
 | | `foundations-chain-of-custody` | NIST SP 800-86 §3.1.2 (was §3.1.1: checked 2026-09-23, the chain of custody is in §3.1.2); NIST IR 8387 §3.2 |
 | | `foundations-hashing-for-evidence` | FIPS 180-4 §1, §6.2; RFC 1321 §1 (and why MD5 alone isn't enough, RFC 6151 §2.1); NIST SP 800-86 §4.2.2; NIST IR 8387 §3.2 |
-| Disk | `disk-partitions-and-filesystems` | Carrier, *File System Forensic Analysis*, ch. 5, 11 |
-| | `disk-macb-timestamps` | Carrier ch. 13; SANS "Windows Forensic Analysis" poster |
+| Disk | `disk-partitions-and-filesystems` | Carrier, *File System Forensic Analysis*, ch. 5, 11 (checked 2026-09-24 against the publisher's contents page) |
+| | `disk-macb-timestamps` | Carrier ch. 13 (Standard File Attributes); Microsoft Learn, "File Times" (was the SANS "Windows Forensic Analysis" poster: checked 2026-09-24, the poster is behind a login and the public copy has no time rules, so it couldn't be verified) |
 | | `disk-deleted-vs-overwritten` | Carrier ch. 8 |
-| | `disk-carving` | Garfinkel, "Carving contiguous and fragmented files with fast object validation" (DFRWS 2007) |
-| Memory | `memory-why-ram-matters` | Ligh et al., *The Art of Memory Forensics*, ch. 1 |
-| | `memory-processes-and-parents` | *The Art of Memory Forensics* ch. 6; SANS "Hunt Evil" poster |
-| | `memory-network-artefacts` | *The Art of Memory Forensics* ch. 11 |
-| | `memory-code-injection` | *The Art of Memory Forensics* ch. 8; MITRE ATT&CK T1055 |
-| Logs and timelines | `logs-windows-logon-events` | Microsoft Learn: Audit logon events (4624, 4625, logon types) |
-| | `logs-time-zones-and-clocks` | RFC 3339; NIST SP 800-92 §2.3 |
-| | `logs-super-timelines` | Plaso documentation; NIST SP 800-86 §6 |
-| | `report-writing-the-report` | NIST SP 800-61r3; NIST SP 800-86 §3.4 |
+| | `disk-carving` | Garfinkel, "Carving contiguous and fragmented files with fast object validation" (DFRWS 2007), §1, §3.2, §5.1.1 (checked 2026-09-24) |
+| Memory | `memory-why-ram-matters` | Ligh et al., *The Art of Memory Forensics*, ch. 4 (was ch. 1: checked 2026-09-24 against the publisher's contents, ch. 1 is "Systems Overview" and ch. 4 "Memory Acquisition"); RFC 3227 §2.1 |
+| | `memory-processes-and-parents` | *The Art of Memory Forensics* ch. 6; Microsoft Learn, "Windows System Services Fundamentals" (was the SANS "Hunt Evil" poster: checked 2026-09-24, the poster's PDF couldn't be fetched to confirm its svchost row) |
+| | `memory-network-artefacts` | *The Art of Memory Forensics* ch. 11 (checked 2026-09-24) |
+| | `memory-code-injection` | *The Art of Memory Forensics* ch. 8; MITRE ATT&CK T1055 (checked 2026-09-24) |
+| Logs and timelines | `logs-windows-logon-events` | Microsoft Learn: the 4624 and 4625 event pages, with their logon type tables (checked 2026-09-24) |
+| | `logs-time-zones-and-clocks` | RFC 3339 §4.1, §4.2; NIST SP 800-92 §2.3.1 (was §2.3: checked 2026-09-24, the inconsistent-timestamps text is in §2.3.1) |
+| | `logs-super-timelines` | Plaso documentation; NIST SP 800-86 §8 (was §6: checked 2026-09-24, §6 is network traffic and §8 is "Using Data from Multiple Sources") |
+| | `report-writing-the-report` | NIST SP 800-61r3 §3.1; NIST SP 800-86 §3.4 (checked 2026-09-24) |
 
 The chapter and section numbers above are starting points written from memory. **Each lesson prompt must check its citation against the source** (open the document, confirm the section, fix the number) before it goes into `references.ts`.
 
@@ -82,5 +82,5 @@ and "In practice" sections naming case-02 and case-03. Commit when pnpm test and
 
 ## Done when
 
-- [ ] 16 lessons, each with a citation that the test checks, a MiniTerminal on the real engine and a Quiz
-- [ ] Every tool's man page links to a lesson and every lesson names a case
+- [x] 16 lessons, each with a citation that the test checks, a MiniTerminal on the real engine and a Quiz
+- [x] Every tool's man page links to a lesson and every lesson names a case

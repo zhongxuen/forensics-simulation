@@ -7,7 +7,7 @@ import {
   isReleased,
 } from "@/content/cases/chapter";
 import { findBannedWords } from "@/content/voice";
-import { CASE_LISTINGS, RELEASED_CASE_LISTINGS } from "@/features/cases";
+import { CASE_LISTINGS, hasCaseEvidence, RELEASED_CASE_LISTINGS } from "@/features/cases";
 import { FIRST_STEP } from "@/lib/next-step";
 import { catalog } from "./support";
 
@@ -34,6 +34,15 @@ describe("the chapter", () => {
     }
   });
 
+  // A case's evidence reaches the browser only through a line in run/evidence.ts. Without it the
+  // workstation starts with nothing attached, and every tool says so.
+  it("gives every playable chapter case its evidence in the browser", () => {
+    for (const listing of CASE_LISTINGS) {
+      if (!CHAPTER_ONE.cases.includes(listing.slug) || listing.status !== "playable") continue;
+      expect(hasCaseEvidence(listing.slug), `${listing.slug} has no evidence loader`).toBe(true);
+    }
+  });
+
   it("lists each case once", () => {
     expect(new Set(CHAPTER_ONE.cases).size).toBe(CHAPTER_ONE.cases.length);
   });
@@ -43,7 +52,9 @@ describe("the chapter", () => {
       CHAPTER_ONE.title,
       CHAPTER_ONE.client,
       CHAPTER_ONE.opening,
-      CHAPTER_ONE.closing,
+      CHAPTER_ONE.closing.text,
+      CHAPTER_ONE.upNext.text,
+      CHAPTER_ONE.upNext.label,
     ]) {
       expect(findBannedWords(line), line).toEqual([]);
     }

@@ -1,5 +1,6 @@
 import { CHAPTER_ONE, caseOrder, isReleased } from "@/content/cases/chapter";
 import type { RunnableCase } from "./case-definition";
+import type { CaseSummary, SummarySource } from "./case-state";
 import { PRACTICE_CASE } from "./practice-case";
 
 /**
@@ -44,14 +45,16 @@ const LISTINGS: readonly CaseListing[] = [
   {
     slug: "case-02",
     title: "The deleted invoice",
-    summary: "An invoice vanished from a company laptop. Follow the evidence, not the suspicion.",
-    status: "planned",
+    summary:
+      "Three invoices vanished and everyone suspects the bookkeeper. Follow the evidence, not the suspicion.",
+    status: "playable",
   },
   {
     slug: "case-03",
     title: "Something is still running",
-    summary: "A server is behaving oddly, and whatever did it may still be in memory.",
-    status: "planned",
+    summary:
+      "A server is talking to a stranger once a minute. Find out what is running, before anybody pulls the plug.",
+    status: "playable",
   },
   {
     slug: PRACTICE_CASE.slug,
@@ -80,4 +83,31 @@ export const CHAPTER = CHAPTER_ONE;
 /** The listing for a slug, or undefined. */
 export function findCaseListing(slug: string): CaseListing | undefined {
   return CASE_LISTINGS.find((listing) => listing.slug === slug);
+}
+
+/**
+ * A summary of every case in the list, in its order: the chapter's cases, released or not, then
+ * the practice case. `getCase` reads a playable case's file (on the server, `getCase`, which
+ * parses it without generating its evidence).
+ */
+export function caseSummaries(
+  getCase: (slug: string) => SummarySource | undefined,
+): readonly CaseSummary[] {
+  return CASE_LISTINGS.map((listing) => {
+    const caseDef: SummarySource | undefined =
+      listing.caseDef ?? (listing.status === "playable" ? getCase(listing.slug) : undefined);
+    const index = CHAPTER_ONE.cases.indexOf(listing.slug);
+    return {
+      id: listing.slug,
+      title: listing.title,
+      summary: listing.summary,
+      ...(index === -1 ? {} : { number: index + 1 }),
+      ...(caseDef ? { minutes: caseDef.estimatedMinutes } : {}),
+      // Main objectives only, as `mainObjectives` counts them.
+      objectives: (caseDef?.objectives ?? [])
+        .filter((objective) => objective.optional !== true && objective.hidden !== true)
+        .map((objective) => objective.id),
+      released: index === -1 || isReleased(listing.slug),
+    };
+  });
 }

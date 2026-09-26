@@ -1,15 +1,67 @@
 "use client";
 
+import Link from "next/link";
+import { use, useMemo } from "react";
 import { Callout } from "@/components/ui/callout";
-import { WORKSTATION } from "@/content/sandbox/workstation";
+import { FOCUS_RING } from "@/components/ui/focus-ring";
 import { CommandCheatSheet, Terminal, useTerminalSession } from "@/features/terminal";
+import { attachEvidence } from "@/sim";
+import { cx } from "@/lib/cx";
+import type { EvidenceSet, ScenarioSpec } from "@/sim/types";
+
+export interface SandboxWorkspaceProps {
+  /** The workstation with the sandbox's folder, built on the server from `sandbox.yaml`. */
+  readonly scenario: ScenarioSpec;
+  readonly seed: number;
+  /** When the kit was handed over: the workstation's clock, and the evidence's `now`. */
+  readonly startsAt: number;
+  readonly tryThis: readonly { readonly command: string; readonly why: string }[];
+  /** Lessons whose practice terminals carry evidence, one per track, for a guided start. */
+  readonly guided: readonly {
+    readonly track: string;
+    readonly title: string;
+    readonly href: string;
+  }[];
+}
+
+let pending: Promise<EvidenceSet> | undefined;
 
 /**
- * The sandbox: the terminal on the analyst workstation, with no objectives. Nothing is kept
- * between visits.
+ * The sandbox's evidence (src/content/sandbox/evidence.json, built by `pnpm evidence:build`), in
+ * a chunk of its own that only this page asks for (00 §4 row 12). One promise, shared by every
+ * render.
  */
-export function SandboxWorkspace() {
-  const session = useTerminalSession({ scenario: WORKSTATION.scenario, seed: WORKSTATION.seed });
+function sandboxEvidence(): Promise<EvidenceSet> {
+  pending ??= import("@/content/sandbox/evidence.json").then((loaded: unknown) => {
+    // A JSON module is the value itself under `default`, whichever way the bundler wrapped it.
+    const set =
+      typeof loaded === "object" && loaded !== null && "default" in loaded
+        ? loaded.default
+        : loaded;
+    return set as EvidenceSet;
+  });
+  return pending;
+}
+
+/**
+ * The sandbox: the terminal on the analyst workstation with the practice kit attached under
+ * `/dev/evidence`, every write-blocker on, and no objectives. Reset machine attaches it again, as
+ * it arrived. Nothing is kept between visits.
+ */
+export function SandboxWorkspace({
+  scenario,
+  seed,
+  startsAt,
+  tryThis,
+  guided,
+}: SandboxWorkspaceProps) {
+  const evidence = use(sandboxEvidence());
+  const setup = useMemo(
+    () => (sim: Parameters<typeof attachEvidence>[0]) =>
+      attachEvidence(sim, evidence, { now: startsAt }),
+    [evidence, startsAt],
+  );
+  const session = useTerminalSession({ scenario, seed, setup });
 
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
@@ -20,27 +72,54 @@ export function SandboxWorkspace() {
       <aside className="space-y-6" aria-label="Help for this machine">
         <Callout kind="tip" title="Nothing can break here. Try anything.">
           <p>
-            This is a practice copy of your workstation. Delete things, change things, get lost:
-            Reset machine puts everything back.
+            Turn a write-blocker off, read the original, change the drive&apos;s hash: Reset machine
+            puts the evidence back as it arrived.
           </p>
         </Callout>
         <section
           aria-labelledby="try-this-title"
           className="rounded-xl border border-subtle bg-surface-raised p-4"
         >
-          <h2 id="try-this-title" className="text-sm font-semibold tracking-wide">
+          <h2 id="try-this-title" className="type-eyebrow">
             Try this first
           </h2>
           <ul className="mt-3 space-y-3">
-            {WORKSTATION.tryThis.map((idea) => (
+            {tryThis.map((idea) => (
               <li key={idea.command}>
-                <code className="font-mono text-sm text-accent">{idea.command}</code>
-                <p className="text-sm leading-6 text-secondary">{idea.why}</p>
+                <code className="type-data break-words text-accent">{idea.command}</code>
+                <p className="mt-1 type-small text-secondary">{idea.why}</p>
               </li>
             ))}
           </ul>
         </section>
-        <CommandCheatSheet />
+        {guided.length > 0 && (
+          <section
+            aria-labelledby="guided-title"
+            className="rounded-xl border border-subtle bg-surface-raised p-4"
+          >
+            <h2 id="guided-title" className="type-eyebrow">
+              Want a guide?
+            </h2>
+            <p className="mt-2 type-small text-secondary">
+              These lessons walk you through the same tools, step by step, on practice evidence of
+              their own.
+            </p>
+            <ul className="mt-3 space-y-2">
+              {guided.map((lesson) => (
+                <li key={lesson.href} className="type-small">
+                  <span className="block text-muted">{lesson.track}</span>
+                  <Link
+                    href={lesson.href}
+                    className={cx("rounded-sm font-medium text-accent hover:underline", FOCUS_RING)}
+                  >
+                    {lesson.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+        <CommandCheatSheet leadWith="Investigate" />
       </aside>
     </div>
   );

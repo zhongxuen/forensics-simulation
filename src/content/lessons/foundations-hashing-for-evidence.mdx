@@ -8,12 +8,10 @@ analogy: "Two copies of a thousand-page book, compared by reading both aloud sid
 summary: How a hash proves a forensic copy matches the original, why you take it at collection, and why MD5 alone isn't enough.
 prerequisites: [foundations-chain-of-custody]
 externalPrerequisites: [crypto-hashing]
-relatedCommands: [grep, ls, cat]
+relatedCommands: [acquire, hashsum, blocker]
 glossaryTerms: [hash, integrity, sha-256, md5, collision, forensic-image]
 cites: [nist-sp-800-86-s4-2-2, fips-180-4, rfc-1321-s1, rfc-6151-s2-1, nist-ir-8387-s3-2]
 ---
-
-{/* TODO(04): when `acquire` and `hashsum` exist, the See it section images a practice device and runs `hashsum --verify` against the handover form, instead of reading recorded hashes. */}
 
 ## The one-sentence version
 
@@ -96,20 +94,28 @@ always travel together.
 
 ## See it
 
-Your workstation has two copies of a note from a practice USB stick, a handover form with the hash
-taken before handover, and a file of hashes worked out for each copy. Which copy is exact?
+The practice USB stick TRAIN-07 is attached to your workstation through a write-blocker, and the
+handover form has the SHA-256 Theo took of it before he handed it over. Image the stick, then check
+your copy against the form.
 
 <MiniTerminal
   scenario="ir-ws-practice"
-  commands={["ls -l copies/copy-a copies/copy-b", "cat handover.txt", "grep 5be6f708 hashes.txt"]}
-  task="Look at the handover form's SHA-256, then type `grep 5be6f708 hashes.txt` to find the copy whose hash starts the same way."
-  expect="grep"
-  success="Only copy-a matches the handover form. Both copies are 115 bytes, and copy-b still differs: one character, 16:40 became 16:46. The size never showed it; the hash did."
+  commands={[
+    "blocker",
+    "cat handover.txt",
+    "acquire train-07 --out images/train-07.img",
+    "hashsum --verify 2585ba7c94d34cfbbdce3bde416725b97208e9d5a8368e57da087d34e560bdd4 images/train-07.img",
+  ]}
+  task="Make the copy with `acquire train-07 --out images/train-07.img`, then check it against the form's SHA-256 with `hashsum --verify`."
+  expect="hashsum"
+  success="MATCH. The hash of your copy is the hash on the form, so the copy is the stick, byte for byte, as Theo handed it over. Record both, with the time."
 />
 
-Checking the first eight characters is a handy way to find a line, and a real verification compares
-all 64. The two hashes here were worked out from those very files, so they're genuine. Try
-`cat copies/copy-b/note.txt` to find the changed character yourself.
+`acquire` printed the copy's hashes as it finished, and `hashsum --verify` compared all 64
+characters for you. The two copies of the note in `copies` are there to try it on a single file:
+`hashsum copies/copy-b/note.txt` gives a different SHA-256 from the note's on the form, though both
+copies are 115 bytes. One character changed, 16:40 became 16:46. The size never showed it; the hash
+did.
 
 ## In practice
 

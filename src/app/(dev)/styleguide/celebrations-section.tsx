@@ -67,7 +67,7 @@ export function CelebrationsSection({ id }: { id: string }) {
           without={DISPLAY_ONLY}
           variants={[
             {
-              label: "Tip, new idea, heads up",
+              label: "Tip, new idea, note, heads up",
               render: () => (
                 <div className="max-w-xl space-y-4">
                   <Callout kind="tip">
@@ -80,6 +80,12 @@ export function CelebrationsSection({ id }: { id: string }) {
                     <p>
                       Every computer has numbered doors for different jobs. These doors are called{" "}
                       <strong className="text-primary">ports</strong>.
+                    </p>
+                  </Callout>
+                  <Callout kind="info" title="Time zones">
+                    <p>
+                      Security log times are shown in UTC. The laptop kept its own clock in
+                      Europe/London (UTC+01:00).
                     </p>
                   </Callout>
                   <Callout kind="warning">
@@ -142,11 +148,21 @@ export function CelebrationsSection({ id }: { id: string }) {
           variants={[
             ...motionVariants(() => <ObjectiveTickDemo />, "Ticking one off"),
             {
-              label: "To do, done, and a bonus (already done when shown, so no celebration)",
+              label: "Done, now, to do, and a bonus (already done when shown, so no celebration)",
               render: () => (
                 <ul className="max-w-xl space-y-4">
                   <ObjectiveTick status="done" success={<LsSuccess />}>
                     Look around your home folder with <Cmd>ls</Cmd>.
+                  </ObjectiveTick>
+                  <ObjectiveTick
+                    status="current"
+                    details={
+                      <p className="mt-2 type-small text-secondary">
+                        Why: a welcome note says what the team expects of you.
+                      </p>
+                    }
+                  >
+                    Read the note called <Cmd>welcome.txt</Cmd>.
                   </ObjectiveTick>
                   <ObjectiveTick status="open">
                     Open the file called <Cmd>welcome.txt</Cmd>.
@@ -159,10 +175,15 @@ export function CelebrationsSection({ id }: { id: string }) {
             },
           ]}
         >
-          One objective in a mission&apos;s list. When the mission checks it off, the box fills with
-          the reward colour and a glow, and the success line slides in beneath. The box isn&apos;t a
-          control: missions tick objectives, not learners. Screen readers hear &ldquo;Done&rdquo; or
-          &ldquo;To do&rdquo; first, and the success line is announced when it arrives.
+          One objective in a case&apos;s list. The <Code>current</Code> one is the brightest thing
+          in the list: a &ldquo;Now&rdquo; eyebrow, an amber box, and its details open (they slide
+          in when it becomes current). When the case checks it off, the box fills with the reward
+          colour and a glow, and the success line slides in beneath, in <Code>text-primary</Code>{" "}
+          behind a reward-coloured rule, so the colour marks the moment and the sentence stays easy
+          to read. The box isn&apos;t a control: cases tick objectives, not players. Screen readers
+          hear &ldquo;Done&rdquo;, &ldquo;Now&rdquo; or &ldquo;To do&rdquo; first, the current one
+          is <Code>aria-current=&quot;step&quot;</Code>, and the success line is announced when it
+          arrives.
         </Specimen>
 
         <Specimen

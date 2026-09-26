@@ -1,0 +1,127 @@
+---
+id: memory-network-artefacts
+title: Who it was talking to
+topic: forensics
+level: 2
+readingMinutes: 7
+analogy: "A phone bill. It doesn't record what was said, but it lists every call: which number, when, and from which handset. The same number called every minute on the minute tells you something before you hear a word."
+summary: Reading the connections in a memory image, tying each to the program that owns it, and spotting a beacon by its rhythm.
+prerequisites: [memory-processes-and-parents]
+externalPrerequisites: [blue-reading-alerts]
+relatedCommands: [mem, logq]
+glossaryTerms: [beacon]
+cites: [amf-ch11]
+---
+
+## The one-sentence version
+
+A memory image records each network connection a computer had open, with both ends and the program
+that owns it, so you can see not only that something talked to an outside address but which process
+did it and how often.
+
+Think of a phone bill. It doesn't record what was said, but it lists every call: which number, when,
+and from which handset. The same number called every minute on the minute tells you something before
+you hear a word.
+
+<Quiz
+  question="netscan shows one process connecting to the same outside address every 60 seconds. What do you do with the address?"
+  options={[
+    {
+      text: "Connect to it, to see who is on the other end",
+      explanation:
+        "That's hacking back. It tells whoever is there that they've been found, the address may belong to someone else's compromised machine, and without permission it's a crime. It stays in your report instead.",
+    },
+    {
+      text: "Write it in the report and recommend blocking it",
+      correct: true,
+      explanation:
+        "The address is evidence and a fix at the same time: it names what to block at the firewall, and it lets other defenders look for the same thing on their machines.",
+    },
+    {
+      text: "Ignore it, because regular connections are always updates",
+      explanation:
+        "Some are. The owner decides: an update service run by Windows from System32 is one thing, a program with a borrowed name in a downloads folder is another.",
+    },
+  ]}
+/>
+
+## Why it matters in security
+
+Most software an attacker leaves behind has to get its instructions from somewhere, and send what it
+finds somewhere. That means connections. The firewall may log that the machine talked to an address;
+only memory says **which program** held the connection open. _The Art of Memory Forensics_
+(Chapter 11) calls this attributing connections to code, and it's often what turns "something on
+this server is talking to the internet" into "this process, started by this parent, from this
+folder".
+
+## How it actually works
+
+### Reading a connection
+
+`mem netscan` prints one line per connection it finds in memory:
+
+- **LOCAL**: this computer's address and port.
+- **REMOTE**: the other end's address and <Term id="port">port</Term>. Port 443 is what web traffic
+  uses, which is exactly why it's a popular port to hide in.
+- **STATE**: `ESTABLISHED` is open and in use. `LISTENING` is waiting for someone to connect in.
+  `CLOSE_WAIT` is finished but not yet tidied away.
+- **PID and OWNER**: the process holding it.
+
+Memory keeps connections that have recently closed as well as open ones, which is how one capture
+can show several minutes of history.
+
+### The rhythm of a beacon
+
+A <Term id="beacon">beacon</Term> checks in with its controller on a timer: the same remote address,
+the same port, a steady number of seconds apart, each connection small. Put the connections in time
+order and the rhythm shows. Legitimate software checks in too (updates, mail, chat), so the rhythm
+is a question, not an answer. The owner's name, folder and parent, from the last lesson, answer it.
+
+### Where you stop
+
+Never connect to the address. It's the one thing in an investigation that feels helpful and does
+harm: it warns whoever is there, the address may be a stranger's hacked machine, and touching a
+system you have no permission for is a crime. Write it down, recommend a block, and share it with
+people who can act on it.
+
+## See it
+
+The drill's practice beacon is still in memory. Find what it talks to.
+
+<MiniTerminal
+  scenario="ir-ws-drill"
+  commands={[
+    "mem netscan train-lt-02",
+    "mem netscan train-lt-02 --pid 6120",
+    "logq --source sysmon-lite --id 3 --count-by DestinationIp",
+  ]}
+  task="Type `mem netscan train-lt-02` to list the connections in the memory image."
+  expect="mem"
+  success="Eight connections from PID 6120, all to 192.168.60.66:443, created at 09:21, 09:22, 09:23 and so on: one a minute, every minute. The last one was still ESTABLISHED when the memory was captured."
+/>
+
+Eight connections, one owner: PID 6120, the `svchost.exe` the last lesson found hiding. The created
+times go up by exactly one minute. Seven are `CLOSE_WAIT` and the newest, at `09:28:00Z`, is
+`ESTABLISHED`, still open when Idris took the image at 09:30. The laptop's process monitor log agrees:
+`logq --count-by DestinationIp` shows eight connection records to the same address, first `09:21`
+and last `09:28`. The address, `192.168.60.66`, is Kit's practice machine on the Range; the letter
+puts it out of scope, so it goes in the report and nowhere else.
+
+## In practice
+
+In [Case 3, Something Is Still Running](/cases/case-03), Quillfen Freight's firewall shows the
+dispatch server contacting `203.0.113.47` every 60 seconds. `mem netscan` says which process is doing
+it, and one of the case's secrets is measuring the interval from the connection times yourself. Mid
+case, Kit wants to connect to the address "to see who's there". You make the call, and Noor explains
+what that choice costs.
+
+## Common misconceptions
+
+- **"The firewall log already shows the connection."** It shows two addresses. Memory shows the
+  process, and so the file, the parent and the command line behind it.
+- **"Port 443 means it's a website."** It means the program chose the port websites use. Anything
+  can.
+- **"Regular connections are always malicious."** Plenty of honest software checks in on a timer.
+  The rhythm raises the question; the process answers it.
+- **"Checking the address is part of the investigation."** Looking it up in your own records and
+  shared threat lists is. Connecting to it isn't.

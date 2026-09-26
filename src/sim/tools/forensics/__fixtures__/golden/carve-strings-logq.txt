@@ -1,0 +1,269 @@
+$ acquire /dev/evidence/qf-lt-07 --out /home/examiner/cases/case-01/images/qf-lt-07.img
+  acquire (simulated) · /dev/evidence/qf-lt-07 → /home/examiner/cases/case-01/images/qf-lt-07.img
+
+    Source         qf-lt-07 · Fenwold M2 solid-state drive · serial FW-2291-0067
+    Geometry       2,048 sectors of 512 bytes
+    Write-blocker  on
+
+    [#####...............] 512 of 2,048 sectors
+    [##########..........] 1,024 of 2,048 sectors
+    [###############.....] 1,536 of 2,048 sectors
+    [####################] 2,048 of 2,048 sectors
+
+    Copied 2,048 sectors in one pass. 0 unreadable sectors.
+
+    MD5      4cd3c4a346ce64e286f1304026c7cec1
+    SHA-256  25e30304afe9d679dd78769d5c3a08bf540d83154cef22c6c6f1634ea3e017ad
+
+  Both hashes are of the image's bytes. Check them against the handover form with:
+    hashsum --verify <hash from the form> /home/examiner/cases/case-01/images/qf-lt-07.img
+[exit 0]
+  @ evidence.readOriginal {"blocker":true,"device":"/dev/evidence/qf-lt-07","tool":"acquire"}
+  @ file.changed {"change":"created","hostId":"ir-ws-01","path":"/home/examiner/cases/case-01/images/qf-lt-07.img"}
+  @ evidence.acquired {"device":"/dev/evidence/qf-lt-07","image":"/home/examiner/cases/case-01/images/qf-lt-07.img","md5":"4cd3c4a346ce64e286f1304026c7cec1","sectors":2048,"sha256":"25e30304afe9d679dd78769d5c3a08bf540d83154cef22c6c6f1634ea3e017ad"}
+  @ command.run {"command":"acquire","exitCode":0,"line":"acquire /dev/evidence/qf-lt-07 --out /home/examiner/cases/case-01/images/qf-lt-07.img"}
+
+$ recover qf-lt-07 51 --out /home/examiner/cases/case-01/export/inv-0413.pdf
+! recover: qf-lt-07 record 51: those clusters hold something else now
+  Deleting C:\Users\dana\Documents\inv-0413.pdf freed cluster 1003, and C:\Windows\Temp\sync.log has since been written there, so the old content is gone.
+
+  The record itself is still evidence: inode qf-lt-07 51 shows the name,
+  the size and the times, which is often enough to show the file existed.
+[exit 1]
+  @ command.error {"code":"CLUSTERS_REUSED","command":"recover","image":"qf-lt-07","record":51}
+  @ command.run {"command":"recover","exitCode":1,"line":"recover qf-lt-07 51 --out /home/examiner/cases/case-01/export/inv-0413.pdf"}
+
+$ recover qf-lt-07 64 --out /home/examiner/cases/case-01/export/statements-april.zip
+  recover (simulated) · qf-lt-07 · record 64 → /home/examiner/cases/case-01/export/statements-april.zip
+
+    From      C:\Users\dana\Downloads\statements-april.zip (deleted)  [disk:qf-lt-07:mft/64]
+    Clusters  1005, none reused
+    Written   215 bytes
+    SHA-256   2e869e293ddac329c4500a0111ca039a8fc00a2251c79bac4ddbff9e64b0b7c4
+
+  The image is untouched. What you wrote is a copy of the bytes still sitting in
+  those clusters. Say so in the report, with the record number and the cluster list.
+[exit 0]
+  @ file.changed {"change":"created","hostId":"ir-ws-01","path":"/home/examiner/cases/case-01/export/statements-april.zip"}
+  @ evidence.recovered {"bytes":215,"image":"qf-lt-07","path":"/home/examiner/cases/case-01/export/statements-april.zip","record":64,"ref":"disk:qf-lt-07:mft/64"}
+  @ command.run {"command":"recover","exitCode":0,"line":"recover qf-lt-07 64 --out /home/examiner/cases/case-01/export/statements-april.zip"}
+
+$ carve qf-lt-07 --out /home/examiner/cases/case-01/export/carved
+  carve (simulated) · qf-lt-07 · unallocated space, 2,048 bytes · pdf, zip, jpg, png
+
+    Offset  Type  Size       Ends with                            Ref
+    512     pdf   512 bytes  nothing: partial                     disk:qf-lt-07:carve/512  [disk:qf-lt-07:carve/512]
+    1024    zip   215 bytes  end of central directory (PK 05 06)  disk:qf-lt-07:carve/1024  [disk:qf-lt-07:carve/1024]
+    1536    jpg   44 bytes   FF D9                                disk:qf-lt-07:carve/1536  [disk:qf-lt-07:carve/1536]
+    1792    png   67 bytes   IEND + CRC                           disk:qf-lt-07:carve/1792  [disk:qf-lt-07:carve/1792]
+
+    Written  /home/examiner/cases/case-01/export/carved/carve-512.pdf  [disk:qf-lt-07:carve/512]
+    Written  /home/examiner/cases/case-01/export/carved/carve-1024.zip  [disk:qf-lt-07:carve/1024]
+    Written  /home/examiner/cases/case-01/export/carved/carve-1536.jpg  [disk:qf-lt-07:carve/1536]
+    Written  /home/examiner/cases/case-01/export/carved/carve-1792.png  [disk:qf-lt-07:carve/1792]
+
+  4 objects: 3 complete, 1 partial.
+
+  Carved objects have no name and no timestamps. Those lived in the file record,
+  and carving works without one, so name each object by its ref when you write it up.
+
+  The pdf at offset 512 has a start but no end: something was written over
+  the rest of it. What survives can still be read: strings disk:qf-lt-07:carve/512
+[exit 0]
+  @ file.changed {"change":"created","hostId":"ir-ws-01","path":"/home/examiner/cases/case-01/export/carved/carve-512.pdf"}
+  @ file.changed {"change":"created","hostId":"ir-ws-01","path":"/home/examiner/cases/case-01/export/carved/carve-1024.zip"}
+  @ file.changed {"change":"created","hostId":"ir-ws-01","path":"/home/examiner/cases/case-01/export/carved/carve-1536.jpg"}
+  @ file.changed {"change":"created","hostId":"ir-ws-01","path":"/home/examiner/cases/case-01/export/carved/carve-1792.png"}
+  @ evidence.carved {"bytes":512,"complete":false,"fileType":"pdf","image":"qf-lt-07","ref":"disk:qf-lt-07:carve/512"}
+  @ evidence.carved {"bytes":215,"complete":true,"fileType":"zip","image":"qf-lt-07","ref":"disk:qf-lt-07:carve/1024"}
+  @ evidence.carved {"bytes":44,"complete":true,"fileType":"jpg","image":"qf-lt-07","ref":"disk:qf-lt-07:carve/1536"}
+  @ evidence.carved {"bytes":67,"complete":true,"fileType":"png","image":"qf-lt-07","ref":"disk:qf-lt-07:carve/1792"}
+  @ command.run {"command":"carve","exitCode":0,"line":"carve qf-lt-07 --out /home/examiner/cases/case-01/export/carved"}
+
+$ strings disk:qf-lt-07:carve/512
+  strings (simulated) · disk:qf-lt-07:carve/512 (partial pdf) · 512 bytes · 4 or more characters
+
+  %PDF-1.4  [disk:qf-lt-07:carve/512]
+  1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj  [disk:qf-lt-07:carve/512]
+  2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj  [disk:qf-lt-07:carve/512]
+  3 0 obj << /Type /Page /Parent 2 0 R /Contents 4 0 R >> endobj  [disk:qf-lt-07:carve/512]
+  4 0 obj << /Length 93 >> stream  [disk:qf-lt-07:carve/512]
+  BT /F1 12 Tf 72 720 Td (Quillfen Freight invoice 0413: 19:44:10 sync started  [disk:qf-lt-07:carve/512]
+  19:44:12 sync finished  [disk:qf-lt-07:carve/512]
+
+  7 strings.
+[exit 0]
+  @ evidence.searched {"found":7,"kind":"carve","target":"disk:qf-lt-07:carve/512"}
+  @ command.run {"command":"strings","exitCode":0,"line":"strings disk:qf-lt-07:carve/512"}
+
+$ strings -o disk:qf-lt-07:carve/1024
+  strings (simulated) · disk:qf-lt-07:carve/1024 (zip) · 215 bytes · 4 or more characters
+
+       30  statements-april.csvdate,reference,amount  [disk:qf-lt-07:carve/1024]
+       72  2026-04-02,INV-0412,1240.00  [disk:qf-lt-07:carve/1024]
+      100  2026-04-10,INV-0413,860.00  [disk:qf-lt-07:carve/1024]
+      173  statements-april.csvPK  [disk:qf-lt-07:carve/1024]
+
+  4 strings.
+[exit 0]
+  @ evidence.searched {"found":4,"kind":"carve","target":"disk:qf-lt-07:carve/1024"}
+  @ command.run {"command":"strings","exitCode":0,"line":"strings -o disk:qf-lt-07:carve/1024"}
+
+$ strings -n 8 qf-srv-01-mem
+  strings (simulated) · qf-srv-01-mem (memory of qf-srv-01) · 5 strings in the capture · 8 or more characters
+
+  Quillfen Freight dispatch
+  cdn-sync.example  (pid 4120, svchost.exe)  [mem:qf-srv-01-mem:pid/4120]
+  203.0.113.47:443  (pid 4120, svchost.exe)  [mem:qf-srv-01-mem:pid/4120]
+  C:\Users\dispatch\Desktop\routes.xlsx  (pid 2208, explorer.exe)  [mem:qf-srv-01-mem:pid/2208]
+
+  4 strings. A pid in brackets is the process that owned the string.
+[exit 0]
+  @ evidence.searched {"found":4,"kind":"memory","target":"qf-srv-01-mem"}
+  @ command.run {"command":"strings","exitCode":0,"line":"strings -n 8 qf-srv-01-mem"}
+
+$ logq --source security --id 4625 --count-by IpAddress
+  logq (simulated) · 41 of 45 records · security, event 4625 · counted by IpAddress
+
+    IpAddress   Records  First                 Last
+    10.60.0.21       40  2026-04-11T19:02:00Z  2026-04-11T19:06:33Z
+    10.60.0.27        1  2026-04-11T08:14:55Z  2026-04-11T08:14:55Z
+
+  2 different values across 41 records.
+  Most of them share one value. To read them: logq --source security --id 4625 --where IpAddress=10.60.0.21
+[exit 0]
+  @ logs.queried {"countBy":"IpAddress","eventId":4625,"matched":41,"source":"security","total":45}
+  @ command.run {"command":"logq","exitCode":0,"line":"logq --source security --id 4625 --count-by IpAddress"}
+
+$ logq --source security --id 4625 --where IpAddress=10.60.0.21 --to 2026-04-11T19:02:07Z
+  logq (simulated) · 2 of 45 records · security, event 4625, IpAddress=10.60.0.21 · times in UTC
+
+  EventID      4625  An account failed to log on.  [log:security/3]
+  TimeCreated  2026-04-11T19:02:00Z  [log:security/3]
+  Computer     qf-srv-01  [log:security/3]
+  Keywords     Audit Failure  [log:security/3]
+    TargetUserName    administrator  [log:security/3]
+    TargetDomainName  QUILLFEN  [log:security/3]
+    LogonType         10  [log:security/3]
+    Status            0xC000006D  [log:security/3]
+    SubStatus         0xC0000064  [log:security/3]
+    FailureReason     Unknown user name or bad password.  [log:security/3]
+    WorkstationName   QF-LT-03  [log:security/3]
+    IpAddress         10.60.0.21  [log:security/3]
+    IpPort            51001  [log:security/3]
+
+  EventID      4625  An account failed to log on.  [log:security/4]
+  TimeCreated  2026-04-11T19:02:07Z  [log:security/4]
+  Computer     qf-srv-01  [log:security/4]
+  Keywords     Audit Failure  [log:security/4]
+    TargetUserName    admin  [log:security/4]
+    TargetDomainName  QUILLFEN  [log:security/4]
+    LogonType         10  [log:security/4]
+    Status            0xC000006D  [log:security/4]
+    SubStatus         0xC0000064  [log:security/4]
+    FailureReason     Unknown user name or bad password.  [log:security/4]
+    WorkstationName   QF-LT-03  [log:security/4]
+    IpAddress         10.60.0.21  [log:security/4]
+    IpPort            51002  [log:security/4]
+
+  2 records. Narrow them with --where, or count them with --count-by <field>.
+[exit 0]
+  @ logs.queried {"eventId":4625,"matched":2,"source":"security","total":45,"where":"IpAddress=10.60.0.21"}
+  @ command.run {"command":"logq","exitCode":0,"line":"logq --source security --id 4625 --where IpAddress=10.60.0.21 --to 2026-04-11T19:02:07Z"}
+
+$ logq --source security --id 4625 | grep 10.60.0.21
+    IpAddress         10.60.0.21  [log:security/3]
+    IpAddress         10.60.0.21  [log:security/4]
+    IpAddress         10.60.0.21  [log:security/5]
+    IpAddress         10.60.0.21  [log:security/6]
+    IpAddress         10.60.0.21  [log:security/7]
+    IpAddress         10.60.0.21  [log:security/8]
+    IpAddress         10.60.0.21  [log:security/9]
+    IpAddress         10.60.0.21  [log:security/10]
+    IpAddress         10.60.0.21  [log:security/11]
+    IpAddress         10.60.0.21  [log:security/12]
+    IpAddress         10.60.0.21  [log:security/13]
+    IpAddress         10.60.0.21  [log:security/14]
+    IpAddress         10.60.0.21  [log:security/15]
+    IpAddress         10.60.0.21  [log:security/16]
+    IpAddress         10.60.0.21  [log:security/17]
+    IpAddress         10.60.0.21  [log:security/18]
+    IpAddress         10.60.0.21  [log:security/19]
+    IpAddress         10.60.0.21  [log:security/20]
+    IpAddress         10.60.0.21  [log:security/21]
+    IpAddress         10.60.0.21  [log:security/22]
+    IpAddress         10.60.0.21  [log:security/23]
+    IpAddress         10.60.0.21  [log:security/24]
+    IpAddress         10.60.0.21  [log:security/25]
+    IpAddress         10.60.0.21  [log:security/26]
+    IpAddress         10.60.0.21  [log:security/27]
+    IpAddress         10.60.0.21  [log:security/28]
+    IpAddress         10.60.0.21  [log:security/29]
+    IpAddress         10.60.0.21  [log:security/30]
+    IpAddress         10.60.0.21  [log:security/31]
+    IpAddress         10.60.0.21  [log:security/32]
+    IpAddress         10.60.0.21  [log:security/33]
+    IpAddress         10.60.0.21  [log:security/34]
+    IpAddress         10.60.0.21  [log:security/35]
+    IpAddress         10.60.0.21  [log:security/36]
+    IpAddress         10.60.0.21  [log:security/37]
+    IpAddress         10.60.0.21  [log:security/38]
+    IpAddress         10.60.0.21  [log:security/39]
+    IpAddress         10.60.0.21  [log:security/40]
+    IpAddress         10.60.0.21  [log:security/41]
+    IpAddress         10.60.0.21  [log:security/42]
+[exit 0]
+  @ logs.queried {"eventId":4625,"matched":41,"source":"security","total":45}
+  @ command.run {"command":"logq","exitCode":0,"line":"logq --source security --id 4625"}
+  @ command.run {"command":"grep","exitCode":0,"line":"grep 10.60.0.21"}
+
+$ pin 1 -m 'the_first_of_forty'
+  pin (simulated) · pinned to the case board
+
+    log:security/3  [log:security/3]
+    from  logq --source security --id 4625 | grep 10.60.0.21, line 1
+          IpAddress         10.60.0.21
+    note  the first of forty
+
+  Other lines you can pin from that output: 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40.
+  The board keeps the ref, so your report can point at this exact record.
+[exit 0]
+  @ board.pinned {"line":"IpAddress         10.60.0.21","note":"the first of forty","ref":"log:security/3"}
+  @ command.run {"command":"pin","exitCode":0,"line":"pin 1 -m 'the first of forty'"}
+
+$ logq --id 4624 --where LogonType=10 --zone local
+  logq (simulated) · 1 of 45 records · every source, event 4624, LogonType=10 · times as each source showed them
+
+  EventID      4624  An account was successfully logged on.  [log:security/43]
+  TimeCreated  2026-04-11 20:07:10 +01:00  [log:security/43]
+  Computer     qf-srv-01  [log:security/43]
+  Keywords     Audit Success  [log:security/43]
+    SubjectUserName            -  [log:security/43]
+    SubjectDomainName          -  [log:security/43]
+    TargetUserName             dispatch  [log:security/43]
+    TargetDomainName           QUILLFEN  [log:security/43]
+    LogonType                  10  [log:security/43]
+    LogonProcessName           User32  [log:security/43]
+    AuthenticationPackageName  Negotiate  [log:security/43]
+    WorkstationName            QF-LT-03  [log:security/43]
+    IpAddress                  10.60.0.21  [log:security/43]
+    IpPort                     0  [log:security/43]
+    TargetLogonId              0x3E7A21  [log:security/43]
+
+  1 record.
+[exit 0]
+  @ logs.queried {"eventId":4624,"matched":1,"total":45,"where":"LogonType=10"}
+  @ command.run {"command":"logq","exitCode":0,"line":"logq --id 4624 --where LogonType=10 --zone local"}
+
+$ pin
+  pin (simulated) · pinned to the case board
+
+    log:security/43  [log:security/43]
+    from  logq --id 4624 --where LogonType=10 --zone local, line 17
+          TargetLogonId              0x3E7A21
+
+  Other lines you can pin from that output: 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16.
+  The board keeps the ref, so your report can point at this exact record.
+[exit 0]
+  @ board.pinned {"line":"TargetLogonId              0x3E7A21","ref":"log:security/43"}
+  @ command.run {"command":"pin","exitCode":0,"line":"pin"}

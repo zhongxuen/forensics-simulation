@@ -199,6 +199,64 @@ export type SimEvent =
       readonly ref: string;
       readonly bytes: number;
     }
+  // Carving, strings and log queries (docs/plan/07-carve-strings-logq.md).
+  | {
+      /** One per object found. */
+      readonly type: "evidence.carved";
+      readonly image: string;
+      readonly ref: string;
+      /** "pdf", "zip", "jpg" or "png". */
+      readonly fileType: string;
+      readonly bytes: number;
+      /** False when the end marker was gone: the rest of the file was written over. */
+      readonly complete: boolean;
+    }
+  | {
+      readonly type: "evidence.searched";
+      /** What was searched, as the player named it. */
+      readonly target: string;
+      readonly kind: "disk" | "memory" | "carve" | "file";
+      /** How many strings were printed. */
+      readonly found: number;
+    }
+  | {
+      readonly type: "logs.queried";
+      /** Records that matched, out of `total` in the evidence set. */
+      readonly matched: number;
+      readonly total: number;
+      readonly source?: string;
+      readonly eventId?: number;
+      /** Every `--where`, as typed, joined with " and ". */
+      readonly where?: string;
+      readonly countBy?: string;
+    }
+  // Memory (docs/plan/08-memory-tools.md). `view` is the `mem` subcommand that ran.
+  | {
+      readonly type: "memory.listed";
+      /** The memory image, such as "qf-srv-01-mem". */
+      readonly image: string;
+      /** A walk of the active process list, which an unlinked process is missing from. */
+      readonly view: "ps" | "pstree";
+      readonly processes: number;
+    }
+  | {
+      readonly type: "memory.scanned";
+      readonly image: string;
+      /** A scan of the whole image, which finds what the lists leave out. */
+      readonly view: "psscan" | "netscan" | "malfind";
+      /** Processes, connections or regions found. */
+      readonly found: number;
+      /** `psscan` only: how many of those are missing from the active list. */
+      readonly unlinked?: number;
+      /** Present when the scan was narrowed with `--pid`. */
+      readonly pid?: number;
+    }
+  | {
+      readonly type: "memory.inspected";
+      readonly image: string;
+      readonly view: "info" | "cmdline" | "strings";
+      readonly pid?: number;
+    }
   | {
       readonly type: "board.pinned";
       readonly ref: string;

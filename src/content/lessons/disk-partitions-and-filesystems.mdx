@@ -1,0 +1,128 @@
+---
+id: disk-partitions-and-filesystems
+title: What's inside a drive
+topic: forensics
+level: 2
+readingMinutes: 7
+analogy: "A library building. The floors are partitions, each floor's card catalogue is its file system, and the shelves are clusters. Throw away a catalogue card and the book is still on the shelf."
+summary: How a drive is divided into partitions, how a file system keeps a record for every file, and why that record matters more than the file.
+prerequisites: [foundations-hashing-for-evidence]
+externalPrerequisites: [forensics-evidence-care]
+relatedCommands: [lsfs, inode, acquire]
+glossaryTerms: [sector, partition, file-system, file-record, cluster]
+cites: [carrier-fsfa-ch5, carrier-fsfa-ch11]
+---
+
+## The one-sentence version
+
+A drive is a long row of numbered blocks, split into partitions, and each partition's file system
+keeps a record for every file that says what it's called and which blocks hold it.
+
+Think of a library building. The floors are the partitions. Each floor has its own card catalogue,
+and the books sit on shelves. An investigator reads the catalogue to find the books, and also walks
+the shelves, because a book can still be there after its card is gone.
+
+<Quiz
+  question="A file is deleted from a laptop. What does the drive most likely still hold?"
+  options={[
+    {
+      text: "Nothing: deleting a file erases it",
+      explanation:
+        "Erasing means writing over every byte, which is slow, so ordinary deleting doesn't do it. The drive marks the space as free and moves on. That's why deleted files can so often be read back.",
+    },
+    {
+      text: "The file's record, still with its name and times, and very likely its content",
+      correct: true,
+      explanation:
+        "Deleting marks the record and the space it pointed at as free. Until something else is written there, the name, the times and the content all stay put. This whole track builds on that.",
+    },
+    {
+      text: "Only the file's name, in a list of deleted files",
+      explanation:
+        "There's no separate list of deleted files. The file's own record stays where it was, marked free, with the name, the size, the times and where the content sits.",
+    },
+  ]}
+/>
+
+## Why it matters in security
+
+Every question you ask of a drive, you ask through its structure. "What was in the Documents
+folder?" is a question for the file system's records. "Was this file here last week?" is a question
+for the times in one record. "Where did the deleted invoice go?" is a question for the free space
+between the records.
+
+If you only look the way the computer's owner did, through folders on a screen, you see what the
+file system chooses to show: live files, today. An examiner reads the records themselves, deleted
+ones included, and the space no record claims.
+
+## How it actually works
+
+### Sectors: the row of blocks
+
+A drive stores everything in <Term id="sector">sectors</Term>, usually 512 bytes each, numbered
+from 0. Imaging reads them in order, which is why `acquire` counts its progress in sectors. The
+practice laptop's drive has 250,069,680 of them.
+
+### Partitions: the floors
+
+A <Term id="partition">partition</Term> is a run of sectors set aside for one purpose. A table near
+the start of the drive says where each one starts and how long it is (Carrier, _File System
+Forensic Analysis_, chapter 5). The practice laptop has two: a small "System reserved" partition
+starting at sector 2,048, and the "Windows" partition starting at sector 1,050,624, which holds
+drive C:.
+
+Carrier also points out that sectors no partition claims are worth a look, since a table can be
+edited to hide something. That's one reason you image the whole drive, not one partition.
+
+### File systems: the catalogue
+
+Inside a partition, a <Term id="file-system">file system</Term> decides how files are stored.
+Windows uses NTFS, where every file and folder has an entry in one big table, the Master File Table
+(Carrier, chapter 11). This game calls each entry a <Term id="file-record">file record</Term>. It
+holds:
+
+- the file's name and the folder it's in
+- its size and its owner
+- four times, which the next lesson is about
+- which clusters hold its content
+
+### Clusters: the shelves
+
+A file system hands out space in <Term id="cluster">clusters</Term>, a few sectors grouped
+together: 4,096 bytes on this laptop. A 44-byte rota still takes a whole cluster. The record lists
+the cluster numbers, and that list is the only thing tying a name to its content.
+
+## See it
+
+The practice laptop from Candlewright's training cupboard is attached to your workstation, with its
+write-blocker on, and a working copy is already in `images`. List the records on its drive.
+
+<MiniTerminal
+  scenario="ir-ws-disk"
+  commands={["ls images", "lsfs train-lt-01", "lsfs train-lt-01 -r", "inode train-lt-01 15"]}
+  task="Type `lsfs train-lt-01 -r` to list every record on the practice laptop's C: drive."
+  expect="lsfs"
+  success="Fifteen records, each with a number. Three have a * in front: they were deleted, and the drive still has their names and sizes. Try `inode train-lt-01 15` to see one record in full, clusters included."
+/>
+
+`lsfs` read your working copy, not the laptop itself: give a tool a drive's name and it opens the
+copy when there is one. `inode` shows everything in one record. Record 15 is `rota.txt`, 44 bytes,
+in cluster 1000, which is one of 4,096 bytes.
+
+## In practice
+
+[Case 1, The Clean Copy](/cases/case-01) ends with this step: once the copy of Quillfen Freight's
+laptop is verified, you list the records on its drive with `lsfs` and find the note left on the
+desktop. In [Case 2, The Deleted Invoice](/cases/case-02), the records of deleted invoices are where the
+investigation starts.
+
+## Common misconceptions
+
+- **"A drive is one big space for files."** It's a row of sectors, divided into partitions, and
+  only a file system turns a partition into files and folders.
+- **"If a folder looks empty, the drive has nothing there."** A folder view shows live records.
+  Deleted records, and the content they point at, are still on the drive until reused.
+- **"Imaging the Windows partition is enough."** Space outside every partition can hold data too.
+  Image the whole drive.
+- **"The name is the file."** The name lives in the record, the content lives in clusters, and the
+  record's cluster list is what joins them. Either half can outlive the other.

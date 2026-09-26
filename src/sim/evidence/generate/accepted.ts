@@ -1,4 +1,5 @@
-import { base64ByteLength } from "../base64";
+import { base64ByteLength, decodeBase64 } from "../base64";
+import { carveBytes } from "../magic";
 import { formatRef, isLogSource } from "../refs";
 import type { ArtefactRef, EvidenceSet, LogRecord } from "../types";
 
@@ -12,7 +13,9 @@ import type { ArtefactRef, EvidenceSet, LogRecord } from "../types";
  *
  * ```text
  * disk:qf-lt-07:mft/*inv-0412*          the file record whose path has that in it
- * disk:qf-lt-07:carve/*                 anything found in unallocated space
+ * disk:qf-lt-07:carve/*                 the start of unallocated space
+ * disk:qf-lt-07:carve/partial pdf       what the carver finds there: by type, whole or partial,
+ * disk:qf-lt-07:carve/*QF-INV-0410*     or by text inside it
  * log:security/where eventId=4624 and IpAddress=10.60.0.21
  * log:sysmon-lite/where TargetFilename=*inv-0412*
  * mem:qf-srv-01-mem:pid/*dispatch*      the process, by name, path or command line
@@ -112,8 +115,19 @@ function diskMatches(
       if (offset < length) found.push(formatRef({ kind: "carve", image: disk.id, offset }));
       continue;
     }
-    if (selector.trim() === "*")
+    if (selector.trim() === "*") {
       found.push(formatRef({ kind: "carve", image: disk.id, offset: 0 }));
+      continue;
+    }
+    // Anything else names what the carver finds, by what an examiner would say about it: its type
+    // ("pdf"), whether it is whole ("partial pdf"), or text inside it ("*QF-INV-0410*"). The same
+    // scan `carve` makes, so the offset is the one its ref prints.
+    for (const object of carveBytes(decodeBase64(disk.unallocatedB64))) {
+      const state = `${object.complete ? "complete" : "partial"} ${object.type}`;
+      if (matchesAny(selector, [object.type, state, latin1(object.bytes)])) {
+        found.push(formatRef({ kind: "carve", image: disk.id, offset: object.offset }));
+      }
+    }
   }
   return found.sort(compare);
 }
@@ -244,6 +258,10 @@ function glob(pattern: string): RegExp {
   }
   return compiled;
 }
+
+/** Bytes as text, one character per byte, so a search can't be thrown by a broken sequence. */
+const latin1 = (bytes: Uint8Array): string =>
+  Array.from(bytes, (byte) => String.fromCharCode(byte)).join("");
 
 function matches(pattern: string, value: string): boolean {
   return glob(pattern).test(value);

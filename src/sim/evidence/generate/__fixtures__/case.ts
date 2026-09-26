@@ -37,6 +37,14 @@ export const SERVER: MachineSpec = {
   ip: "10.60.1.10",
 };
 
+export const TRAINING_LAPTOP: MachineSpec = {
+  id: "train-lt-01",
+  kind: "windows-laptop",
+  baseline: "training-laptop-v1",
+  zone: "Europe/London",
+  accounts: ["trainee"],
+};
+
 export const WORKSTATION: MachineSpec = {
   id: "ir-ws-01",
   kind: "linux-workstation",
