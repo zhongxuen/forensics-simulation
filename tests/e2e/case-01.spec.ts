@@ -208,6 +208,51 @@ test.describe("on a 360 px phone", () => {
   });
 });
 
+/**
+ * The first five minutes (docs/plan/06-case-1-the-clean-copy.md, prompt 06.2): the first objective
+ * ticks within 2 minutes of landing, and Kit's "quick look" at the original, the wrong turn, costs
+ * the drive its hash until Reset machine puts it back. Nothing is lost but that false start.
+ */
+test("the first tick comes inside 2 minutes, and the wrong turn is undone by Reset machine", async ({
+  page,
+}) => {
+  const landed = Date.now();
+  await page.goto("/");
+  await activate(page.getByRole("link", { name: "Open Case 1" }));
+  await activate(page.getByRole("button", { name: "Start case" }));
+  await expect(page.getByText("0 of 5 objectives done")).toBeVisible({ timeout: 30_000 });
+  await type(page, "cat letter.txt");
+  await showView(page, "Objectives");
+  await expect(page.getByText("1 of 5 objectives done")).toBeVisible();
+  expect(Date.now() - landed, "the first objective ticks inside 2 minutes").toBeLessThan(120_000);
+
+  const form = await type(page, "cat handover.txt");
+  const sha256 = /SHA-256:\s+([0-9a-f]{64})/.exec((await form.textContent()) ?? "")?.[1];
+  expect(sha256, "the handover form carries a SHA-256").toBeDefined();
+  const verify = `hashsum --verify ${sha256} /dev/evidence/qf-lt-03`;
+
+  // The wrong turn: the blocker off, a look at the original, and the hash no longer matches.
+  await expect(await type(page, "blocker off /dev/evidence/qf-lt-03")).toContainText(
+    "write-blocker OFF",
+  );
+  await type(page, "lsfs /dev/evidence/qf-lt-03 -l");
+  await expect(await type(page, verify)).toContainText("MISMATCH");
+  expect(await seriousViolations(page)).toEqual([]);
+
+  // Reset machine, from the terminal's More menu, with the keyboard.
+  await activate(page.getByRole("button", { name: "More", exact: true }));
+  await activate(page.getByRole("menuitem", { name: "Reset machine" }));
+  await expect(prompt(page)).toBeFocused();
+
+  // The drive is back as it arrived, blocker and all, and the same command matches again.
+  const blockers = await type(page, "blocker");
+  await expect(blockers).toContainText(/\/dev\/evidence\/qf-lt-03\s+on/);
+  const again = await type(page, verify);
+  await expect(again).toContainText("MATCH");
+  await expect(again).not.toContainText("MISMATCH");
+  expect(await seriousViolations(page)).toEqual([]);
+});
+
 test("/cases lists all three cases, in chapter order, and the practice case", async ({ page }) => {
   await page.goto("/cases");
   const main = page.getByRole("main");

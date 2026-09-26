@@ -9,9 +9,16 @@ import { prompt } from "./helpers";
 
 /** axe's serious and critical violations on the page as it is now, after any fade-in finishes. */
 export async function seriousViolations(page: Page) {
-  // A line that is still fading in would be measured at part opacity: wait for it to arrive.
+  // A line that is still fading in would be measured at part opacity: wait for it to arrive. A
+  // loop never ends (the focused prompt's blinking cursor), so only animations that finish count.
   await page.waitForFunction(() =>
-    document.getAnimations().every((animation) => animation.playState !== "running"),
+    document
+      .getAnimations()
+      .every(
+        (animation) =>
+          animation.playState !== "running" ||
+          animation.effect?.getComputedTiming().iterations === Infinity,
+      ),
   );
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"])

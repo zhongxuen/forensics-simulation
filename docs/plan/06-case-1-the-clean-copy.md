@@ -73,6 +73,6 @@ it passes through. Run against a production build. Commit when green.
 
 ## Done when
 
-- [ ] `pnpm case:play case-01` completes with the wrong turn, every bonus and secret
-- [ ] Playwright: first tick in under 2 minutes, full case keyboard-only
+- [x] `pnpm case:play case-01` completes with the wrong turn, every bonus and secret
+- [x] Playwright: first tick in under 2 minutes, full case keyboard-only
 - [ ] A person with no security background finishes it without the third hint (playtest, see 15)
