@@ -24,8 +24,15 @@ import {
  */
 const ReducedMotionOverrideSchema = z.enum(["system", "reduce", "full"]);
 const NetworkViewSchema = z.enum(["graph", "table"]);
+const AppThemeSchema = z.enum(["system", "dark", "light"]);
 
 export const SETTINGS_SHAPE = {
+  /**
+   * The app's colours (UIUX.md §3): "dark" is Lamplight, "light" is Daylight, and "system" follows
+   * the device's light or dark setting. Dark by default, the look the game was designed in. Applied
+   * as data-theme="light" on <html> (src/styles/tokens.css); the terminal stays dark either way.
+   */
+  appTheme: z.catch(AppThemeSchema, "dark"),
   /** The desktop sidebar is collapsed to an icon rail. */
   sidebarCollapsed: z.catch(z.boolean(), false),
   /**
@@ -74,6 +81,10 @@ export type ReducedMotionOverride = Settings["reducedMotionOverride"];
 
 export const REDUCED_MOTION_OVERRIDES: readonly ReducedMotionOverride[] =
   ReducedMotionOverrideSchema.options;
+
+export type AppTheme = Settings["appTheme"];
+
+export const APP_THEMES: readonly AppTheme[] = AppThemeSchema.options;
 
 export type NetworkView = Settings["networkView"];
 

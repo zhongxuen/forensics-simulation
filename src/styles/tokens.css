@@ -8,23 +8,26 @@
  * paper-white text, and one candle-amber accent for everything you can act on, so Candlewright
  * doesn't look like its red-team sibling's cyan.
  *
- * Dark-first: :root is the dark theme, the only theme in v1. To add a light theme later, add one
- * block that reassigns the same names, for example:
+ * Dark-first: :root is the dark theme and the default. [data-theme="light"] below is "Daylight"
+ * (UIUX.md §3.5), the same room with the lamp swapped for daylight on a manila case file: paper
+ * surfaces, ink text, a darker amber that still reads as text on paper, and status colours
+ * re-picked for a light ground. It reassigns the same names and nothing else, so components and
+ * theme.css need no changes. The settings module puts it on <html> (src/lib/settings, the
+ * appTheme setting); the boot script does so before first paint.
  *
- *   [data-theme="light"] {
- *     color-scheme: light;
- *     --surface-base: #...;
- *     ...
- *   }
+ * The terminal stays dark in both themes: Daylight leaves the --term-* tokens alone, and the
+ * terminal's own frame sets data-theme="dark", which the first selector below matches, so its
+ * header, menus and buttons keep the dark tokens they were measured on.
  *
  * theme.css reads these with `@theme inline`, so an override on any element re-themes that
- * subtree. Components and theme.css need no changes.
+ * subtree. src/lib/contrast-audit.ts measures both blocks.
  *
  * Tokens live in Tailwind's `theme` layer so utilities (for example scheme-light) still win.
  */
 
 @layer theme {
-  :root {
+  :root,
+  [data-theme="dark"] {
     color-scheme: dark;
 
     /* Surfaces: near-black, not #000, so three elevations stay distinguishable. */
@@ -57,7 +60,11 @@
     --border-subtle: #2a2f3b;
     --border-strong: #6f7687;
     --focus-ring: #ffd98f;
+  }
 
+  /* :root only, never [data-theme="dark"]: terminal colour themes set these on <html>
+     (src/lib/terminal-themes.ts), and the terminal's dark frame must inherit them, not reset them. */
+  :root {
     /* Terminal palette, consumed by the terminal renderer in phase 05. Terminal themes (phase 08,
        src/content/themes) reassign these on [data-terminal-theme]; this is the default theme. */
     --term-bg: #0a0c11;
@@ -80,5 +87,40 @@
     --term-bright-magenta: #f0b5ff;
     --term-bright-cyan: #8beeff;
     --term-bright-white: #f5f8fb;
+  }
+
+  /* Daylight. Ratios in UIUX.md §3.5, measured like Lamplight's. */
+  [data-theme="light"] {
+    color-scheme: light;
+
+    /* Surfaces: manila paper. Cards are the fresh sheet on top; overlays the folder's darker card. */
+    --surface-base: #f3ead6;
+    --surface-raised: #fbf7ee;
+    --surface-overlay: #eadfc6;
+
+    /* Ink. Each passes WCAG AA (4.5:1) on every surface above. */
+    --text-primary: #1b1e27;
+    --text-secondary: #3d4150;
+    --text-muted: #595c68;
+
+    /* Amber darkened until it reads as text on paper. Text on a solid fill is still
+       --surface-base, now paper on dark amber. */
+    --accent: #8a4f00;
+    --accent-hover: #6b3c00;
+    --accent-subtle: #f2deb0;
+
+    /* Status, re-picked for a light ground. Warning leans red so it never reads as the accent. */
+    --status-success: #1d6b40;
+    --status-warning: #a3420a;
+    --status-danger: #b0222c;
+    --status-info: #1d539f;
+
+    --reward: #6a3cb0;
+    --reward-glow: rgb(106 60 176 / 0.3);
+
+    /* The focus ring also passes 3:1 on --term-bg, for anything focusable inside the terminal. */
+    --border-subtle: #dccfb3;
+    --border-strong: #817764;
+    --focus-ring: #b8690a;
   }
 }

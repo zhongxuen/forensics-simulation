@@ -3,11 +3,40 @@
  * are measured against which, and the WCAG AA minimum each pair must meet.
  *
  * Contrast is a hard gate (md-files/02-design-system-and-app-shell.md). The test fails if any pair
- * below falls short, and if a colour token in tokens.css is neither audited nor excluded with a
- * reason, so a new token can't skip the check.
+ * below falls short, in either app theme (CONTRAST_THEMES), and if a colour token in tokens.css is
+ * neither audited nor excluded with a reason, so a new token can't skip the check.
  */
 
 import { contrastRatio, WCAG_AA_MIN_RATIO } from "@/lib/contrast";
+import { customPropertiesIn } from "@/lib/css-custom-properties";
+
+/** An app theme: the tokens.css blocks that declare it, later blocks overriding earlier ones. */
+export interface ContrastTheme {
+  readonly id: "dark" | "light";
+  readonly title: string;
+  readonly blocks: readonly string[];
+}
+
+const DARK_BLOCKS = [':root, [data-theme="dark"]', ":root"] as const;
+
+/**
+ * Both app themes (UIUX.md §3). Daylight only reassigns names, so it's measured as Lamplight with
+ * its block laid on top, exactly as the cascade builds it on <html>. The terminal tokens come
+ * through unchanged, because the terminal stays dark in both.
+ */
+export const CONTRAST_THEMES: readonly ContrastTheme[] = [
+  { id: "dark", title: "Lamplight (dark)", blocks: DARK_BLOCKS },
+  { id: "light", title: "Daylight (light)", blocks: [...DARK_BLOCKS, '[data-theme="light"]'] },
+];
+
+/** The token values a theme resolves to on <html>, from the source text of tokens.css. */
+export function themeTokens(css: string, theme: ContrastTheme): Map<string, string> {
+  const tokens = new Map<string, string>();
+  for (const block of theme.blocks) {
+    for (const [name, value] of customPropertiesIn(css, block)) tokens.set(name, value);
+  }
+  return tokens;
+}
 
 /** What a pair is used for, which sets its minimum ratio. */
 export type ContrastUse = "text" | "non-text";

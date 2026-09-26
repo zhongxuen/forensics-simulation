@@ -6,10 +6,12 @@
  * components that need the boot script import `@/lib/settings/boot-script` instead.
  */
 export {
+  APP_THEMES,
   DEFAULT_SETTINGS,
   NETWORK_VIEWS,
   REDUCED_MOTION_OVERRIDES,
   parseSettings,
+  type AppTheme,
   type NetworkView,
   type ReducedMotionOverride,
   type Settings,

@@ -151,6 +151,34 @@ Applied now: the tokens above in `src/styles/tokens.css` and the matching defaul
 
 Not applied (UX.1): the logo mark, the "letter" and "evidence tag" card styles, the type scale, and the SIMULATED badge's single-instance rule.
 
+### 3.5 Daylight, the light theme (prompt UX.9)
+
+The same case file read by daylight: manila paper instead of ink navy, ink instead of paper white, and the amber darkened until it reads as text on paper. It's the `[data-theme="light"]` block in `src/styles/tokens.css`, chosen with the **Colours** setting on `/settings` (Dark, Light or Match my device; Dark by default). The boot script sets it before first paint, and "Match my device" follows the device when it switches. The terminal stays dark: Daylight never touches `--term-*`, and the terminal's frame sets `data-theme="dark"`, so its header and menus keep the Lamplight tokens. The colour rules in §3.3 hold unchanged.
+
+Ratios on base / raised / overlay / accent-subtle, from the same audit, which now measures both themes.
+
+| Token               | Value     | Ratios                                |
+| ------------------- | --------- | ------------------------------------- |
+| `--surface-base`    | `#f3ead6` | —                                     |
+| `--surface-raised`  | `#fbf7ee` | —                                     |
+| `--surface-overlay` | `#eadfc6` | —                                     |
+| `--text-primary`    | `#1b1e27` | 13.9 / 15.5 / 12.5 / 12.5             |
+| `--text-secondary`  | `#3d4150` | 8.4 / 9.4 / 7.6 / 7.6                 |
+| `--text-muted`      | `#595c68` | 5.5 / 6.2 / 5.0 / 5.0                 |
+| `--accent`          | `#8a4f00` | 5.4 / 6.1 / 4.9 / 4.9                 |
+| `--accent-hover`    | `#6b3c00` | 7.7 / 8.6 / 6.9 / 6.9                 |
+| `--accent-subtle`   | `#f2deb0` | —                                     |
+| `--status-success`  | `#1d6b40` | 5.4 / 6.0 / 4.9 / 4.9                 |
+| `--status-warning`  | `#a3420a` | 5.2 / 5.8 / 4.7 / 4.7                 |
+| `--status-danger`   | `#b0222c` | 5.6 / 6.3 / 5.1 / 5.0                 |
+| `--status-info`     | `#1d539f` | 6.2 / 7.0 / 5.6 / 5.6                 |
+| `--reward`          | `#6a3cb0` | 6.0 / 6.8 / 5.5 / 5.4                 |
+| `--border-subtle`   | `#dccfb3` | excluded (decorative)                 |
+| `--border-strong`   | `#817764` | 3.6 / 4.1 / 3.3 / 3.3                 |
+| `--focus-ring`      | `#b8690a` | 3.4 / 3.8 / 3.1 / 3.1; 4.7 on the terminal |
+
+Text on a solid fill is still `--surface-base` (paper on dark amber: 5.4:1). Warning leans red (`#a3420a`) so it never reads as the accent's brown-amber.
+
 ## 4. Layout, whitespace and hierarchy rules
 
 ### 4.1 Spacing

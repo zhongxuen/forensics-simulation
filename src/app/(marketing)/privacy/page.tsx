@@ -28,8 +28,8 @@ export default function PrivacyPage() {
           Your settings
         </h2>
         <p className="mt-3 type-body text-secondary">
-          Under <code className={KEY}>incident-room:settings</code>: things like beginner mode, your
-          terminal&apos;s colours and how much moves on screen. Change them in{" "}
+          Under <code className={KEY}>incident-room:settings</code>: things like light or dark,
+          beginner mode, your terminal&apos;s colours and how much moves on screen. Change them in{" "}
           <Link href="/settings" className={LINK}>
             Settings
           </Link>

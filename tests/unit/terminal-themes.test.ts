@@ -19,7 +19,13 @@ import {
 } from "@/content/themes";
 import { findBannedWords } from "@/content/voice";
 import { TerminalPreview } from "@/features/terminal";
-import { auditContrast, formatContrastRatio, TERMINAL_CONTRAST_GROUPS } from "@/lib/contrast-audit";
+import {
+  auditContrast,
+  CONTRAST_THEMES,
+  formatContrastRatio,
+  TERMINAL_CONTRAST_GROUPS,
+  themeTokens,
+} from "@/lib/contrast-audit";
 import { customPropertiesIn } from "@/lib/css-custom-properties";
 import { terminalThemeCss, terminalThemeTokens, tokenFor } from "@/lib/terminal-themes";
 
@@ -30,7 +36,8 @@ import { terminalThemeCss, terminalThemeTokens, tokenFor } from "@/lib/terminal-
  */
 
 const tokensCss = readFileSync(new URL("../../src/styles/tokens.css", import.meta.url), "utf8");
-const appTokens = customPropertiesIn(tokensCss, ":root");
+// The terminal's frame is always dark (data-theme="dark"), so it's measured on the dark tokens.
+const appTokens = themeTokens(tokensCss, CONTRAST_THEMES[0]!);
 
 describe.each(TERMINAL_THEME_LIST.map((theme) => [theme.id, theme] as const))(
   "terminal theme %s",

@@ -3,20 +3,20 @@ import {
   formatContrastRatio,
   type ContrastAuditGroup,
   type ContrastAuditRow,
+  type ContrastTheme,
 } from "@/lib/contrast-audit";
 import { cx } from "@/lib/cx";
 import { Code, Section } from "./styleguide-ui";
 
 const tokenVar = (name: string) => `var(--${name})`;
 
-export function ContrastSection({
-  id,
-  groups,
-}: {
-  id: string;
-  groups: readonly ContrastAuditGroup[];
-}) {
-  const rows = groups.flatMap((group) => group.rows);
+export interface ThemeAudit {
+  readonly theme: ContrastTheme;
+  readonly groups: readonly ContrastAuditGroup[];
+}
+
+export function ContrastSection({ id, audits }: { id: string; audits: readonly ThemeAudit[] }) {
+  const rows = audits.flatMap((audit) => audit.groups.flatMap((group) => group.rows));
   const failures = rows.filter((row) => !row.passes).length;
 
   return (
@@ -26,9 +26,9 @@ export function ContrastSection({
       intro={
         <p>
           Every colour pair the design uses, measured with <Code>src/lib/contrast.ts</Code> from the
-          values in <Code>src/styles/tokens.css</Code>. WCAG AA: text needs 4.5:1 at any size;
-          borders, focus rings and indicators need 3:1. Ratios are rounded down, never up.{" "}
-          <Code>pnpm test</Code> fails if any pair here fails.
+          values in <Code>src/styles/tokens.css</Code>, once per app theme. WCAG AA: text needs
+          4.5:1 at any size; borders, focus rings and indicators need 3:1. Ratios are rounded down,
+          never up. <Code>pnpm test</Code> fails if any pair here fails.
         </p>
       }
     >
@@ -46,11 +46,21 @@ export function ContrastSection({
           : `${failures} of ${rows.length} pairs fail WCAG AA.`}
       </p>
 
-      <div className="mt-10 space-y-12">
-        {groups.map((group) => (
-          <AuditTable key={group.id} group={group} />
-        ))}
-      </div>
+      {audits.map(({ theme, groups }) => (
+        // data-theme draws each theme's samples with that theme's live tokens.
+        <div
+          key={theme.id}
+          data-theme={theme.id}
+          className="mt-10 rounded-xl bg-surface-base p-4 text-primary sm:p-6"
+        >
+          <h3 className="text-xl font-semibold">{theme.title}</h3>
+          <div className="mt-6 space-y-12">
+            {groups.map((group) => (
+              <AuditTable key={group.id} group={group} themeId={theme.id} />
+            ))}
+          </div>
+        </div>
+      ))}
 
       <div className="mt-12">
         <h3 className="text-lg font-semibold">Not measured as foregrounds</h3>
@@ -69,15 +79,15 @@ export function ContrastSection({
   );
 }
 
-function AuditTable({ group }: { group: ContrastAuditGroup }) {
+function AuditTable({ group, themeId }: { group: ContrastAuditGroup; themeId: string }) {
   const failures = group.rows.filter((row) => !row.passes).length;
-  const headingId = `contrast-${group.id}`;
+  const headingId = `contrast-${themeId}-${group.id}`;
 
   return (
     <div>
-      <h3 id={headingId} className="text-lg font-semibold">
+      <h4 id={headingId} className="text-lg font-semibold">
         {group.title}
-      </h3>
+      </h4>
       <p className="mt-1 max-w-3xl text-sm leading-6 text-secondary">{group.description}</p>
       <p className="mt-1 text-sm text-muted">
         {group.rows.length} pairs, {failures === 0 ? "all pass" : `${failures} fail`}. Minimum{" "}

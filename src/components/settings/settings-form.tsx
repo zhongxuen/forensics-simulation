@@ -6,6 +6,7 @@ import {
   resetSettings,
   updateSettings,
   useSettings,
+  type AppTheme,
   type ReducedMotionOverride,
   type Settings,
 } from "@/lib/settings";
@@ -16,6 +17,24 @@ import {
   Switch,
   type RadioOption,
 } from "./controls";
+
+const THEME_OPTIONS: ReadonlyArray<RadioOption<AppTheme>> = [
+  {
+    value: "dark",
+    label: "Dark",
+    detail: "Lamplight: an evidence room after hours. Easy on the eyes for long sessions.",
+  },
+  {
+    value: "light",
+    label: "Light",
+    detail: "Daylight: ink on manila paper, like a case file on a sunny desk.",
+  },
+  {
+    value: "system",
+    label: "Match my device",
+    detail: "Light or dark, whichever your device is set to, and it changes when your device does.",
+  },
+];
 
 const MOTION_OPTIONS: ReadonlyArray<RadioOption<ReducedMotionOverride>> = [
   {
@@ -69,6 +88,18 @@ export function SettingsForm({ children }: SettingsFormProps) {
   return (
     <ChangeSettingsProvider value={change}>
       <div className="space-y-6">
+        <SettingCard
+          title="Colours"
+          description="How the pages look. The terminal stays dark either way, and has its own colours below."
+        >
+          <RadioGroup
+            legend="Which colours should the app use?"
+            value={settings.appTheme}
+            options={THEME_OPTIONS}
+            onChange={(value) => change({ appTheme: value })}
+          />
+        </SettingCard>
+
         <SettingCard
           title="Sidebar"
           description="The menu on the left. Changes wide screens only: on a phone it opens from the menu button instead."

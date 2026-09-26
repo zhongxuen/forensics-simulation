@@ -62,6 +62,7 @@ function storageEvent(key: string | null) {
 describe("parseSettings", () => {
   it("fills in defaults on first run", () => {
     expect(parseSettings(undefined)).toEqual({
+      appTheme: "dark",
       sidebarCollapsed: false,
       reducedMotionOverride: "system",
       beginnerMode: true,
@@ -96,6 +97,8 @@ describe("parseSettings", () => {
     expect(parseSettings({ beginnerMode: "off" }).beginnerMode).toBe(true);
     expect(parseSettings({ nudgeChip: false }).nudgeChip).toBe(false);
     expect(parseSettings({ nudgeChip: "no" }).nudgeChip).toBe(true);
+    expect(parseSettings({ appTheme: "light" }).appTheme).toBe("light");
+    expect(parseSettings({ appTheme: "sepia" }).appTheme).toBe("dark");
   });
 
   it("drops unknown keys", () => {
@@ -282,9 +285,13 @@ describe("settings store", () => {
 });
 
 describe("applySettingsToElement", () => {
-  function apply(settings: Partial<Settings>, dataset: Record<string, string> = {}) {
+  function apply(
+    settings: Partial<Settings>,
+    dataset: Record<string, string> = {},
+    prefersLight = false,
+  ) {
     const root = { dataset: dataset as DOMStringMap };
-    applySettingsToElement(root, parseSettings(settings));
+    applySettingsToElement(root, parseSettings(settings), prefersLight);
     return { ...root.dataset };
   }
 
@@ -300,9 +307,25 @@ describe("applySettingsToElement", () => {
     expect(apply({ terminalTheme: "phosphor" })).toEqual({ terminalTheme: "phosphor" });
   });
 
+  it("marks Daylight, and follows the device for the system theme", () => {
+    expect(apply({ appTheme: "light" })).toEqual({ theme: "light" });
+    expect(apply({ appTheme: "dark" }, {}, true)).toEqual({});
+    expect(apply({ appTheme: "system" }, {}, true)).toEqual({ theme: "light" });
+    expect(apply({ appTheme: "system" }, { theme: "light" }, false)).toEqual({});
+  });
+
   it("removes every attribute for the defaults, leaving others alone", () => {
     expect(
-      apply({}, { sidebar: "collapsed", motion: "reduce", terminalTheme: "amber", theme: "dark" }),
-    ).toEqual({ theme: "dark" });
+      apply(
+        {},
+        {
+          sidebar: "collapsed",
+          motion: "reduce",
+          terminalTheme: "amber",
+          theme: "light",
+          other: "kept",
+        },
+      ),
+    ).toEqual({ other: "kept" });
   });
 });

@@ -12,8 +12,9 @@ import { run } from "./helpers";
  * anyone remembering to add it; file 03 does the same for cases once they live in
  * src/content/cases. The case workspace states are in the case-01, case-02 and case-03 specs.
  *
- * The site has one colour theme, dark (src/styles/tokens.css: "the only theme in v1"). What a
- * player can change is the terminal's colours, so the sandbox terminal is checked in each of them.
+ * Every route is checked in both app themes, Lamplight (dark, the default) and Daylight (light,
+ * the appTheme setting; src/styles/tokens.css). The terminal stays dark in both, and its own
+ * colours are a separate setting, so the sandbox terminal is checked in each of those too.
  *
  * axe finds what a machine can: missing names, contrast, roles, structure. It can't say whether a
  * page makes sense with a screen reader; a person checks that (file 15).
@@ -59,15 +60,78 @@ async function seriousViolations(page: Page) {
     }));
 }
 
-test.describe.configure({ mode: "parallel" });
-
-for (const route of ROUTES) {
-  test(`axe: ${route} has no serious or critical violations`, async ({ page }) => {
-    await page.goto(route);
-    await page.waitForLoadState("networkidle");
-    expect(await seriousViolations(page)).toEqual([]);
+/** Starts the page in Daylight, as a saved setting would, before any script runs. */
+async function useDaylight(page: Page) {
+  await page.addInitScript(() => {
+    localStorage.setItem("incident-room:settings", JSON.stringify({ appTheme: "light" }));
   });
 }
+
+test.describe.configure({ mode: "parallel" });
+
+for (const theme of ["dark", "light"] as const) {
+  test.describe(`${theme} theme`, () => {
+    for (const route of ROUTES) {
+      test(`axe: ${route} has no serious or critical violations`, async ({ page }) => {
+        // The glossary is the longest page for axe (~50 s); with every route run twice in
+        // parallel it can pass the default limit.
+        if (route === "/learn/glossary") test.slow();
+        if (theme === "light") await useDaylight(page);
+        await page.goto(route);
+        await page.waitForLoadState("networkidle");
+        // Dark is :root's own tokens, so it sets no attribute.
+        expect(await page.locator("html").getAttribute("data-theme")).toBe(
+          theme === "light" ? "light" : null,
+        );
+        expect(await seriousViolations(page)).toEqual([]);
+      });
+    }
+  });
+}
+
+/** Picks a radio the way a keyboard does (the input itself is visually hidden). */
+async function choose(page: Page, name: RegExp) {
+  const radio = page.getByRole("radio", { name });
+  await radio.focus();
+  await page.keyboard.press("Space");
+  await expect(radio).toBeChecked();
+}
+
+test.describe("the app theme setting", () => {
+  test("Light applies at once, and is on before first paint after a reload", async ({ page }) => {
+    await page.goto("/settings");
+    await choose(page, /^Light/);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+    // The terminal stays dark.
+    await page.goto("/sandbox");
+    await expect(page.getByRole("region", { name: "Terminal" })).toHaveAttribute(
+      "data-theme",
+      "dark",
+    );
+    // Read before hydration: the boot script, not React, has to have set it.
+    await page.goto("/settings", { waitUntil: "commit" });
+    await page.waitForSelector("body");
+    expect(await page.locator("html").getAttribute("data-theme")).toBe("light");
+  });
+
+  test("Match my device follows the device's colour scheme", async ({ page }) => {
+    await page.emulateMedia({ colorScheme: "light" });
+    await page.goto("/settings");
+    await expect(page.locator("html")).not.toHaveAttribute("data-theme", "light");
+    await choose(page, /^Match my device.*light or dark/i);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+    await page.emulateMedia({ colorScheme: "dark" });
+    await expect(page.locator("html")).not.toHaveAttribute("data-theme", "light");
+  });
+
+  test("axe: the sandbox terminal with output, in Daylight", async ({ page }) => {
+    await useDaylight(page);
+    await page.goto("/sandbox");
+    await run(page, "ls");
+    await run(page, "mem psscan train-lt-03-mem");
+    expect(await seriousViolations(page)).toEqual([]);
+  });
+});
 
 test.describe("states the player spends time in", () => {
   test("axe: the sandbox terminal, with output", async ({ page }) => {

@@ -390,6 +390,9 @@ export function Terminal({
   return (
     <section
       aria-label="Terminal"
+      // The terminal is dark in both app themes: this keeps its header, menus and buttons on the
+      // dark tokens too (src/styles/tokens.css).
+      data-theme="dark"
       className={cx(
         "flex flex-col overflow-hidden rounded-xl border border-subtle bg-term-bg text-term-fg",
         className,
