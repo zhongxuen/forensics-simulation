@@ -102,6 +102,9 @@ async function playCaseOne(page: Page) {
     timeout: 20_000,
   });
   expect(await seriousViolations(page)).toEqual([]);
+  await showView(page, "Timeline");
+  await expect(page.getByRole("heading", { name: "Timeline" })).toBeVisible({ timeout: 20_000 });
+  expect(await seriousViolations(page)).toEqual([]);
   await showView(page, "Board");
   await expect(page.getByRole("article", { name: /the-door-was-open\.txt/ })).toBeVisible({
     timeout: 20_000,

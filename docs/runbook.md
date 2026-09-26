@@ -109,7 +109,7 @@ Everything a machine can check passed on 2026-09-25 (§8), except the INP budget
 - [ ] **Smoke-test production** (§4): headers with `curl`, then `E2E_BASE_URL=https://forensics-simulation.vercel.app pnpm test:e2e`, and write the result in §8
 - [ ] **Screen reader pass** (§7), now through all three cases' first five minutes and the sandbox
 - [ ] **Playtests** (§7): three people with no security background play Case 1, and one of them plays all three. Record stuck points and fixes in §8
-- [ ] **INP on a quiet machine or a real phone.** `perf:vitals` measured `/cases` and `/cases/case-01` over the 200 ms budget on this laptop (§8). Run it again on a quiet machine; if it still fails, look at Speed Insights' real-visitor INP after a week of traffic before deciding what to change. What was found is in "Known limits" below
+- [x] **INP on a quiet machine.** Rerun in UX.8 (2026-09-26, §8) with nothing else running: every page within budget. Still worth reading Speed Insights' real-visitor INP after a week of traffic, since a busy machine pushes the lab number over ("Known limits" below). A real phone is still untested
 - [ ] **Firewall rule** (§3), still due: the mentor is live
 - [ ] Optional: add `ANTHROPIC_API_KEY` (§2). The game is complete without it
 
@@ -162,6 +162,7 @@ NVDA (Windows) or VoiceOver (macOS), about an hour, through Case 1's first five 
 | 2026-09-24 | Rollback rehearsed: Instant Rollback from 15A.1 (`dpl_Hv58…`) to 02.2 (`dpl_3PNw…`), then Promote back to 15A.1. "Open Case 1" back on `/` afterwards |
 | —          | Automatic promotion confirmed on (the next merge to `main` goes live without a Promote)                                                                                                                                                                                                                                                                                                                                                                        |
 | 2026-09-25 | Full launch prepared (15B.1), on `learning-13.2` after merging 11.1 (Case 2) and 14.1 (the mentor) and building 12.1 (Case 3). Machine-checked: lint, types, format, 145 Vitest files (2,490 tests), `evidence:check` (4 cases, 3 practice stories, the sandbox), `case:validate --strict`, coverage gates, `bundle:check` (largest page 185.7 KB), `security:bundle`, Playwright 74 of 74 (axe on every route and the sandbox terminal in all five colour themes, Cases 1–3 keyboard-only on desktop and 360 px, reduced motion, headers). `perf:vitals` (throttled phone, median of 3): `/` LCP 1164 ms, INP 80 ms, CLS 0.016; `/cases` 1492 ms, **336 ms**, 0; `/cases/case-01` 1408 ms, **224 ms**, 0. **INP is over budget on two pages** (see Known limits) |
+| 2026-09-26 | UX.8 verification pass. Machine-checked: `bundle:check` (every page within budget, largest 183.0 KB), `security:bundle`, Playwright 87 of 87, including the new `visual.spec.ts` (16 screenshots, stable over repeated runs) and `viewport.spec.ts`; lint, types, format and 148 Vitest files (2,565 tests); axe now also runs on Case 1's Timeline, so every pane is checked in every case. `perf:vitals` (throttled phone, median of 3) on a quiet machine: `/` LCP 1240 ms, INP 16 ms, CLS 0; `/cases` 1276 ms, 88 ms, 0; `/cases/case-01` 1380 ms, 80 ms, 0. Run straight after a build and the e2e suite, the same code measured INP 256–536 ms: the worst interaction is always the first key, pressed while React is still hydrating, so it finishes hydration inside that keydown (Known limits). The 15B.1 build, measured alongside on the same quiet machine, gave 32–104 / 56–232 / 72–256 ms, so the UX prompts did not make it worse |
 | —          | Screen reader pass                                                                                                                                                                                                                                                                                                                                                                        |
 | —          | Playtests (P1–P3)                                                                                                                                                                                                                                                                                                                                                                         |
 
@@ -169,9 +170,38 @@ NVDA (Windows) or VoiceOver (macOS), about an hour, through Case 1's first five 
 
 - The app has one colour theme (dark) in v1, so "axe in light and dark" is one pass over the site, plus a pass over the sandbox terminal in each of its five colour themes (`tests/e2e/a11y.spec.ts`), which `tests/unit/terminal-themes.test.ts` also contrast-audits.
 - Case 1's report questions can only point at the note's record: there is no ref for "this image's hash" (recorded in `src/content/cases/case-01.yaml`).
-- **INP over budget in `perf:vitals`** (4× CPU, 2026-09-25). It was already over before today's work: the commit before 11.1 and 14.1 were merged measured `/cases` 256 ms and `/cases/case-01` 496 ms, against 160 and 192 ms at the 15A release. Two causes were found:
+- **INP in `perf:vitals` depends on how busy the machine is** (2026-09-26: within budget on a quiet machine, 256–536 ms straight after a build). Written up first on 2026-09-25, when it was over budget (4× CPU). It was already over before today's work: the commit before 11.1 and 14.1 were merged measured `/cases` 256 ms and `/cases/case-01` 496 ms, against 160 and 192 ms at the 15A release. Two causes were found:
   1. **A key pressed before hydration has finished.** The script presses Tab as soon as the network is idle, and React then hydrates synchronously inside that keydown (up to about 460 ms on the case page). A `<Suspense>` boundary around the page content in `AppShell` now lets the page hydrate on its own, which took `/cases/case-01` from 496 to 224 ms. On `/cases` the key lands in the shell itself, so it still waits.
   2. **Opening the ⌘K palette** costs 140–220 ms throttled, nearly all of it in `dialog.showModal()`: the whole page's style is recalculated (a modal dialog makes everything else inert). Selector cost is small (Chrome's selector stats), and removing the `:has()` and forced-state rules made no reliable difference.
   Next steps, if a quiet-machine run and Speed Insights agree: hydrate less in the shell (render the palette's dialog body only once it is first opened), and consider a non-modal palette with its own focus trap.
 - The sandbox hands over five log sources: no story action writes `vpn` yet (`src/content/cases/sandbox.yaml`).
 - Case 3's two choice beats are report questions (the runner has no in-workspace choice yet), as Case 2's is. Case 3's header comment says so.
+
+## 9. UI review checklist
+
+For every new case and every screen that changes, and whenever Cases 2 and 3 change. It is `docs/UIUX.md` §4.3 (hierarchy) and §3.3 (colour) as questions. Walk it at 1440 × 900 and at 360 × 780 with reduced motion on, on the briefing, the workspace with each view open (Terminal, Objectives, Evidence, Timeline, Board), the report and the debrief. The pictures in `tests/e2e/visual.spec.ts-snapshots/` show what "right" looked like for Case 1 in UX.8 (2026-09-26); `docs/UIUX.md` §2.9 lists what was still open then.
+
+**What a machine checks** (run these first; CI runs all but the last): `pnpm test:e2e` (axe on every screen, keyboard-only play, `viewport.spec.ts`, `visual.spec.ts` where the platform has baselines), `pnpm bundle:check`, `pnpm perf:vitals` on a quiet machine.
+
+### Hierarchy (§4.3)
+
+- [ ] **One primary button per screen, and it's the next step.** Count the solid amber buttons on each screen: at most one, and it's what a beginner should press now
+- [ ] **The current task is the brightest thing after that button.** In the workspace the Now strip names the current objective; nothing else competes with it
+- [ ] **Everything done collapses.** Ticked objectives fold to their tick and title; the report's answered questions don't grow
+- [ ] **Destructive actions live in a menu with a confirm dialog.** Start the case again, Reset machine and anything that throws work away sit in a "⋯" menu, never beside the next step
+- [ ] **Empty states follow 99 §Voice and carry one action.** What's empty, why, and one thing to do about it
+- [ ] **The current objective, the prompt and the tab bar are in view** after a case's first commands, at both sizes, without the page scrolling (`viewport.spec.ts` checks Case 1)
+- [ ] **SIMULATED once per view**: the shell's top bar, plus one per terminal
+
+### Colour (§3.3)
+
+- [ ] **Amber means "you can act on this."** Buttons, links, the selected tab and focus only; never decoration or status
+- [ ] **Every status colour comes with an icon or a word.** MATCH ✓, MISMATCH ✕, blocker off ⚠, Supported / Needs evidence / Not yet
+- [ ] **Warning orange is never a solid fill.** An outline, the dashed tape or an icon, so it can't be mistaken for an amber button
+- [ ] **Reward violet is for moments**: the tick, the stamp, a found secret; never text you read
+- [ ] **Tints are backgrounds only.** Text on `bg-accent/10` and friends is `text-primary`
+- [ ] **One solid-amber block per screen, at most**, including selected toggles and empty-state buttons in panes
+
+### When a screen changes on purpose
+
+Update its baseline and look at it: `pnpm build && pnpm test:e2e tests/e2e/visual.spec.ts --update-snapshots`, then open the changed pictures in `tests/e2e/visual.spec.ts-snapshots/` and check them against this list before committing. The committed baselines were recorded on Windows; the spec skips on a platform without its own (CI's Linux runner). **Owner step:** record and commit Linux baselines once (on a Linux machine, or in Playwright's Docker image `mcr.microsoft.com/playwright`), so CI compares them too.

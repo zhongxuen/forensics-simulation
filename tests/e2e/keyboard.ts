@@ -99,6 +99,33 @@ export async function formSha256(block: Locator): Promise<string> {
   return sha256 ?? "";
 }
 
+/**
+ * Case 1's first ten commands, the clean path of its playthrough
+ * (src/content/cases/playthroughs/case-01.yaml, without the wrong turn): the paperwork, the
+ * blocker, the original's hash, the copy and its hash, the note's record and its pin. Starts at
+ * the briefing and ends in the workspace with the pin on the board.
+ */
+export async function caseOneFirstTenCommands(page: Page) {
+  await activate(page.getByRole("button", { name: "Start case" }));
+  await expect(page.getByText("0 of 5 objectives done")).toBeVisible({ timeout: 30_000 });
+  await type(page, "ls");
+  await type(page, "cat letter.txt");
+  const sha256 = await formSha256(await type(page, "cat handover.txt"));
+  await type(page, "blocker");
+  await expect(await type(page, `hashsum --verify ${sha256} /dev/evidence/qf-lt-03`)).toContainText(
+    "MATCH",
+  );
+  await type(page, "acquire /dev/evidence/qf-lt-03 --out images/qf-lt-03.img");
+  await expect(await type(page, `hashsum --verify ${sha256} images/qf-lt-03.img`)).toContainText(
+    "MATCH",
+  );
+  await type(page, "lsfs images/qf-lt-03.img 'C:\\Users\\mara\\Desktop' -l");
+  await type(page, "inode images/qf-lt-03.img 46");
+  await expect(await type(page, 'pin -m "the message nobody at the yard wrote"')).toContainText(
+    "pinned to the case board",
+  );
+}
+
 /** Nothing on the page is wider than the screen. */
 export async function horizontalOverflow(page: Page): Promise<number> {
   return page.evaluate(
